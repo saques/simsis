@@ -1,0 +1,12 @@
+package tp1;
+
+import java.util.List;
+
+public interface Entity {
+
+    List<Point2D> mbr();
+
+    double getX();
+    double getY();
+    double getRadius();
+}
