@@ -9,4 +9,6 @@ public interface Entity {
     double getX();
     double getY();
     double getRadius();
+    int getId();
+    boolean isWithinRadiusBoundingBox(Entity t, double evalDistance);
 }

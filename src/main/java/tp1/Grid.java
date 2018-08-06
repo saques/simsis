@@ -1,18 +1,19 @@
 package tp1;
 
+import com.google.common.collect.Iterators;
 import lombok.Getter;
 
-import java.util.List;
+import java.util.*;
 
 
-public class Grid <T extends Entity> {
+public class Grid {
 
     @Getter
     private double L, segmentLength;
 
     private int M;
 
-    private Cell<T> [][] grid;
+    private Cell<Entity> [][] grid;
 
     @SuppressWarnings("unchecked")
     public Grid(double L, int M){
@@ -26,10 +27,10 @@ public class Grid <T extends Entity> {
     private void initialize(){
         for(int i = 0; i < M; i++)
             for(int j = 0; j < M; j++)
-                grid[i][j] = new Cell<T>();
+                grid[i][j] = new Cell<>();
     }
 
-    public void add(T t){
+    public void add(Entity t){
         List<Point2D> mbr = t.mbr();
         Point2D a = mbr.get(0);
         Point2D b = mbr.get(1);
@@ -46,18 +47,49 @@ public class Grid <T extends Entity> {
         }
     }
 
-    public void evalNeighbours(double evalDistance) {
+    public Map<Entity, Set<Entity>> evalNeigboursBox(double evalDistance) {
         int cellEvalDistance = (int) Math.ceil(evalDistance / segmentLength);
 
-        // Bounding box method, definitely not the best, considers more cells than necessary
+        Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
+
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < M; j++) {
-                Cell c = grid[i][j];
-
-                // Iterate over every T of the Cell and return 
+                Cell<Entity> c = grid[i][j];
+                boundingBoxIterator(i, j).forEachRemaining(x -> {
+                    c.iterator().forEachRemaining(y -> {
+                        if(!y.equals(x) && y.isWithinRadiusBoundingBox(x, evalDistance)){
+                            if(!adjacencyMap.containsKey(y))
+                                adjacencyMap.put(y, new HashSet<>());
+                            Set<Entity> set = adjacencyMap.get(y);
+                            set.add(x);
+                        }
+                    });
+                });
             }
         }
+        return adjacencyMap;
+    }
 
+    public Map<Entity, Set<Entity>> evalNeigbboursPeriodic(double evalDistance) {
+        return null;
+    }
 
+    private Iterator<Entity> boundingBoxIterator(int x, int y){
+        if(!isWithinBounds(x, y))
+            throw new IllegalArgumentException();
+        Iterator<Entity> ans = grid[x][y].iterator();
+        if(isWithinBounds(x-1, y))
+            ans = Iterators.concat(ans, grid[x-1][y].iterator());
+        if(isWithinBounds(x-1, y+1))
+            ans = Iterators.concat(ans , grid[x-1][y+1].iterator());
+        if(isWithinBounds(x, y+1))
+            ans =  Iterators.concat(ans, grid[x][y+1].iterator());
+        if(isWithinBounds(x+1, y+1))
+            ans = Iterators.concat(ans, grid[x+1][y+1].iterator());
+        return ans;
+    }
+
+    private boolean isWithinBounds(int x, int y){
+        return x >= 0 && x < M && y >= 0 && y < M;
     }
 }
