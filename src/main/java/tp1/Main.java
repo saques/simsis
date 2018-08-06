@@ -17,12 +17,12 @@ public class Main {
         Map<Entity, Set<Entity>> adjacencies = null;
 
         long t0 = System.currentTimeMillis();
-        adjacencies = g.evalNeighbours(rc, Grid.Mode.BOX);
+        adjacencies = g.evalNeighbours(rc, Grid.Mode.PERIODIC);
         System.out.println("Adjacencies count: " + adjacencies.size());
         System.out.println("Time: " + (System.currentTimeMillis() - t0));
 
         t0 = System.currentTimeMillis();
-        adjacencies = g.evalNeighboursBruteForce(rc, Grid.Mode.BOX);
+        adjacencies = g.evalNeighboursBruteForce(rc, Grid.Mode.PERIODIC);
         System.out.println("Adjacencies count: " + adjacencies.size());
         System.out.println("Time: " + (System.currentTimeMillis() - t0));
 

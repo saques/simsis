@@ -44,8 +44,8 @@ public class Grid {
             throw new IllegalArgumentException();
         int M = g.M;
         Iterator<Entity> ans = g.grid[x][y].iterator();
-        ans = Iterators.concat(ans, g.grid[(x-1) % M][y % M].iterator());
-        ans = Iterators.concat(ans , g.grid[(x-1) % M][(y+1) % M].iterator());
+        ans = Iterators.concat(ans, g.grid[Math.floorMod(x-1, M)][y % M].iterator());
+        ans = Iterators.concat(ans , g.grid[Math.floorMod(x-1, M)][(y+1) % M].iterator());
         ans =  Iterators.concat(ans, g.grid[x % M][(y+1) % M].iterator());
         ans = Iterators.concat(ans, g.grid[(x+1) % M][(y+1) % M].iterator());
         return ans;
