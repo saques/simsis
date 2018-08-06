@@ -22,7 +22,7 @@ public class Grid {
             !x.equals(y) && x.isWithinRadiusBoundingBox(y, d);
 
     private static DistanceCondition periodicCondition = (g, x, y, d) ->
-            !x.equals(y) && x.isWithinRadiusPeriodic(y, d, g.L*g.M);
+            !x.equals(y) && x.isWithinRadiusPeriodic(y, d, g.L);
 
     private static EntityIterator boxIterator = (g, x, y) -> {
         if(!g.isWithinBounds(x, y))
@@ -72,6 +72,7 @@ public class Grid {
     private int M;
 
     private Cell<Entity> [][] grid;
+    private List<Entity> list = new LinkedList<>();
 
     @SuppressWarnings("unchecked")
     public Grid(double L, int M){
@@ -103,6 +104,29 @@ public class Grid {
                 grid[i][j].add(t);
             }
         }
+        list.add(t);
+    }
+
+    public Map<Entity, Set<Entity>> evalNeighboursBruteForce(double evalDistance, Mode mode){
+        int cellEvalDistance = (int) Math.ceil(evalDistance / segmentLength);
+        Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
+        for(int i = 0; i < M; i++){
+            for(int j = 0; j < M; j++){
+                Cell<Entity> c = grid[i][j];
+                list.forEach(y -> {
+                    c.forEach(x -> {
+                        if(mode.condition.check(this, x, y, evalDistance)){
+                            if(!adjacencyMap.containsKey(x))
+                                adjacencyMap.put(x, new HashSet<>());
+                            Set<Entity> set = adjacencyMap.get(x);
+                            set.add(y);
+                        }
+                    });
+                });
+            }
+        }
+
+        return adjacencyMap;
     }
 
     public Map<Entity, Set<Entity>> evalNeighbours(double evalDistance, Mode mode) {
