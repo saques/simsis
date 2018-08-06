@@ -31,12 +31,16 @@ public class Particle implements Entity{
     }
 
     public boolean isWithinRadiusBoundingBox(Entity o, double evalDistance){
-        double distance = Math.sqrt(Math.pow(Math.abs(this.x - o.getX()),2) + Math.pow(Math.abs(this.y - o.getY()) ,2));
+        double distance = Math.sqrt(Math.pow(Math.abs(this.x - o.getX()), 2) + Math.pow(Math.abs(this.y - o.getY()), 2));
         return distance - radius - o.getRadius() <= evalDistance;
     }
 
     public boolean isWithinRadiusPeriodic(Entity o, double evalDistance, double boxLength){
-        return true;
+        if(isWithinRadiusBoundingBox(o, evalDistance))
+            return true;
+        double distance = Math.sqrt(Math.pow(Math.abs(this.x + o.getX() - boxLength), 2) +
+                                    Math.pow(Math.abs(this.y + o.getY() - boxLength), 2));
+        return distance - radius - o.getRadius() <= evalDistance;
     }
 
     public List<Point2D> mbr() {

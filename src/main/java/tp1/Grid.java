@@ -8,9 +8,67 @@ import java.util.*;
 
 public class Grid {
 
+    @FunctionalInterface
+    interface DistanceCondition {
+        boolean check(Grid grid, Entity x, Entity y, double evalDistance);
+    }
+
+    @FunctionalInterface
+    interface EntityIterator {
+        Iterator<Entity> compute(Grid grid, int x, int y);
+    }
+
+    private static DistanceCondition boxCondition = (g, x, y, d)  ->
+            !x.equals(y) && x.isWithinRadiusBoundingBox(y, d);
+
+    private static DistanceCondition periodicCondition = (g, x, y, d) ->
+            !x.equals(y) && x.isWithinRadiusPeriodic(y, d, g.L*g.M);
+
+    private static EntityIterator boxIterator = (g, x, y) -> {
+        if(!g.isWithinBounds(x, y))
+            throw new IllegalArgumentException();
+        Iterator<Entity> ans = g.grid[x][y].iterator();
+        if(g.isWithinBounds(x-1, y))
+            ans = Iterators.concat(ans, g.grid[x-1][y].iterator());
+        if(g.isWithinBounds(x-1, y+1))
+            ans = Iterators.concat(ans , g.grid[x-1][y+1].iterator());
+        if(g.isWithinBounds(x, y+1))
+            ans =  Iterators.concat(ans, g.grid[x][y+1].iterator());
+        if(g.isWithinBounds(x+1, y+1))
+            ans = Iterators.concat(ans, g.grid[x+1][y+1].iterator());
+        return ans;
+    };
+
+    private static EntityIterator periodicIterator = (g, x, y) -> {
+        if(!g.isWithinBounds(x, y))
+            throw new IllegalArgumentException();
+        int M = g.M;
+        Iterator<Entity> ans = g.grid[x][y].iterator();
+        ans = Iterators.concat(ans, g.grid[(x-1) % M][y % M].iterator());
+        ans = Iterators.concat(ans , g.grid[(x-1) % M][(y+1) % M].iterator());
+        ans =  Iterators.concat(ans, g.grid[x % M][(y+1) % M].iterator());
+        ans = Iterators.concat(ans, g.grid[(x+1) % M][(y+1) % M].iterator());
+        return ans;
+    };
+
+    public enum Mode {
+        BOX(boxCondition, boxIterator), PERIODIC(periodicCondition, periodicIterator);
+
+         private DistanceCondition condition;
+         private EntityIterator entityIterator;
+
+         Mode(DistanceCondition condition, EntityIterator entityIterator){
+            this.condition = condition;
+            this.entityIterator = entityIterator;
+        }
+
+    }
+
+
     @Getter
     private double L, segmentLength;
 
+    @Getter
     private int M;
 
     private Cell<Entity> [][] grid;
@@ -47,46 +105,25 @@ public class Grid {
         }
     }
 
-    public Map<Entity, Set<Entity>> evalNeigboursBox(double evalDistance) {
+    public Map<Entity, Set<Entity>> evalNeighbours(double evalDistance, Mode mode) {
         int cellEvalDistance = (int) Math.ceil(evalDistance / segmentLength);
-
         Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
-
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < M; j++) {
                 Cell<Entity> c = grid[i][j];
-                boundingBoxIterator(i, j).forEachRemaining(x -> {
-                    c.iterator().forEachRemaining(y -> {
-                        if(!y.equals(x) && y.isWithinRadiusBoundingBox(x, evalDistance)){
-                            if(!adjacencyMap.containsKey(y))
-                                adjacencyMap.put(y, new HashSet<>());
-                            Set<Entity> set = adjacencyMap.get(y);
-                            set.add(x);
+                mode.entityIterator.compute(this, i, j).forEachRemaining(y -> {
+                    c.iterator().forEachRemaining(x -> {
+                        if(mode.condition.check(this, x, y, evalDistance)){
+                            if(!adjacencyMap.containsKey(x))
+                                adjacencyMap.put(x, new HashSet<>());
+                            Set<Entity> set = adjacencyMap.get(x);
+                            set.add(y);
                         }
                     });
                 });
             }
         }
         return adjacencyMap;
-    }
-
-    public Map<Entity, Set<Entity>> evalNeigbboursPeriodic(double evalDistance) {
-        return null;
-    }
-
-    private Iterator<Entity> boundingBoxIterator(int x, int y){
-        if(!isWithinBounds(x, y))
-            throw new IllegalArgumentException();
-        Iterator<Entity> ans = grid[x][y].iterator();
-        if(isWithinBounds(x-1, y))
-            ans = Iterators.concat(ans, grid[x-1][y].iterator());
-        if(isWithinBounds(x-1, y+1))
-            ans = Iterators.concat(ans , grid[x-1][y+1].iterator());
-        if(isWithinBounds(x, y+1))
-            ans =  Iterators.concat(ans, grid[x][y+1].iterator());
-        if(isWithinBounds(x+1, y+1))
-            ans = Iterators.concat(ans, grid[x+1][y+1].iterator());
-        return ans;
     }
 
     private boolean isWithinBounds(int x, int y){
