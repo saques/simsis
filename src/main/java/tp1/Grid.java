@@ -117,8 +117,7 @@ public class Grid {
                 list.forEach(y -> {
                     c.forEach(x -> {
                         if(mode.condition.check(this, x, y, evalDistance)){
-                            Set<Entity> set = adjacencyMap.get(x);
-                            set.add(y);
+                            addToMap(adjacencyMap, x, y);
                         }
                     });
                 });
@@ -138,14 +137,20 @@ public class Grid {
                 mode.entityIterator.compute(this, i, j).forEachRemaining(y -> {
                     c.iterator().forEachRemaining(x -> {
                         if(mode.condition.check(this, x, y, evalDistance)){
-                            Set<Entity> set = adjacencyMap.get(x);
-                            set.add(y);
+                            addToMap(adjacencyMap, x, y);
                         }
                     });
                 });
             }
         }
         return adjacencyMap;
+    }
+
+    private void addToMap(Map<Entity, Set<Entity>> map, Entity x, Entity y){
+        Set<Entity> set = map.get(x);
+        set.add(y);
+        set = map.get(y);
+        set.add(x);
     }
 
     private boolean isWithinBounds(int x, int y){
