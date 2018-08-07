@@ -12,10 +12,11 @@ public class Main {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    private static int N = 100000;
+    private static int N = 1000;
     private static int M = 5;
     private static double L = 20;
-    private static double rc = 1;
+    private static double rc = 0.1;
+    private static double particleRadius = 0.1;
     private static Grid.Mode mode = Grid.Mode.BOX;
     private static Long seed = null;
 
@@ -30,7 +31,7 @@ public class Main {
         Grid g = new Grid(L, M);
 
         LOGGER.info("Generating particles...");
-        generateEntities(L, N, 0.25, r).forEach(g::add);
+        generateEntities(L, N, particleRadius, r).forEach(g::add);
         LOGGER.info("Success");
 
         Map<Entity, Set<Entity>> adjacencies = null;

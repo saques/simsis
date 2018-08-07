@@ -94,13 +94,13 @@ public class Grid {
         Point2D a = mbr.get(0);
         Point2D b = mbr.get(1);
 
-        int cellAx = (int) (a.getX() / segmentLength), cellAy = (int) (a.getY() / segmentLength);
-        int cellBx = (int) (b.getX() / segmentLength), cellBy = (int) (b.getY() / segmentLength);
+        int cellAx = (int) (Math.max(0, a.getX()) / segmentLength), cellAy = (int) (Math.min(L, a.getY()) / segmentLength);
+        int cellBx = (int) (Math.max(0, b.getX()) / segmentLength), cellBy = (int) (Math.min(L, b.getY()) / segmentLength);
 
-        int minx = Math.min(cellAx, cellBx), miny = Math.min(cellAy, cellBy);
-        int maxx = Math.max(cellAx, cellBx), maxy = Math.max(cellAy, cellBy);
-        for (int i = minx; i < maxx; i++) {
-            for (int j = miny; j < maxy; j++) {
+        int minx = Math.min(Math.min(cellAx, cellBx), M-1), miny = Math.min(Math.min(cellAy, cellBy), M-1);
+        int maxx = Math.min(Math.max(cellAx, cellBx), M-1), maxy = Math.min(Math.max(cellAy, cellBy), M-1);
+        for (int i = minx; i <= maxx; i++) {
+            for (int j = miny; j <= maxy; j++) {
                 grid[i][j].add(t);
             }
         }
