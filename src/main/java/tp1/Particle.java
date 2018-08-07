@@ -7,8 +7,8 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@EqualsAndHashCode
 public class Particle implements Entity{
 
     private static int IDS = 0;
@@ -48,5 +48,18 @@ public class Particle implements Entity{
         ans.add(new Point2D(x-radius, y-radius));
         ans.add(new Point2D(x+radius, y+radius));
         return ans;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Particle particle = (Particle) o;
+        return id == particle.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

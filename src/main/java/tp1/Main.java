@@ -1,38 +1,93 @@
 package tp1;
 
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Main {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     private static int N = 100000;
     private static int M = 5;
     private static double L = 20;
     private static double rc = 1;
+    private static Grid.Mode mode = Grid.Mode.BOX;
+    private static Long seed = null;
 
-    public static void main(String[] args) {
-        Random r = new Random(System.currentTimeMillis());
+    public static void main(String[] args) throws Exception{
+        BasicConfigurator.configure();
+
+        if(seed == null)
+            seed = System.currentTimeMillis();
+        LOGGER.info("Seed: {}", seed);
+
+        Random r = new Random(seed);
         Grid g = new Grid(L, M);
+
+        LOGGER.info("Generating particles...");
         generateEntities(L, N, 0.25, r).forEach(g::add);
+        LOGGER.info("Success");
 
         Map<Entity, Set<Entity>> adjacencies = null;
+        LOGGER.info("Running algorithms on {} mode", mode.name());
 
+        LOGGER.info("Running brute force method");
         long t0 = System.currentTimeMillis();
-        adjacencies = g.evalNeighbours(rc, Grid.Mode.PERIODIC);
-        System.out.println("Adjacencies count: " + adjacencies.size());
-        System.out.println("Time: " + (System.currentTimeMillis() - t0));
+        adjacencies = g.evalNeighboursBruteForce(rc, mode);
+        LOGGER.info("Time: {}", System.currentTimeMillis() - t0);
+        LOGGER.info("Adjacent count: {}", adjacencies.size());
 
+        LOGGER.info("Running Cell Index Method");
         t0 = System.currentTimeMillis();
-        adjacencies = g.evalNeighboursBruteForce(rc, Grid.Mode.PERIODIC);
-        System.out.println("Adjacencies count: " + adjacencies.size());
-        System.out.println("Time: " + (System.currentTimeMillis() - t0));
+        adjacencies = g.evalNeighbours(rc, mode);
+        LOGGER.info("Time: {}", System.currentTimeMillis() - t0);
+        LOGGER.info("Adjacent count: {}", adjacencies.size());
+
+        LOGGER.info("Flushing neighbours list...");
+        printAdjacent(adjacencies);
+        LOGGER.info("Success");
 
     }
 
-    private static List<Particle> generateEntities(double range, int N, double radius, Random r){
+    private static List<Particle> generateEntities(double L, int N, double radius, Random r) throws Exception{
+
         List<Particle> ans = new ArrayList<>(N);
-        for(int i = 0; i < N; i++)
-            ans.add(new Particle(r.nextDouble()*range, r.nextDouble()*range, radius));
+        PrintWriter sta = new PrintWriter(new FileWriter("static.txt"));
+        PrintWriter din = new PrintWriter(new FileWriter("dynamic.txt"));
+
+        sta.println(N);
+        sta.println(L);
+
+        //TODO: t0 when time is relevant, irrelevant in this case
+        din.println(0);
+
+        for(int i = 0; i < N; i++) {
+            double x = r.nextDouble() * L, y = r.nextDouble() * L;
+            //TODO: set property of the particle, irrelevant in this case
+            sta.printf("%f %d\n", radius, 0);
+            //TODO: set speed of the particle, irrelevant in this case
+            din.printf("%f %f %f %f\n", x, y, 0.0, 0.0);
+            ans.add(new Particle(x, y, radius));
+        }
+
+        sta.flush(); sta.close();
+        din.flush(); din.close();
         return ans;
+    }
+
+    private static void printAdjacent(Map<Entity, Set<Entity>> adj) throws Exception{
+        PrintWriter file = new PrintWriter(new FileWriter("adjacent.txt"));
+        adj.forEach(((entity, entities) -> {
+            file.printf("[%d", entity.getId());
+            entities.forEach(x -> file.printf(" %d", x.getId()));
+            file.println("]");
+        }));
+        file.flush(); file.close();
     }
 
 }
