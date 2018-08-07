@@ -12,18 +12,18 @@ function animation(M,particle,static_file, dynamic_file, output_file)
     line = substr(line,2,length(line)-2);
     neighbour{end+1} = textscan(line,'%d');
   end
-  plot = scatter(x,y,'b','filled');
+  plot = scatter(x,y,15,'b','filled');
   title('Cell Index Method');
   xlabel('X');
   ylabel('Y');
   hold on;
   particleX = x(particle+1);
   particleY = y(particle+1);
-  plot = scatter(particleX,particleY,'g','filled');
+  plot = scatter(particleX,particleY,15,'g','filled');
   particle_neighbours = neighbour{particle+1}{1}(2:end);
   neighboursX = x(particle_neighbours+1);
   neighboursY = y(particle_neighbours+1);
-  plot = scatter(neighboursX,neighboursY,'r','filled');
+  plot = scatter(neighboursX,neighboursY,15,'r','filled');
   set(gca,'xtick',[0:(L/M):L]);
   set(gca,'ytick',[0:(L/M):L]);
   grid on;
