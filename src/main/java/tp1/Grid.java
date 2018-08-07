@@ -110,14 +110,13 @@ public class Grid {
     public Map<Entity, Set<Entity>> evalNeighboursBruteForce(double evalDistance, Mode mode){
         int cellEvalDistance = (int) Math.ceil(evalDistance / segmentLength);
         Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
+        list.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
         for(int i = 0; i < M; i++){
             for(int j = 0; j < M; j++){
                 Cell<Entity> c = grid[i][j];
                 list.forEach(y -> {
                     c.forEach(x -> {
                         if(mode.condition.check(this, x, y, evalDistance)){
-                            if(!adjacencyMap.containsKey(x))
-                                adjacencyMap.put(x, new HashSet<>());
                             Set<Entity> set = adjacencyMap.get(x);
                             set.add(y);
                         }
@@ -132,14 +131,13 @@ public class Grid {
     public Map<Entity, Set<Entity>> evalNeighbours(double evalDistance, Mode mode) {
         int cellEvalDistance = (int) Math.ceil(evalDistance / segmentLength);
         Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
+        list.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < M; j++) {
                 Cell<Entity> c = grid[i][j];
                 mode.entityIterator.compute(this, i, j).forEachRemaining(y -> {
                     c.iterator().forEachRemaining(x -> {
                         if(mode.condition.check(this, x, y, evalDistance)){
-                            if(!adjacencyMap.containsKey(x))
-                                adjacencyMap.put(x, new HashSet<>());
                             Set<Entity> set = adjacencyMap.get(x);
                             set.add(y);
                         }

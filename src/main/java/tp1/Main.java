@@ -41,13 +41,13 @@ public class Main {
         long t0 = System.currentTimeMillis();
         adjacencies = g.evalNeighboursBruteForce(rc, mode);
         LOGGER.info("Time: {}", System.currentTimeMillis() - t0);
-        LOGGER.info("Adjacent count: {}", adjacencies.size());
+        LOGGER.info("Nonempty adjacent count: {}", adjacencies.values().stream().map(Set::size).reduce(0, (x, y) -> y != 0 ? x+y : x));
 
         LOGGER.info("Running Cell Index Method");
         t0 = System.currentTimeMillis();
         adjacencies = g.evalNeighbours(rc, mode);
         LOGGER.info("Time: {}", System.currentTimeMillis() - t0);
-        LOGGER.info("Adjacent count: {}", adjacencies.size());
+        LOGGER.info("Nonempty adjacent count: {}", adjacencies.values().stream().map(Set::size).reduce(0, (x, y) -> y != 0 ? x+y : x));
 
         LOGGER.info("Flushing neighbours list...");
         printAdjacent(adjacencies);
