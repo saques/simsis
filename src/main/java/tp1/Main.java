@@ -13,12 +13,12 @@ public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     private static int N = 1000;
-    private static int M = 5;
+    private static int M = 10;
     private static double L = 20;
-    private static double rc = 1;
+    private static double rc = 2;
     private static double particleRadius = 0.25;
-    private static Grid.Mode mode = Grid.Mode.BOX;
-    private static Long seed = null;
+    private static Grid.Mode mode = Grid.Mode.PERIODIC;
+    private static Long seed = 1533609637906L;
 
     public static void main(String[] args) throws Exception{
         BasicConfigurator.configure();
@@ -35,13 +35,16 @@ public class Main {
         LOGGER.info("Success");
 
         Map<Entity, Set<Entity>> adjacencies = null;
+        long t0 = 0;
         LOGGER.info("Running algorithms on {} mode", mode.name());
 
+
         LOGGER.info("Running brute force method");
-        long t0 = System.currentTimeMillis();
+        t0 = System.currentTimeMillis();
         adjacencies = g.evalNeighboursBruteForce(rc, mode);
         LOGGER.info("Time: {}", System.currentTimeMillis() - t0);
         LOGGER.info("Nonempty adjacent count: {}", adjacencies.values().stream().map(Set::size).reduce(0, (x, y) -> y != 0 ? x+y : x));
+
 
         LOGGER.info("Running Cell Index Method");
         t0 = System.currentTimeMillis();

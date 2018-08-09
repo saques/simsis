@@ -42,12 +42,17 @@ public class Grid {
     private static EntityIterator periodicIterator = (g, x, y) -> {
         if(!g.isWithinBounds(x, y))
             throw new IllegalArgumentException();
+
         int M = g.M;
+
         Iterator<Entity> ans = g.grid[x][y].iterator();
-        ans = Iterators.concat(ans, g.grid[Math.floorMod(x-1, M)][y % M].iterator());
-        ans = Iterators.concat(ans , g.grid[Math.floorMod(x-1, M)][(y+1) % M].iterator());
-        ans =  Iterators.concat(ans, g.grid[x % M][(y+1) % M].iterator());
-        ans = Iterators.concat(ans, g.grid[(x+1) % M][(y+1) % M].iterator());
+        ans = Iterators.concat(ans, g.grid[x][Math.floorMod(y-1, M)].iterator());
+        if(!(x == (M-1) && y == 0))
+            ans = Iterators.concat(ans, g.grid[(x+1) % M][Math.floorMod(y-1, M)].iterator());
+        ans = Iterators.concat(ans, g.grid[(x+1) % M][y].iterator());
+        if(!(x == (M-1) && y == (M-1)))
+            ans = Iterators.concat(ans, g.grid[(x+1) % M][(y+1) % M].iterator());
+
         return ans;
     };
 
@@ -108,32 +113,26 @@ public class Grid {
     }
 
     public Map<Entity, Set<Entity>> evalNeighboursBruteForce(double evalDistance, Mode mode){
-        int cellEvalDistance = (int) Math.ceil(evalDistance / segmentLength);
         Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
         list.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
-        for(int i = 0; i < M; i++){
-            for(int j = 0; j < M; j++){
-                Cell<Entity> c = grid[i][j];
-                list.forEach(y -> {
-                    c.forEach(x -> {
-                        if(mode.condition.check(this, x, y, evalDistance)){
-                            addToMap(adjacencyMap, x, y);
-                        }
-                    });
-                });
-            }
-        }
+        list.forEach(y -> {
+            list.forEach(x -> {
+                if(mode.condition.check(this, x, y, evalDistance)){
+                    addToMap(adjacencyMap, x, y);
+                }
+            });
+        });
 
         return adjacencyMap;
     }
 
     public Map<Entity, Set<Entity>> evalNeighbours(double evalDistance, Mode mode) {
-        int cellEvalDistance = (int) Math.ceil(evalDistance / segmentLength);
         Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
         list.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < M; j++) {
                 Cell<Entity> c = grid[i][j];
+
                 mode.entityIterator.compute(this, i, j).forEachRemaining(y -> {
                     c.iterator().forEachRemaining(x -> {
                         if(mode.condition.check(this, x, y, evalDistance)){
@@ -141,6 +140,7 @@ public class Grid {
                         }
                     });
                 });
+
             }
         }
         return adjacencyMap;

@@ -26,5 +26,6 @@ function animation(M,particle,static_file, dynamic_file, output_file)
   plot = scatter(neighboursX,neighboursY,15,'r','filled');
   set(gca,'xtick',[0:(L/M):L]);
   set(gca,'ytick',[0:(L/M):L]);
+  set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
   grid on;
 endfunction
