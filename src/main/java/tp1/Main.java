@@ -12,10 +12,10 @@ public class Main {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    private static int N = 100;
-    private static int M = 10;
+    private static int N = 1000;
+    private static int M = 17;
     private static double L = 20;
-    private static double rc = 2;
+    private static double rc = 8;
     private static double particleRadius = 0.25;
     private static Grid.Mode mode = Grid.Mode.PERIODIC;
     private static boolean checkOverlapping = false;
