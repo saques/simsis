@@ -21,27 +21,34 @@ meanCellPer = [mean(t100CellPer),mean(t1000CellPer),mean(t10000CellPer)];
 meanBruteBox = [mean(t100BruteBox),mean(t1000BruteBox),mean(t10000BruteBox)];
 meanCellBox = [mean(t100CellBox),mean(t1000CellBox),mean(t10000CellBox)];
 
+
 stdBrutePer = [std(t100BrutePer),std(t1000BrutePer),std(t10000BrutePer)];
 stdCellPer = [std(t100CellPer),std(t1000CellPer),std(t10000CellPer)];
 stdBruteBox = [std(t100BruteBox),std(t1000BruteBox),std(t10000BruteBox)];
 stdCellBox = [std(t100CellBox),std(t1000CellBox),std(t10000CellBox)];
 
+#stdBrutePer = [std(log10(t100BrutePer)),std(log10(t1000BrutePer)),std(log10(t10000BrutePer))];
+#stdCellPer = [std(log10(t100CellPer)),std(log10(t1000CellPer)),std(log10(t10000CellPer))];
+#stdBruteBox = [std(log10(t100BruteBox)),std(log10(t1000BruteBox)),std(log10(t10000BruteBox))];
+#stdCellBox = [std(log10(t100CellBox)),std(log10(t1000CellBox)),std(log10(t10000CellBox))];
+
 clf;
-errorbar([100,1000,10000],log10(meanBruteBox),log10(stdBruteBox),"-*");
+errorbar([100,1000,10000],meanBruteBox,stdBruteBox,"-*");
 hold on;
-errorbar([100,1000,10000],log10(meanCellBox),log10(stdCellBox),"~r-*");
+errorbar([100,1000,10000],meanCellBox,stdCellBox,"~r-*");
 xlabel('N');
 ylabel('Tiempo(ms)');
-title('Comparacion sin condiciones periodicas de contorno');
+title('Sin condiciones de contorno');
 legend({"Fuerza Bruta","Cell Index Method"}, "location", "northeastoutside");
 
+
 #clf;
-#errorbar([100,1000,10000],log10(meanBrutePer),log10(stdBrutePer),"-*");
+#errorbar([100,1000,10000],log10(meanBrutePer),stdBrutePer,"-*");
 #hold on;
-#errorbar([100,1000,10000],log10(meanCellPer),log10(stdCellPer),"~r-*");
+#errorbar([100,1000,10000],log10(meanCellPer),stdCellPer,"~r-*");
 #xlabel('N');
-#ylabel('Tiempo(ms)');
-#title('Comparacion con condiciones periodicas de contorno');
+#ylabel('log10(Tiempo)(ms)');
+#title('Con condiciones de contorno');
 #legend({"Fuerza Bruta","Cell Index Method"}, "location", "northeastoutside");
 
 
