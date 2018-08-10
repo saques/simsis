@@ -1,5 +1,6 @@
 #txt
 *.txt
+*.dump
 
 # Compiled class file
 *.class

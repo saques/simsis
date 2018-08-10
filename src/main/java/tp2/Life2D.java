@@ -1,40 +1,54 @@
 package tp2;
 
+import utils.PointDumper;
+
+import java.io.IOException;
 import java.util.BitSet;
 
 public class Life2D {
 
-    BitSet arr[];
-    private int M;
-
-    public Life2D(int M){
-        this.M = M;
-        arr = init(M);
+    @FunctionalInterface
+    public interface LifeRule {
+        boolean compute(BitSet[] arr, int i, int j, int M);
     }
 
-    public void run(long generations){
-        while (generations > 0){
-            singleGeneration();
-            generations--;
+
+    public static final LifeRule defaultRule = (arr, i, j, M) -> {
+        int alive = countAlive(arr, i, j, M);
+        if (arr[i].get(j) && (alive == 2 || alive == 3)) {
+            return true;
+        } else return alive == 3;
+    };
+
+
+    private BitSet arr[];
+    private int M;
+    private PointDumper pointDumper;
+
+    public Life2D(int M, String basePath) {
+        this.M = M;
+        arr = init(M);
+        pointDumper = new PointDumper(basePath, PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+    }
+
+    public void run(int generations, LifeRule rule) throws IOException{
+        printAlive(0);
+        for(int i = 1; i < generations+1; i++){
+            singleGeneration(rule, i);
         }
     }
 
-    private void singleGeneration(){
+    private void singleGeneration(LifeRule rule, int gen) throws IOException {
         BitSet ans[] = init(M);
         for(int i = 0; i < M; i++){
             for (int j = 0; j < M; j++){
-                int alive = countAlive(arr, i, j, M);
-                if (arr[i].get(j)) {
-                    //Cell is alive
-                    if(alive == 2 || alive == 3)
-                        ans[i].set(j);
-                } else if(alive == 3) {
-                    //Cell is dead and exactly 3 neighbours are alive
-                    ans[i].set(j);
+                boolean status = rule.compute(arr, i, j, M);
+                ans[i].set(j, status);
+                if (status){
+                    pointDumper.print2D(gen, i, j);
                 }
             }
         }
-        print();
         arr = ans;
     }
 
@@ -69,17 +83,16 @@ public class Life2D {
         return ans;
     }
 
-    public void print(){
-        for(int i = 0; i < M; i++) {
-            for (int j = 0; j < M; j++) {
-                if (arr[i].get(j))
-                    System.out.print("O ");
-                else
-                    System.out.print("X ");
+    public void printAlive(int generation) throws IOException{
+        for(int i = 0; i < M; i++){
+            for (int j = 0; j < M; j++){
+                boolean status = arr[i].get(j);
+                if(status){
+                    pointDumper.print2D(generation, i, j);
+                }
+
             }
-            System.out.println();
         }
-        System.out.println();
     }
 
 }
