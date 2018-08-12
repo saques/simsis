@@ -70,7 +70,7 @@ public class Main {
 //        life2D.run(1000, Life2D.defaultRule);
 //        long end = System.currentTimeMillis();
 //        System.out.println("time: " + (end - start));
-        Life2D life = LifParser.newLifeGame("./lif/explosion.lif", 500, "./out/");
+        Life2D life = LifParser.newLifeGame("./lif/line-puffer-superstable.lif", 500, "./out/");
         life.run(200, Life2D.defaultRule);
     }
 }
