@@ -49,6 +49,7 @@ public class Life2D {
                 }
             }
         }
+        pointDumper.dump(gen);
         arr = ans;
     }
 
@@ -59,7 +60,7 @@ public class Life2D {
 
     private void checkConstraints(int i, int j){
         if(isOutOfBounds(i, j, M))
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("M was: " + M + ", i:" + i +", j: "+ j);
     }
 
     private static boolean isOutOfBounds(int i, int j, int M){
@@ -93,6 +94,7 @@ public class Life2D {
 
             }
         }
+        pointDumper.dump(generation);
     }
 
 }

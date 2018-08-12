@@ -16,10 +16,31 @@ public class Life3D {
 
     public static final Life3D.LifeRule defaultRule = (arr, i, j, k, M) -> {
         int alive = countAlive(arr, i, j,k, M);
-        if (arr[i][k].get(k) && (alive == 2 || alive == 3)) {
+        if (arr[i][j].get(k) && (alive == 2 || alive == 3)) {
             return true;
         } else return alive == 3;
     };
+
+    /**
+     *
+     * @param w Minimum alive neighbours to keep living
+     * @param x Maximum alive neighbours to keep living
+     * @param y Minimum alive neighbours to be born
+     * @param z Maximum alive neighbours to be born
+     * @return
+     */
+    public static final Life3D.LifeRule wxyzRuleFactory(int w, int x, int y, int z) {
+        return (arr, i, j, k, M) -> {
+            int alive = countAlive(arr, i, j, k, M);
+            if (arr[i][j].get(k)) {
+                // cell is alive
+                return alive >= w && alive <= x;
+            } else {
+                // cell is dead
+                return alive >= y && alive <= z;
+            }
+        };
+    }
 
 
     private final PointDumper pointDumper;
@@ -49,6 +70,8 @@ public class Life3D {
                     if(status)
                         pointDumper.print3D(gen, i, j, k);
                 }
+
+        pointDumper.dump(gen);
         arr = ans;
     }
 
@@ -95,6 +118,7 @@ public class Life3D {
                 }
             }
         }
+        pointDumper.dump(generation);
     }
 
 }

@@ -36,29 +36,29 @@ public final class PointDumper {
 
     public void print2D(double timestamp, double x, double y) throws IOException{
         checkConstraints(FileMode.DYNAMIC, Dimensions._2D);
-        checkTimestamp(timestamp);
+//        checkTimestamp(timestamp);
         queue.add(String.format("%f %f\n", x, y));
     }
 
     public void print3D(double timestamp, double x, double y, double z) throws IOException{
         checkConstraints(FileMode.DYNAMIC, Dimensions._3D);
-        checkTimestamp(timestamp);
+//        checkTimestamp(timestamp);
         queue.add(String.format("%f %f %f\n", x, y, z));
     }
 
-    private void checkTimestamp(double timestamp) throws IOException{
-        if(timestamp > currentTimestamp) {
-            if(!queue.isEmpty()) {
-                flush();
-                currentTimestamp = timestamp;
-                id++;
-            } else {
-                currentTimestamp = timestamp;
-            }
-        }
-    }
+//    private void checkTimestamp(double timestamp) throws IOException{
+//        if(timestamp > currentTimestamp) {
+//            if(!queue.isEmpty()) {
+//                flush();
+//                currentTimestamp = timestamp;
+//                id++;
+//            } else {
+//                currentTimestamp = timestamp;
+//            }
+//        }
+//    }
 
-    private void flush() throws IOException{
+    public  void dump(double timestamp) throws IOException{
         PrintWriter printWriter = getPrintWriter(basePath, id);
         printWriter.println(queue.size());
         printWriter.println();
@@ -66,6 +66,8 @@ public final class PointDumper {
         queue.clear();
         printWriter.flush();
         printWriter.close();
+        currentTimestamp = timestamp;
+        id++;
     }
 
     private void checkConstraints(FileMode mode, Dimensions dimensions) {
