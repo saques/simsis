@@ -4,6 +4,8 @@ import utils.PointDumper;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Life2D {
 
@@ -20,6 +22,19 @@ public class Life2D {
         } else return alive == 3;
     };
 
+    public interface LifeRuleFactory {
+        public LifeRule fabricate();
+    }
+
+    public static final  LifeRuleFactory highLifeFactory = () -> {
+        Set<Integer> validAlive = new HashSet<>();
+        validAlive.add(2);
+        validAlive.add(3);
+        Set<Integer> validToBreed = new HashSet<>();
+        validToBreed.add(3);
+        validToBreed.add(6);
+        return wxyzRuleFactory(validAlive, validToBreed);
+    };
 
     private BitSet arr[];
     private int M;
@@ -38,19 +53,41 @@ public class Life2D {
         }
     }
 
-    private void singleGeneration(LifeRule rule, int gen) throws IOException {
+    /**
+     *
+     * @param validAlive Number of neighbours necessary to stay alive
+     * @param validToBreed Number of neighbours necessary to breed
+     * @return
+     */
+    public static final Life2D.LifeRule wxyzRuleFactory(Set<Integer> validAlive, Set<Integer> validToBreed) {
+        return (arr, i, j, M) -> {
+            int alive = countAlive(arr, i, j, M);
+            if (arr[i].get(j)) {
+                // cell is alive
+                return validAlive.contains(alive);
+            } else {
+                // cell is dead
+                return validToBreed.contains(alive);
+            }
+        };
+    }
+
+    private int singleGeneration(LifeRule rule, int gen) throws IOException {
         BitSet ans[] = init(M);
+        int alive = 0;
         for(int i = 0; i < M; i++){
             for (int j = 0; j < M; j++){
                 boolean status = rule.compute(arr, i, j, M);
                 ans[i].set(j, status);
                 if (status){
+                    alive++;
                     pointDumper.print2D(gen, i, j);
                 }
             }
         }
         pointDumper.dump(gen);
         arr = ans;
+        return alive;
     }
 
     public void set(int i, int j){
