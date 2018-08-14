@@ -12,7 +12,7 @@ public class Main {
     }
 
     private static void test3D() throws IOException{
-        Life3D life3D = new Life3D(100, "./other/");
+        Life3D life3D = new Life3D(100, "./out/");
 
         /**
          * Beacon
@@ -52,7 +52,7 @@ public class Main {
 
 
         // Rule 4555 is stable, according to http://web.stanford.edu/~cdebs/GameOfLife/
-        life3D.run(42, Life3D.wxyzRuleFactory(5, 7, 6, 6));
+        life3D.run(200, Life3D.wxyzRuleFactory(5, 7, 6, 6));
     }
 
 
@@ -70,7 +70,7 @@ public class Main {
 //        life2D.run(1000, Life2D.defaultRule);
 //        long end = System.currentTimeMillis();
 //        System.out.println("time: " + (end - start));
-        Life2D life = LifParser.newLifeGame("./lif/replicator.lif", 50, "./out/");
+        Life2D life = LifParser.newLifeGame("./lif/replicator.lif", 50, "./out/", 0.001, 1L);
         life.run(200, Life2D.highLifeFactory.fabricate() );
     }
 }

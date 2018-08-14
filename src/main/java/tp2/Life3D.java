@@ -58,19 +58,38 @@ public class Life3D {
         for(int i = 1; i < generations+1; i++) {
             singleGeneration(rule, i);
         }
+        pointDumper.dumpStats();
     }
 
     private void singleGeneration(LifeRule rule, int gen) throws IOException {
         BitSet ans[][] = init(M);
+        int alive = 0;
+        int minX = M - 1 , minY = M - 1, minZ = M - 1,  maxX = 0, maxY = 0, maxZ = 0;
+        double sumX = 0, sumY = 0, sumZ = 0;
         for(int i = 0; i < M; i++)
             for (int j = 0; j < M; j++)
                 for(int k = 0; k < M; k++){
                     boolean status = rule.compute(arr, i, j, k, M);
                     ans[i][j].set(k, status);
-                    if(status)
+                    if(status) {
+                        alive++;
+                        minX = Math.min(minX, i); maxX = Math.max(maxX, i);
+                        minY = Math.min(minY, j); maxY = Math.max(maxY, j);
+                        minZ = Math.min(minZ, k); maxZ = Math.max(maxZ, k);
+                        sumX += i;
+                        sumY += j;
+                        sumZ += k;
                         pointDumper.print3D(gen, i, j, k);
+                    }
                 }
 
+        double radius;
+        if (alive == 0 || alive == 1) {
+            radius = 0;
+        } else {
+            radius = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2) + Math.pow(maxZ - minZ, 2)) / 2.0;
+        }
+        pointDumper.pushStats(new Statistics(radius, alive, new double[]{sumX, sumY, sumZ}));
         pointDumper.dump(gen);
         arr = ans;
     }

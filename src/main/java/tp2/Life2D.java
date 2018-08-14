@@ -5,6 +5,7 @@ import utils.PointDumper;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class Life2D {
@@ -39,6 +40,8 @@ public class Life2D {
     private BitSet arr[];
     private int M;
     private PointDumper pointDumper;
+    private double mutationProbability = 0;
+    private Random random;
 
     public Life2D(int M, String basePath) {
         this.M = M;
@@ -46,11 +49,18 @@ public class Life2D {
         pointDumper = new PointDumper(basePath, PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
     }
 
+    public Life2D(int M, String basePath, double mutationProbability, Random random) {
+        this(M, basePath);
+        this.random = random;
+        this.mutationProbability = mutationProbability;
+    }
+
     public void run(int generations, LifeRule rule) throws IOException{
         printAlive(0);
         for(int i = 1; i < generations+1; i++){
             singleGeneration(rule, i);
         }
+        pointDumper.dumpStats();
     }
 
     /**
@@ -72,27 +82,51 @@ public class Life2D {
         };
     }
 
-    private int singleGeneration(LifeRule rule, int gen) throws IOException {
+    private void singleGeneration(LifeRule rule, int gen) throws IOException {
         BitSet ans[] = init(M);
         int alive = 0;
+        int minX = M - 1 , minY = M - 1, maxX = 0, maxY = 0;
+        double sumX = 0, sumY = 0;
         for(int i = 0; i < M; i++){
             for (int j = 0; j < M; j++){
                 boolean status = rule.compute(arr, i, j, M);
                 ans[i].set(j, status);
                 if (status){
                     alive++;
+                    minX = Math.min(minX, i); maxX = Math.max(maxX, i);
+                    minY = Math.min(minY, j); maxY = Math.max(maxY, j);
+                    sumX += i;
+                    sumY += j;
                     pointDumper.print2D(gen, i, j);
                 }
             }
         }
+        double radius;
+        if (alive == 0 || alive == 1) {
+            radius = 0;
+        } else {
+            radius = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2)) / 2.0;
+        }
+        pointDumper.pushStats(new Statistics(radius, alive, new double[]{sumX / alive, sumY / alive}));
         pointDumper.dump(gen);
         arr = ans;
-        return alive;
     }
 
     public void set(int i, int j){
         checkConstraints(i, j);
         arr[i].set(j);
+    }
+
+    public void setRandomly(int i, int j) {
+        double xRand = this.random.nextDouble();
+        double yRand = this.random.nextDouble();
+        if (xRand < mutationProbability) {
+            i = random.nextDouble() < 0.5? Math.min(i + 1, M - 1): Math.max(i - 1, 0);
+        }
+        if (yRand < mutationProbability) {
+            j = random.nextDouble() < 0.5 ? Math.min(j + 1, M - 1) : Math.max(j - 1, 0);
+        }
+        set(i, j);
     }
 
     private void checkConstraints(int i, int j){
