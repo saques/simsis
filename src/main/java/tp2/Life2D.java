@@ -17,7 +17,7 @@ public class Life2D {
 
 
     public static final LifeRule defaultRule = (arr, i, j, M) -> {
-        int alive = countAlive(arr, i, j, M);
+        int alive = countAlive(arr, i, j, M, false);
         if (arr[i].get(j) && (alive == 2 || alive == 3)) {
             return true;
         } else return alive == 3;
@@ -71,7 +71,7 @@ public class Life2D {
      */
     public static final Life2D.LifeRule wxyzRuleFactory(Set<Integer> validAlive, Set<Integer> validToBreed) {
         return (arr, i, j, M) -> {
-            int alive = countAlive(arr, i, j, M);
+            int alive = countAlive(arr, i, j, M, false);
             if (arr[i].get(j)) {
                 // cell is alive
                 return validAlive.contains(alive);
@@ -138,12 +138,15 @@ public class Life2D {
         return i < 0 || i >= M || j < 0 || j >= M;
     }
 
-    private static int countAlive(BitSet set[], int i, int j, int M){
+    private static int countAlive(BitSet set[], int i, int j, int M, boolean periodic){
         int ans = 0;
         for(int x = i-1; x <= i+1; x++)
             for(int y = j-1; y <= j+1; y++)
-                if((!(i == x && j == y)) && !isOutOfBounds(x, y, M) && set[x].get(y))
-                    ans ++;
+                if((!(i == x && j == y)))
+                    if(periodic)
+                        ans += set[Math.floorMod(x,M)].get(Math.floorMod(y, M)) ? 1 : 0;
+                    else
+                        ans += !isOutOfBounds(x, y, M) && set[x].get(y) ? 1 : 0;
 
         return ans;
     }

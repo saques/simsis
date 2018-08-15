@@ -15,7 +15,7 @@ public class Life3D {
     }
 
     public static final Life3D.LifeRule defaultRule = (arr, i, j, k, M) -> {
-        int alive = countAlive(arr, i, j,k, M);
+        int alive = countAlive(arr, i, j,k, M, false);
         if (arr[i][j].get(k) && (alive == 2 || alive == 3)) {
             return true;
         } else return alive == 3;
@@ -31,7 +31,7 @@ public class Life3D {
      */
     public static final Life3D.LifeRule wxyzRuleFactory(int w, int x, int y, int z) {
         return (arr, i, j, k, M) -> {
-            int alive = countAlive(arr, i, j, k, M);
+            int alive = countAlive(arr, i, j, k, M, false);
             if (arr[i][j].get(k)) {
                 // cell is alive
                 return alive >= w && alive <= x;
@@ -108,13 +108,15 @@ public class Life3D {
         return i < 0 || i >= M || j < 0 || j >= M || k < 0 || k >= M;
     }
 
-    private static int countAlive(BitSet set[][], int i, int j, int k, int M){
+    private static int countAlive(BitSet set[][], int i, int j, int k, int M, boolean periodic){
         int ans = 0;
         for(int x = i-1; x <= i+1; x++)
             for(int y = j-1; y <= j+1; y++)
                 for(int z = k-1; z <= k+1; z++)
-                    if((!(i == x && j == y && k == z)) && !isOutOfBounds(x, y, z, M) && set[x][y].get(z))
-                        ans ++;
+                    if(periodic)
+                        ans += set[Math.floorMod(x,M)][Math.floorMod(y, M)].get(Math.floorMod(z, M)) ? 1 : 0;
+                    else
+                        ans += !isOutOfBounds(x, y, z, M) && set[x][y].get(z) ? 1 : 0;
         return ans;
     }
 
