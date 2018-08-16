@@ -1,6 +1,7 @@
 #txt
 *.txt
 *.dump
+*.statistics
 
 # Compiled class file
 *.class
