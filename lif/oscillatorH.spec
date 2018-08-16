@@ -11,4 +11,4 @@ life3D.set(3, 2, 10);
 life3D.set(3, 3, 10);
 
 // Rule 4555 is stable, according to http://web.stanford.edu/~cdebs/GameOfLife/
-life3D.run(200, Life3D.wxyzRuleFactory(5, 6, 5, 5));
+life3D.run(100, Life3D.b5s56Rule.fabricate());

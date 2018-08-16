@@ -112,7 +112,7 @@ public class Life3D {
         } else {
             radius = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2) + Math.pow(maxZ - minZ, 2)) / 2.0;
         }
-        pointDumper.pushStats(new Statistics(radius, alive, new double[]{sumX, sumY, sumZ}));
+        pointDumper.pushStats(new Statistics(radius, alive, new double[]{sumX/alive, sumY/alive, sumZ/alive}));
         pointDumper.dump(gen);
         arr = ans;
     }
