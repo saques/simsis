@@ -112,11 +112,15 @@ public class Life3D {
         int ans = 0;
         for(int x = i-1; x <= i+1; x++)
             for(int y = j-1; y <= j+1; y++)
-                for(int z = k-1; z <= k+1; z++)
-                    if(periodic)
-                        ans += set[Math.floorMod(x,M)][Math.floorMod(y, M)].get(Math.floorMod(z, M)) ? 1 : 0;
+                for(int z = k-1; z <= k+1; z++) {
+                    if (x == i && y == j && z == k) {
+                        continue;
+                    }
+                    if (periodic)
+                        ans += set[Math.floorMod(x, M)][Math.floorMod(y, M)].get(Math.floorMod(z, M)) ? 1 : 0;
                     else
                         ans += !isOutOfBounds(x, y, z, M) && set[x][y].get(z) ? 1 : 0;
+                }
         return ans;
     }
 

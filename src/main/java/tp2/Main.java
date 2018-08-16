@@ -7,12 +7,12 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws IOException{
-        test2D();
-//        test3D();
+//        test2D();
+        test3D();
     }
 
     private static void test3D() throws IOException{
-        Life3D life3D = new Life3D(100, "./out/");
+        Life3D life3D = new Life3D(100, "./out/glider3D/");
 
         /**
          * Beacon
@@ -37,22 +37,50 @@ public class Main {
         /**
          * Glider
          */
-        life3D.set(21,21, 0);
-        life3D.set(22,20, 0);
-        life3D.set(20,19, 0);
-        life3D.set(21,19, 0);
-        life3D.set(22,19, 0);
-        life3D.set(21,21, 1);
-        life3D.set(22,20, 1);
-        life3D.set(20,19, 1);
-        life3D.set(21,19, 1);
-        life3D.set(22,19, 1);
+//        life3D.set(21,21, 0);
+//        life3D.set(22,20, 0);
+//        life3D.set(20,19, 0);
+//        life3D.set(21,19, 0);
+//        life3D.set(22,19, 0);
+//        life3D.set(21,21, 1);
+//        life3D.set(22,20, 1);
+//        life3D.set(20,19, 1);
+//        life3D.set(21,19, 1);
+//        life3D.set(22,19, 1);
 
+        /**
+         * 3D glider, 5655.
+         * https://pdfs.semanticscholar.org/8eda/1c703dc143269c1613fcff63fee15f15f899.pdf
+         */
+        life3D.set(1, 0, 10);
+        life3D.set(2, 0, 10);
+        life3D.set(1, 1, 10);
+        life3D.set(2, 1, 10);
+        life3D.set(1, 3, 10);
+        life3D.set(2, 3, 10);
+        life3D.set(1, 4, 10);
+        life3D.set(2, 4, 10);
 
+        life3D.set(0, 2, 10);
+        life3D.set(3, 2, 10);
 
+        life3D.set(0, 1, 9);
+        life3D.set(0, 3, 9);
 
+        life3D.set(3, 1, 9);
+        life3D.set(3, 3, 9);
+
+        life3D.set(1, 0, 9);
+        life3D.set(2, 0, 9);
+        life3D.set(1, 4, 9);
+        life3D.set(2, 4, 9);
+
+        life3D.set(3, 1, 9);
+        life3D.set(3, 3, 9);
+        life3D.set(3, 1, 9);
+        life3D.set(3, 3, 9);
         // Rule 4555 is stable, according to http://web.stanford.edu/~cdebs/GameOfLife/
-        life3D.run(200, Life3D.wxyzRuleFactory(5, 7, 6, 6));
+        life3D.run(200, Life3D.wxyzRuleFactory(5, 6, 5, 5));
     }
 
 
@@ -70,7 +98,7 @@ public class Main {
 //        life2D.run(1000, Life2D.defaultRule);
 //        long end = System.currentTimeMillis();
 //        System.out.println("time: " + (end - start));
-        Life2D life = LifParser.newLifeGame("./lif/replicator.lif", 50, "./out/", 0.001, 1L);
-        life.run(200, Life2D.highLifeFactory.fabricate() );
+        Life2D life = LifParser.newLifeGame("./lif/oscillator.lif", 50, "./out/oscillator2D/" );
+        life.run(200, Life2D.defaultRule );
     }
 }
