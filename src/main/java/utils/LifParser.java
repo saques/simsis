@@ -1,13 +1,10 @@
 package utils;
 
 import com.google.common.io.Files;
-import com.sun.javafx.binding.StringFormatter;
 import javafx.util.Pair;
-import tp1.Point2D;
 import tp2.Life2D;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
