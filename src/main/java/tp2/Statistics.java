@@ -1,6 +1,5 @@
 package tp2;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class Statistics {

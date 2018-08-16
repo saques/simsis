@@ -4,6 +4,8 @@ import utils.PointDumper;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Life3D {
 
@@ -21,6 +23,27 @@ public class Life3D {
         } else return alive == 3;
     };
 
+    public interface LifeRuleFactory {
+        public Life3D.LifeRule fabricate();
+    }
+
+    public static final  LifeRuleFactory b4s9Rule = () -> {
+        Set<Integer> validAlive = new HashSet<>();
+        validAlive.add(9);
+        Set<Integer> validToBreed = new HashSet<>();
+        validToBreed.add(4);
+        return wxyzRuleFactory(validAlive, validToBreed);
+    };
+
+    public static final  LifeRuleFactory b5s56Rule = () -> {
+        Set<Integer> validAlive = new HashSet<>();
+        validAlive.add(5);
+        validAlive.add(6);
+        Set<Integer> validToBreed = new HashSet<>();
+        validToBreed.add(5);
+        return wxyzRuleFactory(validAlive, validToBreed);
+    };
+
     /**
      *
      * @param w Minimum alive neighbours to keep living
@@ -29,15 +52,15 @@ public class Life3D {
      * @param z Maximum alive neighbours to be born
      * @return
      */
-    public static final Life3D.LifeRule wxyzRuleFactory(int w, int x, int y, int z) {
+    public static final Life3D.LifeRule wxyzRuleFactory(Set<Integer> validAlive, Set<Integer> validToBreed) {
         return (arr, i, j, k, M) -> {
             int alive = countAlive(arr, i, j, k, M, false);
             if (arr[i][j].get(k)) {
                 // cell is alive
-                return alive >= w && alive <= x;
+                return validAlive.contains(alive);
             } else {
                 // cell is dead
-                return alive >= y && alive <= z;
+                return validToBreed.contains(alive);
             }
         };
     }
