@@ -16,14 +16,30 @@ public class Particle implements Entity{
     @Getter @Setter
     private double x;
     @Getter @Setter
+    private double vx;
+    @Getter @Setter
     private double y;
     @Getter @Setter
+    private double vy;
+    @Getter @Setter
     private double radius;
+    @Getter @Setter
+    private double mass;
 
     public Particle(double x, double y, double radius){
         this.x = x;
         this.y = y;
         this.radius = radius;
+        this.id = IDS++;
+    }
+
+    public Particle(double x, double y, double vx, double vy, double radius, double mass){
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.radius = radius;
+        this.mass = mass;
         this.id = IDS++;
     }
 
