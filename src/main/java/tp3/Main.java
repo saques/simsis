@@ -13,7 +13,8 @@ import java.util.function.Function;
 public class Main {
 
     private static double L = 100;
-    private static int N = 10000;
+    private static int N = 1000;
+    private static int iterations = 100;
     private static double bigParticleRadius = 0.05;
     private static double bigParticleMass = 100;
     private static double particleRadius = 0.005;
@@ -30,7 +31,15 @@ public class Main {
                                                                             L, N, particleRadius, particleMass,
                                                                             maxSpeed, r, true);
 
-        Board board = new Board(L, list);
+        Board board = new Board(L, list, "./tp3/");
+
+
+        board.dumpParticles();
+        board.computeEvents();
+        for(int i = 0; i < iterations; i++){
+            board.processEvent();
+            board.dumpParticles();
+        }
 
     }
 

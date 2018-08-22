@@ -7,8 +7,13 @@ import tp1.Particle;
 @EqualsAndHashCode
 public class Event implements Comparable<Event>{
 
+
     enum EventType {
-        PARTICLE, WALL;
+        PARTICLE, WALL
+    }
+
+    enum WallType{
+        V, H
     }
 
     public Event(Particle p1, Particle p2, double time){
@@ -18,10 +23,11 @@ public class Event implements Comparable<Event>{
         this.type = EventType.PARTICLE;
     }
 
-    public Event(Particle p, double time){
+    public Event(Particle p, double time, WallType wallType){
         this.p1 = p;
         this.time = time;
         this.type = EventType.WALL;
+        this.wallType = wallType;
     }
 
     @Getter
@@ -32,6 +38,9 @@ public class Event implements Comparable<Event>{
 
     @Getter
     private EventType type;
+
+    @Getter
+    private WallType wallType;
 
     @Override
     public int compareTo(Event o) {

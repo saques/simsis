@@ -1,5 +1,6 @@
 package tp1;
 
+import common.Vector2D;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.ArrayList;
@@ -14,17 +15,10 @@ public class Particle implements Entity{
     private int id;
 
     @Getter @Setter
-    private double x;
-    @Getter @Setter
-    private double vx;
-    @Getter @Setter
-    private double y;
-    @Getter @Setter
-    private double vy;
-    @Getter @Setter
-    private double radius;
-    @Getter @Setter
-    private double mass;
+    private double x, vx, y, vy;
+    @Getter
+    private double radius, mass;
+
 
     public Particle(double x, double y, double radius){
         this.x = x;
@@ -92,6 +86,14 @@ public class Particle implements Entity{
         if (o == null || getClass() != o.getClass()) return false;
         Particle particle = (Particle) o;
         return id == particle.id;
+    }
+
+    public Vector2D position(){
+        return new Vector2D(x, y);
+    }
+
+    public Vector2D velocity(){
+        return new Vector2D(vx, vy);
     }
 
     @Override

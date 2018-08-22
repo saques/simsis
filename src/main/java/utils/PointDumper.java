@@ -37,12 +37,17 @@ public final class PointDumper {
         this.dimensions = dimensions;
     }
 
-    public void print2D(double timestamp, double x, double y){
+    public void print2D(double x, double y){
         checkConstraints(FileMode.DYNAMIC, Dimensions._2D);
         queue.add(String.format("%f %f\n", x, y));
     }
 
-    public void print3D(double timestamp, double x, double y, double z){
+    public void print2D(double x, double y, double vx, double vy, double mass, double radius){
+        checkConstraints(FileMode.DYNAMIC, Dimensions._2D);
+        queue.add(String.format("%f %f %f %f %f %f\n", x, y, vx, vy, mass, radius));
+    }
+
+    public void print3D(double x, double y, double z){
         checkConstraints(FileMode.DYNAMIC, Dimensions._3D);
         queue.add(String.format("%f %f %f\n", x, y, z));
     }
