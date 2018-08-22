@@ -10,21 +10,45 @@ import java.util.PriorityQueue;
 public class Board {
 
     @Getter
-    private double width, height;
+    private double L;
+
+    private double t = 0;
 
     @Getter
     private List<Particle> particles;
 
     public PriorityQueue<Event> events = new PriorityQueue<>();
 
-    public Board(double width, double height, List<Particle> particles){
-        this.width = width;
-        this.height = height;
+    public Board(double L, List<Particle> particles){
+        this.L = L;
         this.particles = particles;
     }
 
     public void computeEvents(){
         events.clear();
+
+        //Compute collisions against walls
+        for(Particle x : particles){
+            double t = 0, oPos;
+            if(x.getVx() > 0){
+                t = (L-x.getRadius()-x.getX())/x.getVx();
+
+                oPos = t*x.getVy() + x.getY();
+            } else if(x.getVx() < 0){
+                t = (x.getRadius()-x.getX())/x.getVx();
+
+            }
+
+            if(x.getVy() > 0){
+                t = (L-x.getRadius()-x.getY())/x.getVy();
+
+            } else if(x.getVy() < 0){
+                t = (x.getRadius()-x.getY())/x.getVy();
+
+            }
+
+        }
+
         for(Particle x : particles){
             for(Particle y : particles){
                 //check if x and y collide
@@ -34,6 +58,7 @@ public class Board {
                 //are already added in the PQ
             }
         }
+
     }
 
     public void processEvent(){

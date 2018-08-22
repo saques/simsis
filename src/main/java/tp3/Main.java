@@ -26,16 +26,11 @@ public class Main {
         seed = seed == -1 ? System.currentTimeMillis() : seed;
         Random r = new Random(seed);
 
-        ParticleGenerators.generateBrownianParticles(bigParticleMass, bigParticleRadius,
-                                                     L, N, particleRadius, particleMass,
-                                                     maxSpeed, r, true);
+        List<Particle> list =  ParticleGenerators.generateBrownianParticles(bigParticleMass, bigParticleRadius,
+                                                                            L, N, particleRadius, particleMass,
+                                                                            maxSpeed, r, true);
 
-        ArrayList<Particle> list = new ArrayList<>();
-
-
-
-
-        Board board = new Board(L, L, list);
+        Board board = new Board(L, list);
 
     }
 
