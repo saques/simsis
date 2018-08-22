@@ -1,5 +1,6 @@
 package tp1;
 
+import common.ParticleGenerators;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class Main {
         Grid g = new Grid(L, M);
 
         LOGGER.info("Generating particles...");
-        generateEntities(L, N, particleRadius, r, checkOverlapping).forEach(g::add);
+        ParticleGenerators.generateEntities(L, N, particleRadius, r, checkOverlapping).forEach(g::add);
         LOGGER.info("Success");
 
         Map<Entity, Set<Entity>> adjacencies = null;
@@ -57,41 +58,6 @@ public class Main {
         printAdjacent(adjacencies);
         LOGGER.info("Success");
 
-    }
-
-    private static List<Particle> generateEntities(double L, int N, double radius, Random r, boolean checkOverlapping) throws Exception{
-
-        List<Particle> ans = new ArrayList<>(N);
-        PrintWriter sta = new PrintWriter(new FileWriter("static.txt"));
-        PrintWriter din = new PrintWriter(new FileWriter("dynamic.txt"));
-
-        sta.println(N);
-        sta.println(L);
-
-        //TODO: t0 when time is relevant, irrelevant in this case
-        din.println(0);
-
-        while(N > 0) {
-            double x = r.nextDouble() * L, y = r.nextDouble() * L;
-
-            Particle p = new Particle(x, y, radius);
-
-            if(checkOverlapping && ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0))) {
-                Particle.decreaseIDs();
-                continue;
-            }
-
-            //TODO: set property of the particle, irrelevant in this case
-            sta.printf("%f %d\n", radius, 0);
-            //TODO: set speed of the particle, irrelevant in this case
-            din.printf("%f %f %f %f\n", x, y, 0.0, 0.0);
-            ans.add(p);
-            N--;
-        }
-
-        sta.flush(); sta.close();
-        din.flush(); din.close();
-        return ans;
     }
 
     private static void printAdjacent(Map<Entity, Set<Entity>> adj) throws Exception{

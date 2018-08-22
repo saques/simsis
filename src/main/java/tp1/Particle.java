@@ -47,6 +47,10 @@ public class Particle implements Entity{
         return pithagoras(x,o.getX(),y,o.getY()) - radius - o.getRadius() <= evalDistance;
     }
 
+    public boolean overlapsBoundaries(double L){
+        return (L-x) < radius || x < radius || (L-y) < radius || y < radius;
+    }
+
     public boolean isWithinRadiusPeriodic(Entity o, double evalDistance, double boxLength){
         if(isWithinRadiusBoundingBox(o, evalDistance))
             return true;
@@ -95,7 +99,7 @@ public class Particle implements Entity{
         return Objects.hash(id);
     }
 
-    static void decreaseIDs(){
+    public static void decreaseIDs(){
         IDS--;
     }
 }
