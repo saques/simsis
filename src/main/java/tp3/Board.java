@@ -11,7 +11,7 @@ import java.util.*;
 
 public class Board {
 
-    private static final double EPSILON = 0.0001;
+    private static final double EPSILON = 0.001;
 
     @Getter
     private double L;
@@ -35,27 +35,41 @@ public class Board {
 //        events.clear();
 
         //Compute wall collision events
-        particles.forEach(x -> {
-            Event e = wallCollisions(x, 0);
-            if (e != null) {
-                events.add(e);
-            }
+        particles.forEach(particle -> {
+            computeEvents(particle, 0);
         });
-
-        List<Particle> remaining = new LinkedList<>(particles);
-        for(Particle x : particles){
-            remaining.remove(0);
-            events.addAll(particleCollisions(x, remaining, 0));
-        }
+//        particles.forEach(x -> {
+//            Event e = wallCollisions(x, 0);
+//            if (e != null) {
+//                events.add(e);
+//            }
+//        });
+//
+//        List<Particle> remaining = new LinkedList<>(particles);
+//        for(Particle x : particles){
+//            remaining.remove(0);
+//            events.addAll(particleCollisions(x, remaining, 0));
+//        }
     }
 
     public void computeEvents(Particle p, double acumTime) {
+        assert (p.collisionTime == Double.MAX_VALUE);
         PriorityQueue<Event> particleEvents = new PriorityQueue<>();
-        particleEvents.add(wallCollisions(p, acumTime));
+        Event wallCollision = wallCollisions(p, acumTime);
+        if(wallCollision != null)
+            particleEvents.add(wallCollision);
         List<Particle> remaining = new LinkedList<>(particles);
         remaining.remove(p);
         particleEvents.addAll(particleCollisions(p, remaining, acumTime));
-        events.add(particleEvents.remove());
+        if (!particleEvents.isEmpty()){
+            Event nextCollision = particleEvents.remove();
+            nextCollision.getP1().collisionTime = nextCollision.getTime();
+            if (nextCollision.getType() == Event.EventType.PARTICLE) {
+                nextCollision.getP2().collisionTime = nextCollision.getTime();
+            }
+            events.add(nextCollision);
+        }
+        assert (p.collisionTime != Double.MAX_VALUE);
     }
 
 
@@ -74,7 +88,7 @@ public class Board {
                 continue;
             double t = (-1)*(VR + Math.sqrt(d))/VV;
             double eventTime = acumTime + t;
-            if(t < EPSILON || eventTime > p.collisionTime || eventTime > o.collisionTime)
+            if(t < EPSILON || eventTime >= o.collisionTime)
                 continue;
             events.add(new Event(p, o, eventTime));
         }
@@ -91,7 +105,7 @@ public class Board {
 
             oPos = t*p.getVy() + p.getY();
             double eventTime = acumTime + t;
-            if(oPos >= 0 && oPos < L && eventTime < p.collisionTime)
+            if(oPos >= 0 && oPos < L)
                 return new Event(p, eventTime, Event.WallType.V);
 
         } else if(p.getVx() < 0){
@@ -99,7 +113,7 @@ public class Board {
 
             oPos = t*p.getVy() + p.getY();
             double eventTime = acumTime + t;
-            if(oPos >= 0 && oPos < L && eventTime < p.collisionTime)
+            if(oPos >= 0 && oPos < L)
                 return new Event(p, eventTime, Event.WallType.V);
         }
 
@@ -108,7 +122,7 @@ public class Board {
 
             oPos = t*p.getVx() + p.getX();
             double eventTime = acumTime + t;
-            if(oPos >= 0 && oPos < L && eventTime < p.collisionTime)
+            if(oPos >= 0 && oPos < L)
                 return new Event(p, eventTime, Event.WallType.H);
 
         } else if(p.getVy() < 0){
@@ -116,19 +130,18 @@ public class Board {
 
             oPos = t*p.getVx() + p.getX();
             double eventTime = acumTime + t;
-            if(oPos >= 0 && oPos < L && eventTime < p.collisionTime)
+            if(oPos >= 0 && oPos < L )
                 return new Event(p, eventTime, Event.WallType.H);
         }
         return null;
     }
 
-    public void processEvent() throws IOException{
+    public boolean processEvent() throws IOException{
         if(events.isEmpty())
             throw new IllegalStateException();
 
         Event event = events.remove();
-        double delta = event.getTime() - t;
-        t = event.getTime();
+
 
         Particle p1 = event.getP1(), p2 = event.getP2();
         if (event.getTime() == p1.collisionTime && (p2 == null || event.getTime() == p2.collisionTime)) {
@@ -137,9 +150,16 @@ public class Board {
                 p2.collisionTime = Double.MAX_VALUE;
             }
         } else {
-
-            return;
+            if (event.getTime() == p1.collisionTime) {
+                computeEvents(p1, event.getTime());
+            } else if (p2 != null && event.getTime() == p2.collisionTime) {
+                computeEvents(p2, event.getTime());
+            }
+            return false;
         }
+
+        double delta = event.getTime() - t;
+        t = event.getTime();
 
         particles.forEach(p -> {
             p.setX(p.getVx()*delta + p.getX());
@@ -180,6 +200,7 @@ public class Board {
                 break;
         }
         dumpParticles();
+        return true;
     }
 
     public void dumpParticles() throws IOException {

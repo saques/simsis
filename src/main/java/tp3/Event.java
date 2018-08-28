@@ -20,8 +20,6 @@ public class Event implements Comparable<Event>{
     long collisionB;
 
     public Event(Particle p1, Particle p2, double time){
-        p1.collisionTime = time;
-        p2.collisionTime = time;
         this.p1 = p1;
         this.p2 = p2;
         this.time = time;
@@ -29,7 +27,6 @@ public class Event implements Comparable<Event>{
     }
 
     public Event(Particle p, double time, WallType wallType){
-        p.collisionTime = time;
         this.p1 = p;
         this.time = time;
         this.type = EventType.WALL;

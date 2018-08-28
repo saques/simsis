@@ -13,13 +13,13 @@ import java.util.function.Function;
 public class Main {
 
     private static double L = 100;
-    private static int N = 50;
-    private static int iterations = 100;
+    private static int N = 300;
+    private static int iterations = 500;
     private static double bigParticleRadius = 0.05;
     private static double bigParticleMass = 100;
     private static double particleRadius = 1;
     private static double particleMass = 0.1;
-    private static double maxSpeed = 0.1;
+    private static double maxSpeed = 10;
     private static long seed = -1;
 
 
@@ -36,9 +36,11 @@ public class Main {
 
         board.dumpParticles();
         board.computeEvents();
-        for(int i = 0; i < iterations; i++){
-            board.processEvent();
-//            board.computeEvents();
+        int i = 0;
+        while (i < iterations) {
+            if (board.processEvent()) {
+                i++;
+            }
         }
 
     }
