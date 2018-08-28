@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 
 public final class PointDumper {
 
@@ -18,6 +19,9 @@ public final class PointDumper {
     private final String basePath;
     private int id = 0;
     private double currentTimestamp = -1;
+    private int randomRed;
+    private int randomGreen;
+    private int randomBlue;
 
     public enum FileMode {
         STATIC, DYNAMIC
@@ -35,6 +39,10 @@ public final class PointDumper {
         this.basePath = basePath;
         this.mode = mode;
         this.dimensions = dimensions;
+        Random random = new Random();
+        randomBlue = random.nextInt();
+        randomGreen = random.nextInt();
+        randomRed = random.nextInt();
     }
 
     public void print2D(double x, double y){
@@ -42,9 +50,12 @@ public final class PointDumper {
         queue.add(String.format("%f %f\n", x, y));
     }
 
-    public void print2D(double x, double y, double vx, double vy, double mass, double radius){
+    public void print2D(double x, double y, double vx, double vy, double mass, double radius, int id){
         checkConstraints(FileMode.DYNAMIC, Dimensions._2D);
-        queue.add(String.format("%f %f %f %f %f %f\n", x, y, vx, vy, mass, radius));
+        int red = id * randomRed % 1000;
+        int blue = id * randomBlue % 1000;
+        int green = id * randomGreen % 1000;
+        queue.add(String.format("%f %f %f %f %f %f %d %d %d\n", x, y, vx, vy, mass, radius, red, green, blue));
     }
 
     public void print3D(double x, double y, double z){
@@ -52,7 +63,7 @@ public final class PointDumper {
         queue.add(String.format("%f %f %f\n", x, y, z));
     }
 
-    public  void dump(double timestamp) throws IOException{
+    public void dump (double timestamp) throws IOException {
         PrintWriter printWriter = getPrintWriter(basePath, id);
         printWriter.println(queue.size());
         printWriter.println();
@@ -62,6 +73,14 @@ public final class PointDumper {
         printWriter.close();
         currentTimestamp = timestamp;
         id++;
+    }
+
+    public  void dump(double timestamp, double L) throws IOException{
+        print2D(0, 0, 0, 0, 1, 0.001,0);
+        print2D(0, L, 0, 0, 1, 0.001, 0);
+        print2D(100, L, 0, 0, 1, 0.001, 0);
+        print2D(100, L, 0, 0, 1, 0.001, 0);
+        dump(timestamp);
     }
 
     public void pushStats(Statistics statistics) {

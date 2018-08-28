@@ -62,7 +62,7 @@ public final class ParticleGenerators {
         //Big particle data
         sta.printf("%f %f\n", bigParticleRadius, bigParticleMass);
         din.printf("%f %f %f %f\n", L/2, L/2, 0.0, 0.0);
-        ans.add(new Particle( L/2,  L/2,  0,  0,  bigParticleRadius,  bigParticleMass));
+//        ans.add(new Particle( L/2,  L/2,  0,  0,  bigParticleRadius,  bigParticleMass));
 
         while(N > 0) {
             double x = r.nextDouble() * L, y = r.nextDouble() * L;

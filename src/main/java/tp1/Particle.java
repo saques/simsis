@@ -19,6 +19,7 @@ public class Particle implements Entity{
     @Getter
     private double radius, mass;
 
+    public double collisionTime = Double.MAX_VALUE;
 
     public Particle(double x, double y, double radius){
         this.x = x;
