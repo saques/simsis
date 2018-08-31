@@ -52,6 +52,12 @@ public class Board {
 //        }
     }
 
+    public void addTimestamps(long interval) {
+        for (double i = 0; i < interval; i++) {
+            events.add(new Event(i));
+        }
+    }
+
     public void computeEvents(Particle p, double acumTime) {
         assert (p.collisionTime == Double.MAX_VALUE);
         PriorityQueue<Event> particleEvents = new PriorityQueue<>();
@@ -100,13 +106,14 @@ public class Board {
     private Event wallCollisions(Particle p, double acumTime){
 
         double t, oPos;
+        PriorityQueue<Event> events = new PriorityQueue<>();
         if(p.getVx() > 0){
             t = (L-p.getRadius()-p.getX())/p.getVx();
 
             oPos = t*p.getVy() + p.getY();
             double eventTime = acumTime + t;
             if(oPos >= 0 && oPos < L)
-                return new Event(p, eventTime, Event.WallType.V);
+                events.add(new Event(p, eventTime, Event.WallType.V));
 
         } else if(p.getVx() < 0){
             t = (p.getRadius()-p.getX())/p.getVx();
@@ -114,7 +121,7 @@ public class Board {
             oPos = t*p.getVy() + p.getY();
             double eventTime = acumTime + t;
             if(oPos >= 0 && oPos < L)
-                return new Event(p, eventTime, Event.WallType.V);
+                events.add(new Event(p, eventTime, Event.WallType.V));
         }
 
         if(p.getVy() > 0){
@@ -123,7 +130,7 @@ public class Board {
             oPos = t*p.getVx() + p.getX();
             double eventTime = acumTime + t;
             if(oPos >= 0 && oPos < L)
-                return new Event(p, eventTime, Event.WallType.H);
+                events.add(new Event(p, eventTime, Event.WallType.H));
 
         } else if(p.getVy() < 0){
             t = (p.getRadius()-p.getY())/p.getVy();
@@ -131,9 +138,12 @@ public class Board {
             oPos = t*p.getVx() + p.getX();
             double eventTime = acumTime + t;
             if(oPos >= 0 && oPos < L )
-                return new Event(p, eventTime, Event.WallType.H);
+                events.add(new Event(p, eventTime, Event.WallType.H));
         }
-        return null;
+        if (events.isEmpty()) {
+            return null;
+        }
+        return events.remove();
     }
 
     public boolean processEvent() throws IOException{
@@ -141,21 +151,21 @@ public class Board {
             throw new IllegalStateException();
 
         Event event = events.remove();
-
-
         Particle p1 = event.getP1(), p2 = event.getP2();
-        if (event.getTime() == p1.collisionTime && (p2 == null || event.getTime() == p2.collisionTime)) {
-            p1.collisionTime = Double.MAX_VALUE;
-            if (p2 != null) {
-                p2.collisionTime = Double.MAX_VALUE;
+        if (event.getType() == Event.EventType.PARTICLE || event.getType() == Event.EventType.WALL) {
+            if (event.getTime() == p1.collisionTime && (p2 == null || event.getTime() == p2.collisionTime)) {
+                p1.collisionTime = Double.MAX_VALUE;
+                if (p2 != null) {
+                    p2.collisionTime = Double.MAX_VALUE;
+                }
+            } else {
+                if (event.getTime() == p1.collisionTime) {
+                    computeEvents(p1, event.getTime());
+                } else if (p2 != null && event.getTime() == p2.collisionTime) {
+                    computeEvents(p2, event.getTime());
+                }
+                return false;
             }
-        } else {
-            if (event.getTime() == p1.collisionTime) {
-                computeEvents(p1, event.getTime());
-            } else if (p2 != null && event.getTime() == p2.collisionTime) {
-                computeEvents(p2, event.getTime());
-            }
-            return false;
         }
 
         double delta = event.getTime() - t;
@@ -198,9 +208,12 @@ public class Board {
                 }
                 computeEvents(p1, event.getTime());
                 break;
+
+            case TIMESTAMP:
+                dumpParticles();
+                return true;
         }
-        dumpParticles();
-        return true;
+        return false;
     }
 
     public void dumpParticles() throws IOException {

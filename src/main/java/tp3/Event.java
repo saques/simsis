@@ -9,7 +9,7 @@ public class Event implements Comparable<Event>{
 
 
     enum EventType {
-        PARTICLE, WALL
+        PARTICLE, WALL, TIMESTAMP
     }
 
     enum WallType{
@@ -18,6 +18,11 @@ public class Event implements Comparable<Event>{
 
     long collisionA;
     long collisionB;
+
+    public Event (double time) {
+        this.time = time;
+        this.type = EventType.TIMESTAMP;
+    }
 
     public Event(Particle p1, Particle p2, double time){
         this.p1 = p1;

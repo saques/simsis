@@ -12,14 +12,14 @@ import java.util.function.Function;
 
 public class Main {
 
-    private static double L = 100;
-    private static int N = 300;
-    private static int iterations = 500;
+    private static double L = .5;
+    private static int N = 500;
+    private static int iterations = 1000;
     private static double bigParticleRadius = 0.05;
     private static double bigParticleMass = 100;
-    private static double particleRadius = 1;
+    private static double particleRadius = .005;
     private static double particleMass = 0.1;
-    private static double maxSpeed = 10;
+    private static double maxSpeed = 0.1;
     private static long seed = -1;
 
 
@@ -30,11 +30,9 @@ public class Main {
         List<Particle> list =  ParticleGenerators.generateBrownianParticles(bigParticleMass, bigParticleRadius,
                                                                             L, N, particleRadius, particleMass,
                                                                             maxSpeed, r, true);
-
         Board board = new Board(L, list, "./tp3/");
-
-
         board.dumpParticles();
+        board.addTimestamps(iterations);
         board.computeEvents();
         int i = 0;
         while (i < iterations) {

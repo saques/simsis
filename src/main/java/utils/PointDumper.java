@@ -52,9 +52,19 @@ public final class PointDumper {
 
     public void print2D(double x, double y, double vx, double vy, double mass, double radius, int id){
         checkConstraints(FileMode.DYNAMIC, Dimensions._2D);
-        int red = id * randomRed % 1000;
-        int blue = id * randomBlue % 1000;
-        int green = id * randomGreen % 1000;
+        int red, blue, green;
+        if (id == 0) {
+            red = 100;
+            blue = 0;
+            green = 0;
+        } else {
+            red = 200;
+            green = 200;
+            blue = 200;
+        }
+//        int red = (id+1) * randomRed % 256 + 100;
+//        int blue = (id+1) * randomBlue % 256 + 100;
+//        int green = (id+1) * randomGreen % 256 + 100;
         queue.add(String.format("%f %f %f %f %f %f %d %d %d\n", x, y, vx, vy, mass, radius, red, green, blue));
     }
 
@@ -78,8 +88,8 @@ public final class PointDumper {
     public  void dump(double timestamp, double L) throws IOException{
         print2D(0, 0, 0, 0, 1, 0.001,0);
         print2D(0, L, 0, 0, 1, 0.001, 0);
-        print2D(100, L, 0, 0, 1, 0.001, 0);
-        print2D(100, L, 0, 0, 1, 0.001, 0);
+        print2D(L, L, 0, 0, 1, 0.001, 0);
+        print2D(L, 0, 0, 0, 1, 0.001, 0);
         dump(timestamp);
     }
 
