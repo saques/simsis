@@ -18,7 +18,7 @@ public class Main {
 
     private static double L = .5;
     private static int N = 500;
-    private static int iterations = 1000;
+    private static int iterations = 500;
     private static double bigParticleRadius = 0.05;
     private static double bigParticleMass = 100;
     private static double particleRadius = .005;

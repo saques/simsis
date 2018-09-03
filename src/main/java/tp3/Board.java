@@ -57,6 +57,8 @@ public class Board {
 
 
 
+
+
     public PriorityQueue<Event> events = new PriorityQueue<>();
 
     public Board(double L, List<Particle> particles, String basePath){

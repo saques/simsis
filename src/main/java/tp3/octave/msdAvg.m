@@ -18,12 +18,15 @@ function msdAvg(varargin)
     
   
   endfor
+  deviation = std(y');
   y = (sum(y') / length(varargin));
   p=polyfit(x,y,1);
   hold on
   plot(x,y,'ro','markersize',4,'markerfacecolor','r');
   z=@(x) polyval(p,x);
-  fplot(z,[x(1),x(end)]);
+  
+  errorbar(x, z(x(1):x(end)), deviation,"~-*");
+
   xlabel('x')
   ylabel('y')
   grid on
