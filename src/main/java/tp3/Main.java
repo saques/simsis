@@ -2,6 +2,7 @@ package tp3;
 
 import common.ParticleGenerators;
 import tp1.Particle;
+import utils.PointDumper;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -9,12 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
 
     private static double L = .5;
     private static int N = 500;
-    private static int iterations = 1000;
+    private static int iterations = 10;
     private static double bigParticleRadius = 0.05;
     private static double bigParticleMass = 100;
     private static double particleRadius = .005;
@@ -24,23 +27,59 @@ public class Main {
 
 
     public static void main(String[] args) throws Exception{
-        seed = seed == -1 ? System.currentTimeMillis() : seed;
-        Random r = new Random(seed);
-
-        List<Particle> list =  ParticleGenerators.generateBrownianParticles(bigParticleMass, bigParticleRadius,
-                                                                            L, N, particleRadius, particleMass,
-                                                                            maxSpeed, r, true);
-        Board board = new Board(L, list, "./tp3/");
-        board.dumpParticles();
-        board.addTimestamps(iterations);
-        board.computeEvents();
-        int i = 0;
-        while (i < iterations) {
-            if (board.processEvent()) {
-                i++;
-            }
+        Integer times;
+        try{
+             times = new Integer(args[0]);
+        }catch(ArrayIndexOutOfBoundsException e){
+            times = 1;
         }
 
+        ArrayList<ArrayList<Double>> bigParticleSd = new ArrayList<>() ;
+        System.out.println(times);
+        seed = seed == -1 ? System.currentTimeMillis() : seed;
+        for (int time = 0 ; time <  times ; time++) {
+            Random r = new Random(seed);
+            Particle.resetIDs();
+            List<Particle> list = ParticleGenerators.generateBrownianParticles(bigParticleMass, bigParticleRadius,
+                    L, N, particleRadius, particleMass,
+                    maxSpeed, r, true);
+            Board board = new Board(L, list, "C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\ovito\\");
+            board.dumpParticles();
+            board.addTimestamps(iterations);
+            board.computeEvents();
+            int i = 0;
+            while (i < iterations) {
+                if (i > iterations / 3) {
+                    if (board.processEvent(true)) {
+                        i++;
+                    }
+                } else {
+                    if (board.processEvent(false)) {
+                        i++;
+                    }
+                }
+            }
+
+            bigParticleSd.add(board.getBigParticleSD());
+            board.dumpStatistics("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\stats\\",time);
+            seed = System.currentTimeMillis();
+
+        }
+
+        Integer finalTimes = times;
+        List<Double> bigParticleMsd = bigParticleSd.get(0).stream().map(x -> (x / (double) finalTimes)).collect(Collectors.toList());
+        for (int i = 1 ; i < times ; i++){
+            ArrayList<Double> aux = new ArrayList<>(bigParticleSd.get(0).size());
+            for (int j = 0 ; j < bigParticleSd.get(0).size() ; j++){
+                aux.add(j,bigParticleSd.get(i).get(j)+ bigParticleMsd.get(j) );
+            }
+            bigParticleMsd = aux;
+        }
+
+        bigParticleMsd.stream().map( x -> x / (double) finalTimes).collect(Collectors.toList());
+        PointDumper dumper = new PointDumper("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\ovito\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+
+        dumper.dumpMSD("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\stats\\",bigParticleMsd);
     }
 
 }

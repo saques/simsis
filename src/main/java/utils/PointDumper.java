@@ -1,14 +1,13 @@
 package utils;
 
 import tp2.Statistics;
+import tp3.BrownianStatistics;
+import tp3.Point2D;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 
 public final class PointDumper {
 
@@ -65,7 +64,7 @@ public final class PointDumper {
 //        int red = (id+1) * randomRed % 256 + 100;
 //        int blue = (id+1) * randomBlue % 256 + 100;
 //        int green = (id+1) * randomGreen % 256 + 100;
-        queue.add(String.format("%f %f %f %f %f %f %d %d %d\n", x, y, vx, vy, mass, radius, red, green, blue));
+        queue.add(String.format("%f %f %f %f %f %f %d %d %d", x, y, vx, vy, mass, radius, red, green, blue));
     }
 
     public void print3D(double x, double y, double z){
@@ -77,7 +76,7 @@ public final class PointDumper {
         PrintWriter printWriter = getPrintWriter(basePath, id);
         printWriter.println(queue.size());
         printWriter.println();
-        queue.forEach(printWriter::print);
+        queue.forEach(printWriter::println);
         queue.clear();
         printWriter.flush();
         printWriter.close();
@@ -110,6 +109,61 @@ public final class PointDumper {
     }
 
 
+    public void dumpStatsBrownian(BrownianStatistics statistics , String path ) throws IOException{
+        statsQueue.add(String.format("%d\n",statistics.getCollisionTimes().size()));
+        for (double t : statistics.getCollisionTimes()){
+            statsQueue.add(String.format("%.17f\n",t));
+        }
+        PrintWriter printWriter = new PrintWriter(new FileWriter(path + "statisticsTime.txt"));
+        statsQueue.forEach(printWriter::println);
+        printWriter.flush();
+        printWriter.close();
+
+        statsQueue.clear();
+        statsQueue.add(String.format("%d\n",statistics.getVelocities().size()));
+        for (double v : statistics.getVelocities()){
+            statsQueue.add(String.format("%.17f\n",v));
+        }
+        printWriter = new PrintWriter(new FileWriter(path + "statisticsVelocity.txt"));
+        statsQueue.forEach(printWriter::println);
+        printWriter.flush();
+        printWriter.close();
+
+        statsQueue.clear();
+        statsQueue.add(String.format("%d\n",statistics.getVelocitiesAtInit().size()));
+        for (double v : statistics.getVelocitiesAtInit()){
+            statsQueue.add(String.format("%.17f\n",v));
+        }
+        printWriter = new PrintWriter(new FileWriter(path + "statisticsVelocityInit.txt"));
+        statsQueue.forEach(printWriter::println);
+        printWriter.flush();
+        printWriter.close();
+
+        statsQueue.clear();
+        statsQueue.add(String.format("%d\n",statistics.getBigParticleTrajectory().size()));
+        for (Point2D p : statistics.getBigParticleTrajectory()){
+            statsQueue.add(String.format("%.17f;%.17f\n",p.getX(),p.getY()));
+        }
+        printWriter = new PrintWriter(new FileWriter(path + "statisticsTrajectory.txt"));
+        statsQueue.forEach(printWriter::println);
+        printWriter.flush();
+        printWriter.close();
+
+
+    }
+
+    public void dumpMSD(String path , List<Double> msd ) throws IOException{
+
+        statsQueue.clear();
+        statsQueue.add(String.format("%d\n",msd.size()));
+        for (Double z : msd){
+            statsQueue.add(String.format("%.17f\n",z));
+        }
+        PrintWriter printWriter = new PrintWriter(new FileWriter(path + "statisticsMSD.txt"));
+        statsQueue.forEach(printWriter::println);
+        printWriter.flush();
+        printWriter.close();
+    }
 
     private void checkConstraints(FileMode mode, Dimensions dimensions) {
         if (!this.mode.equals(mode) || !this.dimensions.equals(dimensions))

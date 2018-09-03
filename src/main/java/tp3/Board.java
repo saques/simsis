@@ -23,12 +23,43 @@ public class Board {
     @Getter
     private List<Particle> particles;
 
+    @Getter
+    private List<Double> velocities = new ArrayList<>();
+
+    @Getter
+    private List<Double> velocitiesParcicles = new ArrayList<>();
+
+    @Getter
+    private List<Double> velocitiesParciclesInit ;
+    @Getter
+    private List<Double> collisionTimes = new ArrayList<>();
+
+    @Getter
+    private ArrayList<Double> bigParticleSD = new ArrayList<>();
+    @Getter
+    private int collisionsPerSecond = 0;
+
+    @Getter
+    private List<Integer> collisionsPerSecondList = new ArrayList<>();
+
+    @Getter
+    private List<Point2D> bigParticleTrajectory = new ArrayList<>();
+
+    @Getter
+    private Point2D lastPointBigParticle ;
+
+
+
     public PriorityQueue<Event> events = new PriorityQueue<>();
 
     public Board(double L, List<Particle> particles, String basePath){
         this.L = L;
         this.particles = particles;
         this.dumper = new PointDumper(basePath, PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+        this.velocitiesParciclesInit = new ArrayList<>();
+        particles.forEach(p -> {
+            velocitiesParciclesInit.add(Math.sqrt(Math.pow(p.getVx(),2)+ Math.pow(p.getVy(),2)));
+        });
     }
 
     public void computeEvents(){
@@ -146,7 +177,7 @@ public class Board {
         return events.remove();
     }
 
-    public boolean processEvent() throws IOException{
+    public boolean processEvent(Boolean lastThirdOfSim) throws IOException{
         if(events.isEmpty())
             throw new IllegalStateException();
 
@@ -171,9 +202,18 @@ public class Board {
         double delta = event.getTime() - t;
         t = event.getTime();
 
+        collisionTimes.add(delta);
+
+        collisionsPerSecond++;
+
+        Particle bigParticle = (Particle)particles.stream().filter( x -> x.getId() == 0).toArray()[0];
+
+
+        velocitiesParcicles.clear();
         particles.forEach(p -> {
             p.setX(p.getVx()*delta + p.getX());
             p.setY(p.getVy()*delta + p.getY());
+            velocitiesParcicles.add(Math.sqrt(Math.pow(p.getVx(),2)+ Math.pow(p.getVy(),2)));
         });
 
         switch (event.getType()){
@@ -210,6 +250,19 @@ public class Board {
                 break;
 
             case TIMESTAMP:
+                collisionsPerSecondList.add(collisionsPerSecond);
+                collisionsPerSecond = 0;
+                if (lastThirdOfSim)
+                    velocities.addAll(velocitiesParcicles);
+
+                Point2D bigParticlePos = new Point2D(bigParticle.getX(),bigParticle.getY());
+                bigParticleTrajectory.add(bigParticlePos);
+
+                if (lastPointBigParticle != null){
+                    bigParticleSD.add(  Math.pow(lastPointBigParticle.getX() - bigParticle.getX() , 2 ) + Math.pow(lastPointBigParticle.getY() - bigParticle.getY() , 2 )  );
+                }
+
+                lastPointBigParticle = bigParticlePos;
                 dumpParticles();
                 return true;
         }
@@ -219,5 +272,13 @@ public class Board {
     public void dumpParticles() throws IOException {
         particles.forEach(x -> dumper.print2D(x.getX(), x.getY(), x.getVx(), x.getVy(), x.getMass(), x.getRadius(), x.getId()));
         dumper.dump(t, L);
+    }
+
+    public void dumpStatistics(String path,Integer time)  throws IOException {
+        System.out.println(collisionsPerSecondList.stream().mapToInt(Integer::intValue).average().getAsDouble() + " colisiones por segundo");
+        System.out.println(collisionTimes.stream().mapToDouble(Double::doubleValue).average().getAsDouble() + " promedio de tiempo de colision");
+        BrownianStatistics bS = new BrownianStatistics(collisionTimes,velocitiesParciclesInit,velocities,bigParticleTrajectory);
+        dumper.dumpStatsBrownian(bS, path);
+
     }
 }

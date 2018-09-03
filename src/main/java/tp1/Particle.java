@@ -108,4 +108,8 @@ public class Particle implements Entity{
     public static void decreaseIDs(){
         IDS--;
     }
+
+    public static void resetIDs(){
+        IDS = 0;
+    }
 }
