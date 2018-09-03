@@ -46,7 +46,14 @@ public class Board {
     private List<Point2D> bigParticleTrajectory = new ArrayList<>();
 
     @Getter
-    private Point2D lastPointBigParticle ;
+    private Point2D bigParticleInitialPos ;
+
+    @Getter
+    private Boolean hasCollided = false;
+
+
+    @Getter
+    private  Double COLLISION_EPSILON ;
 
 
 
@@ -59,6 +66,11 @@ public class Board {
         this.velocitiesParciclesInit = new ArrayList<>();
         particles.forEach(p -> {
             velocitiesParciclesInit.add(Math.sqrt(Math.pow(p.getVx(),2)+ Math.pow(p.getVy(),2)));
+
+            if (p.getId() == 0) {
+                bigParticleInitialPos = new Point2D(p.getX(), p.getY());
+                COLLISION_EPSILON = (3 / 2.0) * p.getRadius() ;
+            }
         });
     }
 
@@ -214,6 +226,13 @@ public class Board {
             p.setX(p.getVx()*delta + p.getX());
             p.setY(p.getVy()*delta + p.getY());
             velocitiesParcicles.add(Math.sqrt(Math.pow(p.getVx(),2)+ Math.pow(p.getVy(),2)));
+
+            if (p.getId() == 0){
+                if (!hasCollided  && (p.getX() < COLLISION_EPSILON || p.getX() > L - COLLISION_EPSILON || p.getY() < COLLISION_EPSILON || p.getY() > L - COLLISION_EPSILON)) {
+                    hasCollided = true;
+                    System.out.println("Marge chocamos");
+                }
+            }
         });
 
         switch (event.getType()){
@@ -257,12 +276,10 @@ public class Board {
 
                 Point2D bigParticlePos = new Point2D(bigParticle.getX(),bigParticle.getY());
                 bigParticleTrajectory.add(bigParticlePos);
+                if ( !hasCollided )
+                    bigParticleSD.add(  Math.pow(bigParticleInitialPos.getX() - bigParticle.getX() , 2 ) + Math.pow(bigParticleInitialPos.getY() - bigParticle.getY() , 2 )  );
 
-                if (lastPointBigParticle != null){
-                    bigParticleSD.add(  Math.pow(lastPointBigParticle.getX() - bigParticle.getX() , 2 ) + Math.pow(lastPointBigParticle.getY() - bigParticle.getY() , 2 )  );
-                }
 
-                lastPointBigParticle = bigParticlePos;
                 dumpParticles();
                 return true;
         }
