@@ -8,6 +8,7 @@ import utils.PointDumper;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Board {
 
@@ -36,6 +37,10 @@ public class Board {
 
     @Getter
     private ArrayList<Double> bigParticleSD = new ArrayList<>();
+
+    @Getter
+    private ArrayList<Double> smallParticleSD = new ArrayList<>();
+
     @Getter
     private int collisionsPerSecond = 0;
 
@@ -48,12 +53,28 @@ public class Board {
     @Getter
     private Point2D bigParticleInitialPos ;
 
+
     @Getter
-    private Boolean hasCollided = false;
+    private Point2D smallParticleInitialPos ;
+
+    @Getter
+    private Boolean hasCollidedBig = false;
+
+    @Getter
+    private Boolean hasCollidedSmall = false;
 
 
     @Getter
     private  Double COLLISION_EPSILON ;
+
+    @Getter
+    private  Double COLLISION_EPSILON_SMALL ;
+
+    @Getter
+    private Particle bigParticle ;
+    @Getter
+    private Particle smallParticle ;
+
 
 
 
@@ -66,14 +87,23 @@ public class Board {
         this.particles = particles;
         this.dumper = new PointDumper(basePath, PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
         this.velocitiesParciclesInit = new ArrayList<>();
-        particles.forEach(p -> {
+        for (Particle p : particles){
             velocitiesParciclesInit.add(Math.sqrt(Math.pow(p.getVx(),2)+ Math.pow(p.getVy(),2)));
 
             if (p.getId() == 0) {
                 bigParticleInitialPos = new Point2D(p.getX(), p.getY());
-                COLLISION_EPSILON = (3 / 2.0) * p.getRadius() ;
+                COLLISION_EPSILON = (3 / 2.0) * p.getRadius();
+                bigParticle = p;
+            } else if (smallParticle != null){
+                if ( (Math.pow(smallParticle.getX() - L/2 ,2) + Math.pow(smallParticle.getY()-L/2,2) ) > (Math.pow(p.getX() - L/2 ,2) + Math.pow(p.getY()-L/2,2) ))
+                    smallParticle = p;
+            } else if (smallParticle == null){
+                smallParticle = p;
             }
-        });
+        };
+        COLLISION_EPSILON_SMALL = (3 / 2.0) * smallParticle.getRadius();
+
+        smallParticleInitialPos = new Point2D(smallParticle.getX(),smallParticle.getY());
     }
 
     public void computeEvents(){
@@ -220,8 +250,6 @@ public class Board {
 
         collisionsPerSecond++;
 
-        Particle bigParticle = (Particle)particles.stream().filter( x -> x.getId() == 0).toArray()[0];
-
 
         velocitiesParcicles.clear();
         particles.forEach(p -> {
@@ -229,13 +257,20 @@ public class Board {
             p.setY(p.getVy()*delta + p.getY());
             velocitiesParcicles.add(Math.sqrt(Math.pow(p.getVx(),2)+ Math.pow(p.getVy(),2)));
 
-            if (p.getId() == 0){
-                if (!hasCollided  && (p.getX() < COLLISION_EPSILON || p.getX() > L - COLLISION_EPSILON || p.getY() < COLLISION_EPSILON || p.getY() > L - COLLISION_EPSILON)) {
-                    hasCollided = true;
-                    System.out.println("Marge chocamos");
-                }
-            }
         });
+
+
+
+        if (!hasCollidedBig  && (bigParticle.getX() < COLLISION_EPSILON || bigParticle.getX() > L - COLLISION_EPSILON || bigParticle.getY() < COLLISION_EPSILON || bigParticle.getY() > L - COLLISION_EPSILON)) {
+            hasCollidedBig = true;
+            System.out.println("Marge chocamos");
+        }
+
+        if (!hasCollidedSmall  && (smallParticle.getX() < COLLISION_EPSILON_SMALL || smallParticle.getX() > L - COLLISION_EPSILON_SMALL || smallParticle.getY() < COLLISION_EPSILON_SMALL || smallParticle.getY() > L - COLLISION_EPSILON_SMALL)) {
+            hasCollidedSmall = true;
+            System.out.println("Maggie chocamos");
+        }
+
 
         switch (event.getType()){
 
@@ -278,8 +313,11 @@ public class Board {
 
                 Point2D bigParticlePos = new Point2D(bigParticle.getX(),bigParticle.getY());
                 bigParticleTrajectory.add(bigParticlePos);
-                if ( !hasCollided )
+                if ( !hasCollidedBig )
                     bigParticleSD.add(  Math.pow(bigParticleInitialPos.getX() - bigParticle.getX() , 2 ) + Math.pow(bigParticleInitialPos.getY() - bigParticle.getY() , 2 )  );
+
+                if ( !hasCollidedSmall )
+                    smallParticleSD.add(  Math.pow(smallParticleInitialPos.getX() - smallParticle.getX() , 2 ) + Math.pow(smallParticleInitialPos.getY() - smallParticle.getY() , 2 )  );
 
 
                 dumpParticles();

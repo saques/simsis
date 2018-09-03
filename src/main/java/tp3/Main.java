@@ -18,7 +18,7 @@ public class Main {
 
     private static double L = .5;
     private static int N = 500;
-    private static int iterations = 500;
+    private static int iterations = 1500;
     private static double bigParticleRadius = 0.05;
     private static double bigParticleMass = 100;
     private static double particleRadius = .005;
@@ -36,6 +36,8 @@ public class Main {
         }
 
         ArrayList<ArrayList<Double>> bigParticleSd = new ArrayList<>() ;
+        ArrayList<ArrayList<Double>> smallParticleSd = new ArrayList<>() ;
+
         System.out.println(times);
         seed = seed == -1 ? System.currentTimeMillis() : seed;
         for (int time = 0 ; time <  times ; time++) {
@@ -63,6 +65,8 @@ public class Main {
             }
 
             bigParticleSd.add(board.getBigParticleSD());
+            smallParticleSd.add(board.getSmallParticleSD());
+
             board.dumpStatistics("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\stats\\",time);
             seed = System.currentTimeMillis();
 
@@ -70,11 +74,14 @@ public class Main {
 
         Integer finalTimes = times;
         int min = bigParticleSd.stream().map( x -> x.size()).min(Integer::compareTo).get();
+        int minSmall = smallParticleSd.stream().map( x -> x.size()).min(Integer::compareTo).get();
 
 
         PointDumper dumper = new PointDumper("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\ovito\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
 
-        dumper.dumpMSD("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\",bigParticleSd,min);
+        dumper.dumpMSD("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\","msd",bigParticleSd,min);
+        dumper.dumpMSD("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\","msdSmall",smallParticleSd,minSmall);
+
     }
 
 }

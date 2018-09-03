@@ -19,7 +19,7 @@ function msdAvg(varargin)
   
   endfor
   deviation = std(y');
-  y = (sum(y') / length(varargin));
+  y = mean(y');
   p=polyfit(x,y,1);
   hold on
   plot(x,y,'ro','markersize',4,'markerfacecolor','r');

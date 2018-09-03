@@ -7,6 +7,6 @@ function timeHisto(histoBin,time_file)
     line = str2num(fgets(file));
     times = [times;line/N];
   end
-  hist(times);
+  hist(times,histoBin);
 
 endfunction
