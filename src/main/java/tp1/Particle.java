@@ -1,11 +1,15 @@
 package tp1;
 
+import common.Vector2D;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@ToString
 public class Particle implements Entity{
 
     private static int IDS = 0;
@@ -14,11 +18,11 @@ public class Particle implements Entity{
     private int id;
 
     @Getter @Setter
-    private double x;
-    @Getter @Setter
-    private double y;
-    @Getter @Setter
-    private double radius;
+    private double x, vx, y, vy;
+    @Getter
+    private double radius, mass;
+
+    public double collisionTime = Double.MAX_VALUE;
 
     public Particle(double x, double y, double radius){
         this.x = x;
@@ -27,8 +31,22 @@ public class Particle implements Entity{
         this.id = IDS++;
     }
 
+    public Particle(double x, double y, double vx, double vy, double radius, double mass){
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.radius = radius;
+        this.mass = mass;
+        this.id = IDS++;
+    }
+
     public boolean isWithinRadiusBoundingBox(Entity o, double evalDistance){
         return pithagoras(x,o.getX(),y,o.getY()) - radius - o.getRadius() <= evalDistance;
+    }
+
+    public boolean overlapsBoundaries(double L){
+        return (L-x) < radius || x < radius || (L-y) < radius || y < radius;
     }
 
     public boolean isWithinRadiusPeriodic(Entity o, double evalDistance, double boxLength){
@@ -74,12 +92,24 @@ public class Particle implements Entity{
         return id == particle.id;
     }
 
+    public Vector2D position(){
+        return new Vector2D(x, y);
+    }
+
+    public Vector2D velocity(){
+        return new Vector2D(vx, vy);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
 
-    static void decreaseIDs(){
+    public static void decreaseIDs(){
         IDS--;
+    }
+
+    public static void resetIDs(){
+        IDS = 0;
     }
 }

@@ -102,7 +102,7 @@ public class Life3D {
                         sumX += i;
                         sumY += j;
                         sumZ += k;
-                        pointDumper.print3D(gen, i, j, k);
+                        pointDumper.print3D(i, j, k);
                     }
                 }
 
@@ -161,7 +161,7 @@ public class Life3D {
                 for (int k = 0; k < M; k++) {
                     boolean status = arr[i][j].get(k);
                     if (status) {
-                        pointDumper.print3D(generation, i, j, k);
+                        pointDumper.print3D(i, j, k);
                     }
                 }
             }

@@ -97,7 +97,7 @@ public class Life2D {
                     minY = Math.min(minY, j); maxY = Math.max(maxY, j);
                     sumX += i;
                     sumY += j;
-                    pointDumper.print2D(gen, i, j);
+                    pointDumper.print2D(i, j);
                 }
             }
         }
@@ -163,7 +163,7 @@ public class Life2D {
             for (int j = 0; j < M; j++){
                 boolean status = arr[i].get(j);
                 if(status){
-                    pointDumper.print2D(generation, i, j);
+                    pointDumper.print2D(i, j);
                 }
 
             }
