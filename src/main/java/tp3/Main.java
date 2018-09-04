@@ -18,7 +18,7 @@ public class Main {
 
     private static double L = .5;
     private static int N = 500;
-    private static int iterations = 1500;
+    private static int iterations = 1000;
     private static double bigParticleRadius = 0.05;
     private static double bigParticleMass = 100;
     private static double particleRadius = .005;
@@ -47,7 +47,7 @@ public class Main {
             List<Particle> list = ParticleGenerators.generateBrownianParticles(bigParticleMass, bigParticleRadius,
                     L, N, particleRadius, particleMass,
                     maxSpeed, r, true);
-            Board board = new Board(L, list, "C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\ovito\\");
+            Board board = new Board(L, list, ".\\src\\main\\java\\tp3\\ovito\\");
             board.dumpParticles();
             board.addTimestamps(iterations);
             board.computeEvents();
@@ -67,7 +67,7 @@ public class Main {
             bigParticleSd.add(board.getBigParticleSD());
             smallParticleSd.add(board.getSmallParticleSD());
 
-            board.dumpStatistics("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\stats\\",time);
+            board.dumpStatistics(".\\src\\main\\java\\tp3\\stats\\",time);
             seed = System.currentTimeMillis();
 
         }
@@ -77,10 +77,10 @@ public class Main {
         int minSmall = smallParticleSd.stream().map( x -> x.size()).min(Integer::compareTo).get();
 
 
-        PointDumper dumper = new PointDumper("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\ovito\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+        PointDumper dumper = new PointDumper(".\\src\\main\\java\\tp3\\ovito\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
 
-        dumper.dumpMSD("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\","msd",bigParticleSd,min);
-        dumper.dumpMSD("C:\\Users\\Nicolas\\Documents\\GitHub\\simsis\\src\\main\\java\\tp3\\","msdSmall",smallParticleSd,minSmall);
+        dumper.dumpMSD(".\\src\\main\\java\\tp3\\","msd",bigParticleSd,min);
+        dumper.dumpMSD(".\\src\\main\\java\\tp3\\","msdSmall",smallParticleSd,minSmall);
 
     }
 
