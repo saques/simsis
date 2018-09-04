@@ -7,6 +7,6 @@ function vHisto(histoBin,v_file)
     line = str2num(fgets(file));
     v = [v;line/N];
   end
-  hist(v);
+  hist(v,histoBin);
 
 endfunction

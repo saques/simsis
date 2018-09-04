@@ -152,15 +152,28 @@ public final class PointDumper {
 
     }
 
-    public void dumpMSD(String path , List<Double> msd ) throws IOException{
-
-        statsQueue.clear();
-        statsQueue.add(String.format("%d\n",msd.size()));
-        for (Double z : msd){
-            statsQueue.add(String.format("%.17f\n",z));
+    public void dumpMSD(String path , String msdFolder,ArrayList<ArrayList<Double>> sd, int size ) throws IOException{
+        int i = 0;
+        for (List<Double> msd : sd) {
+            statsQueue.clear();
+            statsQueue.add(String.format("%d\n", size));
+            for (Double z : msd) {
+                statsQueue.add(String.format("%.17f\n", z));
+            }
+            PrintWriter printWriter = new PrintWriter(new FileWriter(path + "stats\\"+msdFolder+"\\statisticsMSD"+i+".txt"));
+            statsQueue.forEach(printWriter::println);
+            printWriter.flush();
+            printWriter.close();
+            i++;
         }
-        PrintWriter printWriter = new PrintWriter(new FileWriter(path + "statisticsMSD.txt"));
-        statsQueue.forEach(printWriter::println);
+
+
+        PrintWriter printWriter = new PrintWriter(new FileWriter(path + "octave\\"+msdFolder+"Script.m"));
+        printWriter.print("msdAvg(");
+        for (int j = 0 ; j < sd.size() - 1 ; j++){
+            printWriter.print("'..\\stats\\"+msdFolder+"\\statisticsMSD"+j+".txt',");
+        }
+        printWriter.print("'..\\stats\\"+msdFolder+"\\statisticsMSD"+(sd.size()-1)+".txt');");
         printWriter.flush();
         printWriter.close();
     }

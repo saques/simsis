@@ -1,4 +1,4 @@
-function trajectory(histoBin,v_file)
+function trajectory(v_file)
   file = fopen(v_file,'r');
   N = str2num(fgets(file));
   trajectory = [];
@@ -11,7 +11,7 @@ function trajectory(histoBin,v_file)
   end
 
 
-plot3 (trajectory(:,1),trajectory(:,1), [1:N]);
+plot3 (trajectory(:,1),trajectory(:,2), [1:N]);
 xlabel ("r.*sin (t)");
 ylabel ("r.*cos (t)");
 zlabel ("z");
