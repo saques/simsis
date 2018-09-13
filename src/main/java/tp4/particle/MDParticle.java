@@ -29,7 +29,7 @@ public abstract class MDParticle {
         fx0 = fy0 = 0;
     }
 
-    void interact(MDParticle o){
+    public void interact(MDParticle o){
 
         double f = G*mass*o.mass/(Math.pow(x0, 2) + Math.pow(y0, 2));
 
@@ -41,8 +41,10 @@ public abstract class MDParticle {
 
     void resetForces(){
         fx0 = fy0 = 0;
-    }
+    };
 
-    abstract void processDelta(double delta);
+    public abstract void rDelta(double delta);
+
+    public abstract void vDelta(double delta);
     
 }
