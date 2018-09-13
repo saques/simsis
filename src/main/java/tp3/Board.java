@@ -8,7 +8,6 @@ import utils.PointDumper;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Board {
 
@@ -120,8 +119,8 @@ public class Board {
 //            }
 //        });
 //
-//        List<Particle> remaining = new LinkedList<>(particles);
-//        for(Particle x : particles){
+//        List<MDParticle> remaining = new LinkedList<>(particles);
+//        for(MDParticle x : particles){
 //            remaining.remove(0);
 //            events.addAll(particleCollisions(x, remaining, 0));
 //        }
@@ -158,8 +157,8 @@ public class Board {
         List<Event> events = new LinkedList<>();
 
         for(Particle o : particles){
-            Vector2D deltaV = o.velocity().dif(p.velocity());
-            Vector2D deltaR = o.position().dif(p.position());
+            Vector2D deltaV = o.velocity().sub(p.velocity());
+            Vector2D deltaR = o.position().sub(p.position());
             double VR = deltaV.dot(deltaR);
             double VV = deltaV.dot(deltaV);
             double RR = deltaR.dot(deltaR);
@@ -275,8 +274,8 @@ public class Board {
         switch (event.getType()){
 
             case PARTICLE:
-                Vector2D deltaV = p2.velocity().dif(p1.velocity());
-                Vector2D deltaR = p2.position().dif(p1.position());
+                Vector2D deltaV = p2.velocity().sub(p1.velocity());
+                Vector2D deltaR = p2.position().sub(p1.position());
                 double VR = deltaV.dot(deltaR);
                 double sigma = p1.getRadius() + p2.getRadius();
                 double J = (2*p1.getMass()*p2.getMass()*VR)/(sigma*(p1.getMass()+p2.getMass()));
