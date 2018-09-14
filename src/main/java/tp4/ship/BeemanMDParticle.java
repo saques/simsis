@@ -1,4 +1,4 @@
-package tp4.particle;
+package tp4.ship;
 
 public class BeemanMDParticle extends  MDParticle{
 
@@ -13,7 +13,7 @@ public class BeemanMDParticle extends  MDParticle{
 
 
     @Override
-    void interact(MDParticle mdParticle) {
+    public void interact(MDParticle mdParticle) {
         fx_2 = fx_1;
         fy_2 = fy_1;
 
@@ -23,7 +23,7 @@ public class BeemanMDParticle extends  MDParticle{
     }
 
     @Override
-    void rDelta(double delta) {
+    public void rDelta(double delta) {
         x0 = r(delta, x0, vx0, fx0/mass, fx_1/mass);
         y0 = r(delta, y0, vy0, fy0/mass, fy_1/mass);
     }
@@ -33,7 +33,7 @@ public class BeemanMDParticle extends  MDParticle{
      * @param delta
      */
     @Override
-    void vDelta(double delta){
+    public void vDelta(double delta){
         //Passing fx0/mass as a1 because interact() was called, so
         //we are using the prediction obtained from the new position
         vx0 = v(delta, vx0, fx0/mass, fx_1/mass, fx_2/mass);

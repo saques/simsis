@@ -1,4 +1,4 @@
-package tp4;
+package tp4.oscillator;
 
 public class GearPredictorCorrector {
 
@@ -23,8 +23,10 @@ public class GearPredictorCorrector {
         return pred + alfa * deltaR2 * qFact / Math.pow(deltaT, q);
     }
 
+
+
     public static FiveCoefficients nextStep(
-            FiveCoefficients q, double deltaT, double k, double gamma, double mass
+            FiveCoefficients q, double deltaT, Accelerator accelerator
     ) {
         double r0Pred = evalTaylor5(q.r0, q.r1, q.r2, q.r3, q.r4, q.r5, deltaT);
         double r1Pred = evalTaylor5(q.r1, q.r2, q.r3, q.r4, q.r5, 0, deltaT);
@@ -33,7 +35,7 @@ public class GearPredictorCorrector {
         double r4Pred = evalTaylor5(q.r4, q.r5, 0, 0, 0, 0, deltaT);
         double r5Pred = evalTaylor5(q.r5, 0, 0, 0, 0, 0, deltaT);
 
-        double a = (- k * r0Pred - gamma * r1Pred) / mass;
+        double a = accelerator.accelerate(r0Pred, r1Pred);
         double deltaR2 = (a - r2Pred) * Math.pow(deltaT, 2) / 2;
 
         FiveCoefficients rCorrected = new FiveCoefficients();

@@ -34,9 +34,9 @@ public final class ParticleGenerators {
                 continue;
             }
 
-            //TODO: set property of the particle, irrelevant in this case
+            //TODO: set property of the ship, irrelevant in this case
             sta.printf("%f %d\n", radius, 0);
-            //TODO: set speed of the particle, irrelevant in this case
+            //TODO: set speed of the ship, irrelevant in this case
             din.printf("%f %f %f %f\n", x, y, 0.0, 0.0);
             ans.add(p);
             N--;
@@ -59,7 +59,7 @@ public final class ParticleGenerators {
         //TODO: t0 when time is relevant, irrelevant in this case
         din.println(0);
 
-        //Big particle data
+        //Big ship data
         sta.printf("%f %f\n", bigParticleRadius, bigParticleMass);
         din.printf("%f %f %f %f\n", L/2, L/2, 0.0, 0.0);
         ans.add(new Particle( L/2,  L/2,  0,  0,  bigParticleRadius,  bigParticleMass));
@@ -78,9 +78,9 @@ public final class ParticleGenerators {
                 continue;
             }
 
-            //TODO: set property of the particle, irrelevant in this case
+            //TODO: set property of the ship, irrelevant in this case
             sta.printf("%f %f\n", radius, mass);
-            //TODO: set speed of the particle, irrelevant in this case
+            //TODO: set speed of the ship, irrelevant in this case
             din.printf("%f %f %f %f\n", x, y, vx, vy);
             ans.add(p);
             N--;

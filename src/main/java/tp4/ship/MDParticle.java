@@ -1,4 +1,4 @@
-package tp4.particle;
+package tp4.ship;
 
 import common.Vector2D;
 

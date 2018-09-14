@@ -70,7 +70,7 @@ public class Event implements Comparable<Event>{
         if (type == EventType.PARTICLE) {
             return "particleA" + p1.toString() + ", particleB: " + p2.toString() + ", time:" + time;
         } else {
-            return "particle" + p1.toString() + ", wall: " + wallType.toString() + ", time:" + time;
+            return "ship" + p1.toString() + ", wall: " + wallType.toString() + ", time:" + time;
         }
     }
 }

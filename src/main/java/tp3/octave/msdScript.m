@@ -1,0 +1,1 @@
+msdAvg('..\stats\msd\statisticsMSD0.txt');

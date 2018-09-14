@@ -1,6 +1,4 @@
-package tp4;
-
-import tp4.particle.MDParticle;
+package tp4.ship;
 
 import java.util.LinkedList;
 import java.util.List;
