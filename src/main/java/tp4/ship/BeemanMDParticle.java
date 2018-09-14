@@ -11,15 +11,14 @@ public class BeemanMDParticle extends  MDParticle{
         fx_1 = fy_1 = 0;
     }
 
-
     @Override
-    public void interact(MDParticle mdParticle) {
+    public void saveState(){
         fx_2 = fx_1;
         fy_2 = fy_1;
 
         fx_1 = fx0;
         fy_1 = fy0;
-        super.interact(mdParticle);
+        resetForces();
     }
 
     @Override
@@ -27,7 +26,7 @@ public class BeemanMDParticle extends  MDParticle{
         x0 = r(delta, x0, vx0, fx0/mass, fx_1/mass);
         y0 = r(delta, y0, vy0, fy0/mass, fy_1/mass);
 
-        System.out.println("x: " + x0 + "y: " + y0);
+        System.out.println("x: " + x0 + " y: " + y0);
     }
 
     /**
@@ -40,6 +39,8 @@ public class BeemanMDParticle extends  MDParticle{
         //we are using the prediction obtained from the new position
         vx0 = v(delta, vx0, fx0/mass, fx_1/mass, fx_2/mass);
         vy0 = v(delta, vy0, fy0/mass, fy_1/mass, fy_2/mass);
+
+        //System.out.println("vx: " + vx0 + " vy: " + vy0);
     }
 
     private double r(double t, double r0, double v0, double a0, double a_1){
@@ -48,7 +49,6 @@ public class BeemanMDParticle extends  MDParticle{
     }
 
     private double v(double t, double v0, double a1, double a0, double a_1){
-        double t2 = Math.pow(t, 2);
         return v0 + (1.0/3.0)*a1*t + (5.0/6.0)*a0*t - (1.0/6.0)*a_1*t;
     }
 

@@ -2,8 +2,10 @@ package common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 @AllArgsConstructor
+@ToString
 public class Vector2D {
 
     @Getter
@@ -23,7 +25,7 @@ public class Vector2D {
     }
 
     public Vector2D nor(){
-        double mod = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        double mod = mod();
         return scl(1.0/mod);
     }
 
@@ -33,5 +35,12 @@ public class Vector2D {
         return this;
     }
 
+    public double mod(){
+        return Math.sqrt(mod2());
+    }
+
+    public double mod2(){
+        return Math.pow(x, 2) + Math.pow(y, 2);
+    }
 
 }

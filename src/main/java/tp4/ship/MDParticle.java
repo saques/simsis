@@ -4,7 +4,7 @@ import common.Vector2D;
 
 public abstract class MDParticle {
 
-    public static final double G = 6.693E-11;
+    public static final double G = 6.67408E-20;
 
     double mass;
     double radius;
@@ -31,9 +31,11 @@ public abstract class MDParticle {
 
     public void interact(MDParticle o){
 
-        double f = G*mass*o.mass/(Math.pow(x0, 2) + Math.pow(y0, 2));
+        Vector2D rel = new Vector2D(o.x0, o.y0).sub(new Vector2D(x0, y0));
 
-        Vector2D xyforces = new Vector2D(o.x0, o.y0).sub(new Vector2D(x0, y0)).nor().scl(f);
+        double f = G*mass*o.mass/(rel.mod2());
+
+        Vector2D xyforces = rel.nor().scl(f);
 
         fx0 += xyforces.x;
         fy0 += xyforces.y;
@@ -41,7 +43,9 @@ public abstract class MDParticle {
 
     void resetForces(){
         fx0 = fy0 = 0;
-    };
+    }
+
+    abstract void saveState();
 
     public abstract void rDelta(double delta);
 
