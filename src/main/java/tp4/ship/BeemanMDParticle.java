@@ -19,13 +19,15 @@ public class BeemanMDParticle extends  MDParticle{
 
         fx_1 = fx0;
         fy_1 = fy0;
-        interact(mdParticle);
+        super.interact(mdParticle);
     }
 
     @Override
     public void rDelta(double delta) {
         x0 = r(delta, x0, vx0, fx0/mass, fx_1/mass);
         y0 = r(delta, y0, vy0, fy0/mass, fy_1/mass);
+
+        System.out.println("x: " + x0 + "y: " + y0);
     }
 
     /**
@@ -50,5 +52,8 @@ public class BeemanMDParticle extends  MDParticle{
         return v0 + (1.0/3.0)*a1*t + (5.0/6.0)*a0*t - (1.0/6.0)*a_1*t;
     }
 
-
+    public void initializeF(){
+        fx_2 = fx_1 = fx0;
+        fy_2 = fy_1 = fy0;
+    }
 }
