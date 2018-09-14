@@ -2,6 +2,8 @@ package tp4.ship;
 
 import common.Vector2D;
 
+import java.io.IOException;
+
 public abstract class MDParticle {
 
     public static final double G = 6.67408E-20;
@@ -45,7 +47,7 @@ public abstract class MDParticle {
         fx0 = fy0 = 0;
     }
 
-    abstract void saveState();
+    abstract void saveState(int i) throws IOException;
 
     public abstract void rDelta(double delta);
 

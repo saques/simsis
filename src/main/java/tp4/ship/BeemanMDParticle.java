@@ -1,24 +1,31 @@
 package tp4.ship;
 
+import utils.PointDumper;
+
+import java.io.IOException;
+
 public class BeemanMDParticle extends  MDParticle{
 
 
     private double fx_1, fy_1;
     private double fx_2, fy_2;
+    private PointDumper dumper;
 
-    public BeemanMDParticle(double mass, double radius, double x0, double y0, double vx0, double vy0){
+    public BeemanMDParticle(double mass, double radius, double x0, double y0, double vx0, double vy0, PointDumper dumper){
         super(mass, radius, x0, y0, vx0, vy0);
         fx_1 = fy_1 = 0;
+        this.dumper = dumper;
     }
 
     @Override
-    public void saveState(){
+    public void saveState(int i) throws IOException {
         fx_2 = fx_1;
         fy_2 = fy_1;
 
         fx_1 = fx0;
         fy_1 = fy0;
         resetForces();
+        dumper.dump(i);
     }
 
     @Override
@@ -26,7 +33,7 @@ public class BeemanMDParticle extends  MDParticle{
         x0 = r(delta, x0, vx0, fx0/mass, fx_1/mass);
         y0 = r(delta, y0, vy0, fy0/mass, fy_1/mass);
 
-        System.out.println("x: " + x0 + " y: " + y0);
+        dumper.print2D(x0, y0, vx0, vy0, mass, radius, 0);
     }
 
     /**
@@ -39,8 +46,6 @@ public class BeemanMDParticle extends  MDParticle{
         //we are using the prediction obtained from the new position
         vx0 = v(delta, vx0, fx0/mass, fx_1/mass, fx_2/mass);
         vy0 = v(delta, vy0, fy0/mass, fy_1/mass, fy_2/mass);
-
-        //System.out.println("vx: " + vx0 + " vy: " + vy0);
     }
 
     private double r(double t, double r0, double v0, double a0, double a_1){
