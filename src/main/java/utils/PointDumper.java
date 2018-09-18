@@ -22,6 +22,8 @@ public final class PointDumper {
     private int randomGreen;
     private int randomBlue;
 
+
+
     public enum FileMode {
         STATIC, DYNAMIC
     }
@@ -174,6 +176,17 @@ public final class PointDumper {
             printWriter.print("'..\\stats\\"+msdFolder+"\\statisticsMSD"+j+".txt',");
         }
         printWriter.print("'..\\stats\\"+msdFolder+"\\statisticsMSD"+(sd.size()-1)+".txt');");
+        printWriter.flush();
+        printWriter.close();
+    }
+
+    public void dumpOscilatorAproximation(List<Double> numericSolutions) throws IOException {
+        statsQueue.add(String.format("%d",numericSolutions.size()));
+        for (double t : numericSolutions){
+            statsQueue.add(String.format(Locale.US,"%.17f",t));
+        }
+        PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "numericSolutions.txt"));
+        statsQueue.forEach(printWriter::println);
         printWriter.flush();
         printWriter.close();
     }
