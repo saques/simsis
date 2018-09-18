@@ -41,6 +41,7 @@ public abstract class MDParticle {
 
         fx0 += xyforces.x;
         fy0 += xyforces.y;
+
     }
 
     void resetForces(){
