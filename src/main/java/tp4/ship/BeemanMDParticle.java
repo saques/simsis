@@ -32,8 +32,7 @@ public class BeemanMDParticle extends  MDParticle{
         x0 = r(delta, x0, vx0, fx0/mass, fx_1/mass);
         y0 = r(delta, y0, vy0, fy0/mass, fy_1/mass);
 
-        if(id != 0)
-            dumper.print2D(x0/AU, y0/AU, vx0/AU, vy0/AU, mass, radius/AU, 0);
+        dumper.print2D(x0/AU, y0/AU, vx0/AU, vy0/AU, mass, radius, id);
     }
 
     /**
