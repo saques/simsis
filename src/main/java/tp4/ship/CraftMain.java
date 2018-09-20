@@ -8,7 +8,7 @@ import java.util.List;
 public class CraftMain {
 
     static final double maxTime = 31558118.4*29;
-    static final double delta = 60*60*24*3;
+    static final double delta = 60*60*24*7;
 
     public static void main(String[] args) throws IOException{
 
@@ -61,20 +61,21 @@ public class CraftMain {
                 5.68319E+26, 58232,
                 -1.075238877886715E+09, 8.538222924091074E+08,
                 -6.527515746018062E+00, -7.590526046562251E+00,
-                beemanDumper
+                gpcDumper
         );
 
         GearPredictorCorrectorParticle jupiter2 = new GearPredictorCorrectorParticle(
                 1.89813E+27, 69911,
                 1.061950341671551E+08, 7.544955348409320E+08,
                 -1.309157032053854E+01, 2.424744678419164E+00,
-                beemanDumper
+                gpcDumper
         );
 
         system2.add(sun2);
         system2.add(earth2);
         system2.add(saturn2);
         system2.add(jupiter2);
+
         //runGearPredictorCorrector(delta, maxTime, system2, gpcDumper);
 
 

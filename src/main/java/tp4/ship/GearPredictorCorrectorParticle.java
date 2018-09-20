@@ -64,7 +64,7 @@ public class GearPredictorCorrectorParticle extends MDParticle {
         x5 = correct(x5, 1.0 / 60.0, deltaR2X, delta, 5, 120);
         y5 = correct(y5, 1.0 / 60.0, deltaR2Y, delta, 5, 120);
 
-        dumper.print2D(x0/AU, y0/AU, vx0/AU, vy0/AU, mass, radius/AU, 0);
+        dumper.print2D(x0/AU, y0/AU, vx0/AU, vy0/AU, mass, radius/AU, id);
     }
 
     private static double taylorEval(double a, double b, double c, double d, double e, double f, double deltaT) {
