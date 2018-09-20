@@ -66,7 +66,7 @@ public final class PointDumper {
 //        int red = (id+1) * randomRed % 256 + 100;
 //        int blue = (id+1) * randomBlue % 256 + 100;
 //        int green = (id+1) * randomGreen % 256 + 100;
-        queue.add(String.format("%f %f %f %f %f %f %d %d %d", x, y, vx, vy, mass, radius, red, green, blue));
+        queue.add(String.format("%.20f %.20f %f %f %f %f %d %d %d", x, y, vx, vy, mass, radius, red, green, blue));
     }
 
     public void print3D(double x, double y, double z){

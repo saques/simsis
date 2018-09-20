@@ -6,7 +6,12 @@ import java.io.IOException;
 
 public abstract class MDParticle {
 
+    private static int IDs = 0;
+
+    int id;
+
     public static final double G = 6.67408E-20;
+    public static final double AU = 149597870.7;
 
     double mass;
     double radius;
@@ -22,6 +27,7 @@ public abstract class MDParticle {
 
 
     public MDParticle(double mass, double radius, double x0, double y0, double vx0, double vy0){
+        id = IDs++;
         this.mass = mass;
         this.radius = radius;
         this.x0 = x0;

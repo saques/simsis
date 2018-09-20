@@ -25,7 +25,6 @@ public class BeemanMDParticle extends  MDParticle{
         fx_1 = fx0;
         fy_1 = fy0;
         resetForces();
-        dumper.dump(i);
     }
 
     @Override
@@ -33,7 +32,8 @@ public class BeemanMDParticle extends  MDParticle{
         x0 = r(delta, x0, vx0, fx0/mass, fx_1/mass);
         y0 = r(delta, y0, vy0, fy0/mass, fy_1/mass);
 
-        dumper.print2D(x0, y0, vx0, vy0, mass, radius, 0);
+        if(id != 0)
+            dumper.print2D(x0/AU, y0/AU, vx0/AU, vy0/AU, mass, radius/AU, 0);
     }
 
     /**

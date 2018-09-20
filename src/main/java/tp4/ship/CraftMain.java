@@ -1,8 +1,6 @@
 package tp4.ship;
 
-import tp4.oscillator.GearPredictorCorrector;
 import utils.PointDumper;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,39 +16,38 @@ public class CraftMain {
         List<MDParticle> system = new LinkedList<>();
 
 
-        PointDumper sunDumper = new PointDumper(".\\tp4\\ovito\\sun", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
-        BeemanMDParticle sun = new BeemanMDParticle(1.9885E30, 695700 , 0, 0, 0, 0, sunDumper);
+        PointDumper beemanDumper = new PointDumper(".\\tp4\\ovito\\beeman\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+        BeemanMDParticle sun = new BeemanMDParticle(1.9885E30, 695700 , 0, 0, 0, 0, beemanDumper);
 
-        PointDumper earthDumper = new PointDumper(".\\tp4\\ovito\\earth", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
         BeemanMDParticle earth = new BeemanMDParticle(
                 5.97237E24, 6371,
                   1.443040359985483E+8, -4.566821691926755E+7,
                  8.429276455862507E+0, 2.831601955976786E+1,
-                    earthDumper);
+                beemanDumper);
+
         system.add(sun);
         system.add(earth);
-        runBeeman(delta, maxTime, system);
+        runBeeman(delta, maxTime, system, beemanDumper);
 
 
-        PointDumper sunDumper2 = new PointDumper(".\\tp4\\ovito\\sunK", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
-        GearPredictorCorrectorParticle sun2 = new GearPredictorCorrectorParticle(1.9885E30, 695700 , 0, 0, 0, 0, sunDumper2);
+        PointDumper gpcDumper = new PointDumper(".\\tp4\\ovito\\gpc\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+        GearPredictorCorrectorParticle sun2 = new GearPredictorCorrectorParticle(1.9885E30, 695700 , 0, 0, 0, 0, gpcDumper);
 
         List<MDParticle> system2 = new LinkedList<>();
-        PointDumper earthDumper2 = new PointDumper(".\\tp4\\ovito\\earthK", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
         GearPredictorCorrectorParticle earth2 = new GearPredictorCorrectorParticle(
                 5.97237E24, 6371,
                 1.443040359985483E+8, -4.566821691926755E+7,
                 8.429276455862507E+0, 2.831601955976786E+1,
-                earthDumper2);
+                gpcDumper);
 
         system2.add(sun2);
         system2.add(earth2);
-        runGearPredictorCorrector(delta, maxTime, system2);
+        runGearPredictorCorrector(delta, maxTime, system2, gpcDumper);
 
 
     }
 
-    private static void runBeeman(double delta, double maxTime, List<MDParticle> system) throws IOException {
+    private static void runBeeman(double delta, double maxTime, List<MDParticle> system, PointDumper dumper) throws IOException {
 
 
         system.forEach(x -> system.forEach(y -> {
@@ -70,13 +67,12 @@ public class CraftMain {
                     x.interact(y);
             }));
             system.forEach(x -> x.vDelta(delta));
-            final int iTemp = i;
-            system.forEach((x) -> System.out.println("Beeman -> i: "+ iTemp + ", x: " + x.x0 + ", y: " + x.y0));
+            dumper.dump(i);
         }
 
     }
 
-    private static void runGearPredictorCorrector(double delta, double maxtime, List<MDParticle> system) throws  IOException  {
+    private static void runGearPredictorCorrector(double delta, double maxtime, List<MDParticle> system, PointDumper dumper) throws  IOException  {
         system.forEach(x -> system.forEach(y -> {
             if(x != y) {
                 x.interact(y);
@@ -93,8 +89,7 @@ public class CraftMain {
                     x.interact(y);
             }));
             system.forEach(x -> x.vDelta(delta));
-            final int iTemp = i;
-            system.forEach((x) -> System.out.println("GearPredictorCorrector -> i: "+ iTemp + ", x: " + x.x0 + ", y: " + x.y0));
+            dumper.dump(i);
         }
     }
 }
