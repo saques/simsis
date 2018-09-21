@@ -10,7 +10,7 @@ public class CraftStats {
     private List<Double> speeds;
 
     private double minToJupiter, minToSaturn;
-    private Vector2D rInit, vInit;
+    private double v, h;
 
     private List<String> dump;
 
@@ -36,15 +36,22 @@ public class CraftStats {
         return minToJupiter;
     }
 
-    public boolean isBetterApproach(double jupiterDist, double saturnDist, Vector2D rInit, Vector2D vInit){
+    public boolean isBetterApproach(double jupiterDist, double saturnDist, double v, double h){
         if((jupiterDist+saturnDist) < (minToJupiter + minToSaturn)){
             minToJupiter = jupiterDist;
             minToSaturn = saturnDist;
-            this.rInit = rInit;
-            this.vInit = vInit;
+            this.v = v;
+            this.h = h;
             return true;
         }
         return false;
     }
 
+    public double getV() {
+        return v;
+    }
+
+    public double getH() {
+        return h;
+    }
 }

@@ -96,8 +96,4 @@ public class GearPredictorCorrectorParticle extends MDParticle {
         return pred + alfa * deltaR2 * qFact / Math.pow(deltaT, q);
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
 }

@@ -60,8 +60,4 @@ public abstract class MDParticle implements Cloneable{
 
     public abstract void vDelta(double delta);
 
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-    
 }
