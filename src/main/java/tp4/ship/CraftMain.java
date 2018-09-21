@@ -9,7 +9,7 @@ import java.util.List;
 public class CraftMain {
 
     static final double maxTime = 31558118.4*4;
-    static final double delta = 60*60*24*2;
+    static final double delta = 60*60*24;
     static final double maxSpeed = 20;
     static final double maxAltitude = 10000;
     static final double karmanLine = 100;
@@ -134,8 +134,8 @@ public class CraftMain {
 
         for(double h = karmanLine; h < maxAltitude; h += heightStep){
 
-            //Calculate orbital speed at given height
-            double minV = Math.sqrt((MDParticle.G*eMass)/(eRadius + h));
+            //Calculate escape velocity
+            double minV = Math.sqrt((2*MDParticle.G*eMass)/(eRadius + h));
 
             System.out.println(minV);
 
