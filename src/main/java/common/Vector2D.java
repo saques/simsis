@@ -11,6 +11,11 @@ public class Vector2D {
     @Getter
     public double x, y;
 
+    public Vector2D(Vector2D vector2D){
+        this.x = vector2D.x;
+        this.y = vector2D.y;
+    }
+
 
     public double dot(Vector2D o){
         return x*o.x + y*o.y;
@@ -40,7 +45,7 @@ public class Vector2D {
     }
 
     public double mod2(){
-        return Math.pow(x, 2) + Math.pow(y, 2);
+        return (Math.pow(x, 2) + Math.pow(y, 2));
     }
 
 }

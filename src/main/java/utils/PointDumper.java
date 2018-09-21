@@ -17,10 +17,10 @@ public final class PointDumper {
     private final Queue<String> statsQueue = new LinkedList<>();
     private final String basePath;
     private int id = 0;
-    private double currentTimestamp = -1;
     private int randomRed;
     private int randomGreen;
     private int randomBlue;
+    private List<String> list = new LinkedList<>();
 
 
 
@@ -63,9 +63,6 @@ public final class PointDumper {
             green = 200;
             blue = 200;
         }
-//        int red = (id+1) * randomRed % 256 + 100;
-//        int blue = (id+1) * randomBlue % 256 + 100;
-//        int green = (id+1) * randomGreen % 256 + 100;
         queue.add(String.format("%.20f %.20f %f %f %f %f %d %d %d", x, y, vx, vy, mass, radius, red, green, blue));
     }
 
@@ -82,8 +79,34 @@ public final class PointDumper {
         queue.clear();
         printWriter.flush();
         printWriter.close();
-        currentTimestamp = timestamp;
         id++;
+    }
+
+    public void dumpToList() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(String.format("%d\n", queue.size()));
+        stringBuilder.append("\n");
+        queue.forEach(x-> stringBuilder.append(String.format("%s\n", x)));
+        queue.clear();
+        list.add(stringBuilder.toString());
+    }
+
+    public void dumpList(List<String> strings) throws IOException {
+        int id = 0;
+        for (String s : strings) {
+            PrintWriter printWriter = getPrintWriter(basePath, id);
+            printWriter.print(s);
+            printWriter.flush();
+            printWriter.close();
+            id++;
+        }
+    }
+
+    public List<String> getList(){
+        List<String> ans = list;
+        list = new LinkedList<>();
+        queue.clear();
+        return ans;
     }
 
     public  void dump(double timestamp, double L) throws IOException{

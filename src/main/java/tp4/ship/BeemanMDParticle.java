@@ -32,7 +32,7 @@ public class BeemanMDParticle extends  MDParticle{
         x0 = r(delta, x0, vx0, fx0/mass, fx_1/mass);
         y0 = r(delta, y0, vy0, fy0/mass, fy_1/mass);
 
-        dumper.print2D(x0/AU, y0/AU, vx0/AU, vy0/AU, mass, radius, id);
+        dumper.print2D(x0/AU, y0/AU, vx0, vy0, mass, radius, id);
     }
 
     /**
@@ -60,4 +60,9 @@ public class BeemanMDParticle extends  MDParticle{
         fx_2 = fx_1 = fx0;
         fy_2 = fy_1 = fy0;
     }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
 }

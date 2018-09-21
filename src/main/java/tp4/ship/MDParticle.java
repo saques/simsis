@@ -4,7 +4,7 @@ import common.Vector2D;
 
 import java.io.IOException;
 
-public abstract class MDParticle {
+public abstract class MDParticle implements Cloneable{
 
     private static int IDs = 0;
 
@@ -59,5 +59,9 @@ public abstract class MDParticle {
     public abstract void rDelta(double delta);
 
     public abstract void vDelta(double delta);
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
     
 }
