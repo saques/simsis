@@ -6,17 +6,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CraftMain {
 
     static final double BD = 1500 ;
+    static final double CLOSE_THRESHOLD = 10000000;
+
     static final double maxTime = 31558118.4*4;
-    static final double delta = 60*60*24/2;
+    static final double delta = 60*60*24;
+    static final double deltaClose = 60*60;
+
     static final double maxSpeed = 20;
-    static final double maxAltitude = 1000;
+    static final double maxAltitude = 5000;
     static final double karmanLine = 100;
 
-    static final double heightStep = 50;
+    static final double heightStep = 100;
     static final double speedStep = 0.1;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
@@ -244,7 +249,7 @@ public class CraftMain {
 
         CraftStats stats = new CraftStats();
 
-        for(double h = karmanLine; h < maxAltitude; h += heightStep){
+        for(double h = karmanLine; h <= maxAltitude; h += heightStep){
 
             //Calculate escape velocity
             double minV = Math.sqrt((2*MDParticle.G*eMass)/(eRadius + h));
@@ -272,9 +277,11 @@ public class CraftMain {
                 system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
                 dumper.dumpToList();
 
-                boolean bad = false;
 
-                for(int i = 0; i<maxTime/delta; i++){
+                double saturnDist , jupiterDist ,earthDist ,sunDist;
+
+                boolean bad = false;
+                for(double d = 0; d < maxTime ; d += delta){
 
                     system.forEach(x -> x.rDelta(delta));
                     system.forEach(MDParticle::resetForces);
@@ -285,10 +292,10 @@ public class CraftMain {
 
                     system.forEach(x -> x.vDelta(delta));
 
-                    double saturnDist = new Vector2D(saturn.x0, saturn.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
-                    double jupiterDist = new Vector2D(jupiter.x0, jupiter.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
-                    double earthDist = new Vector2D(earth.x0, earth.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
-                    double sunDist = new Vector2D(sun.x0, sun.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+                    saturnDist = new Vector2D(saturn.x0, saturn.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+                    jupiterDist = new Vector2D(jupiter.x0, jupiter.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+                    earthDist = new Vector2D(earth.x0, earth.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+                    sunDist = new Vector2D(sun.x0, sun.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
 
                     if(saturnDist <= (saturn.radius + BD) || jupiterDist <= (jupiter.radius + BD) || earthDist <= earth.radius || sunDist <= (sun.radius + BD)){
                         dumper.getList();
@@ -300,7 +307,7 @@ public class CraftMain {
                     minSaturn = Math.min(minSaturn, saturnDist);
 
                     system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
-                    stats.logSpeed(new Vector2D(voyager.vx0, voyager.vy0).mod());
+                    stats.logSpeed(d, new Vector2D(voyager.vx0, voyager.vy0).mod());
                     dumper.dumpToList();
                 }
 
@@ -314,6 +321,13 @@ public class CraftMain {
         }
 
         return stats;
+    }
+
+    private static double getStep(Stream<Double> distances){
+        double ans = delta;
+        if(distances.anyMatch(x -> x < CLOSE_THRESHOLD))
+            ans = deltaClose;
+        return ans;
     }
 
 }

@@ -10,9 +10,9 @@ import java.util.List;
 
 public class CraftStats {
 
-    private List<Double> speeds;
+    private List<Vector2D> speeds;
 
-    private List<Double> bestSpeeds;
+    private List<Vector2D> bestSpeeds;
 
     private double minToJupiter, minToSaturn;
     private double v, h;
@@ -55,7 +55,9 @@ public class CraftStats {
 
     public void printBestSpeeds(String file) throws IOException{
         PrintWriter writer = new PrintWriter(new FileWriter(file + ".speeds"));
-        bestSpeeds.forEach(writer::println);
+        bestSpeeds.forEach(x-> {
+            writer.printf("%f %f\n", x.x, x.y);
+        });
         writer.flush();
         writer.close();
     }
@@ -64,8 +66,8 @@ public class CraftStats {
         speeds = new LinkedList<>();
     }
 
-    public void logSpeed(double v){
-        speeds.add(v);
+    public void logSpeed(double t, double v){
+        speeds.add(new Vector2D(t, v));
     }
 
     public double getV() {
