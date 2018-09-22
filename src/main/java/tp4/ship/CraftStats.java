@@ -2,12 +2,17 @@ package tp4.ship;
 
 import common.Vector2D;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 
 public class CraftStats {
 
     private List<Double> speeds;
+
+    private List<Double> bestSpeeds;
 
     private double minToJupiter, minToSaturn;
     private double v, h;
@@ -42,9 +47,25 @@ public class CraftStats {
             minToSaturn = saturnDist;
             this.v = v;
             this.h = h;
+            bestSpeeds = new LinkedList<>(speeds);
             return true;
         }
         return false;
+    }
+
+    public void printBestSpeeds(String file) throws IOException{
+        PrintWriter writer = new PrintWriter(new FileWriter(file + ".speeds"));
+        bestSpeeds.forEach(writer::println);
+        writer.flush();
+        writer.close();
+    }
+
+    public void resetSpeeds(){
+        speeds = new LinkedList<>();
+    }
+
+    public void logSpeed(double v){
+        speeds.add(v);
     }
 
     public double getV() {

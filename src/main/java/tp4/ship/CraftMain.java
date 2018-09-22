@@ -9,10 +9,11 @@ import java.util.List;
 
 public class CraftMain {
 
+    static final double BD = 1500 ;
     static final double maxTime = 31558118.4*4;
     static final double delta = 60*60*24;
     static final double maxSpeed = 20;
-    static final double maxAltitude = 10000;
+    static final double maxAltitude = 1000;
     static final double karmanLine = 100;
 
     static final double heightStep = 25;
@@ -36,8 +37,11 @@ public class CraftMain {
 
       beemanDumper.dumpList(stats.getDump());
 
-      System.out.println(stats.getV());
-      System.out.println(stats.getH());
+      System.out.println("Ejection speed: " + stats.getV());
+      System.out.println("Departure orbit: " + stats.getH());
+      System.out.println("Closest distance to Jupiter: " + stats.getMinToJupiter());
+      System.out.println("Closest distance to Saturn: " + stats.getMinToSaturn());
+
     }
 
     private static void gpc() throws IOException{
@@ -47,8 +51,11 @@ public class CraftMain {
 
         gpcDumper.dumpList(stats.getDump());
 
-        System.out.println(stats.getV());
-        System.out.println(stats.getH());
+        System.out.println("Ejection speed: " + stats.getV());
+        System.out.println("Departure orbit: " + stats.getH());
+        System.out.println("Closest distance to Jupiter: " + stats.getMinToJupiter());
+        System.out.println("Closest distance to Saturn: " + stats.getMinToSaturn());
+        stats.printBestSpeeds(".\\tp4\\ovito\\gpc\\");
     }
 
     private static List<MDParticle> beemanSystem(double v, double h, PointDumper dumper){
@@ -283,7 +290,7 @@ public class CraftMain {
                     double earthDist = new Vector2D(earth.x0, earth.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
                     double sunDist = new Vector2D(sun.x0, sun.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
 
-                    if(saturnDist <= saturn.radius || jupiterDist <= jupiter.radius || earthDist <= earth.radius || sunDist <= sun.radius){
+                    if(saturnDist <= (saturn.radius + BD) || jupiterDist <= (jupiter.radius + BD) || earthDist <= earth.radius || sunDist <= (sun.radius + BD)){
                         dumper.getList();
                         bad = true;
                         break;
@@ -293,6 +300,7 @@ public class CraftMain {
                     minSaturn = Math.min(minSaturn, saturnDist);
 
                     system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
+                    stats.logSpeed(new Vector2D(voyager.vx0, voyager.vy0).mod());
                     dumper.dumpToList();
                 }
 
@@ -301,6 +309,7 @@ public class CraftMain {
                 if(stats.isBetterApproach(minJupiter, minSaturn, v, h) && !bad){
                     stats.setDump(dump);
                 }
+                stats.resetSpeeds();
             }
         }
 
