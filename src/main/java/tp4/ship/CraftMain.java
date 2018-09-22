@@ -11,13 +11,13 @@ public class CraftMain {
 
     static final double BD = 1500 ;
     static final double maxTime = 31558118.4*4;
-    static final double delta = 60*60*24;
+    static final double delta = 60*60*24/2;
     static final double maxSpeed = 20;
     static final double maxAltitude = 1000;
     static final double karmanLine = 100;
 
-    static final double heightStep = 25;
-    static final double speedStep = 0.05;
+    static final double heightStep = 50;
+    static final double speedStep = 0.1;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
 
@@ -248,10 +248,10 @@ public class CraftMain {
 
             //Calculate escape velocity
             double minV = Math.sqrt((2*MDParticle.G*eMass)/(eRadius + h));
+            System.out.printf("Running for height %f\n", h);
 
             for(double v = minV; v < maxSpeed; v += speedStep){
 
-                System.out.printf("Running for height %f, speed %f\n", h, v);
 
                 List<MDParticle> system = gearPredictorCorrectorSystem(v, h, dumper);
 
