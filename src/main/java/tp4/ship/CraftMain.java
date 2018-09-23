@@ -4,6 +4,7 @@ import common.Vector2D;
 import utils.PointDumper;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -11,15 +12,15 @@ public class CraftMain {
 
     static final double BD = 1500 ;
 
-    static final double maxTime = 31558118.4*4;
-    static final double delta = 60;
+    static final double maxTime = 31558118.4*3;
+    static final double delta = 60*60*24;
 
     static final double maxSpeed = 20;
-    static final double maxAltitude = 8250;
-    static final double karmanLine = 7500;
+    static final double maxAltitude = 10000;
+    static final double karmanLine = 100;
 
-    static final double heightStep = 25;
-    static final double speedStep = 0.1;
+    static final double heightStep = 50;
+    static final double speedStep = 0.5;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
 
@@ -27,9 +28,11 @@ public class CraftMain {
 
     public static void main(String[] args) throws IOException{
 
-        //gpc();
+        gpc();
 
-        gpcNextTime();
+        //gpcNextTime();
+
+        //gpcForDefined(4100.0,10.32549300563502);
     }
 
     private static void beeman() throws IOException {
@@ -66,6 +69,20 @@ public class CraftMain {
         double t = runGearPredictorCorrectorNextTime(delta, maxTime, null, /*0.00006684491*/ 0.1);
 
         System.out.println("Next time: " + t);
+    }
+
+    private static void gpcForDefined(double h, double v) throws IOException{
+
+        PointDumper gpcDumper = new PointDumper(".\\tp4\\ovito\\gpc\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+
+        CraftStats stats = runGearPredictorCorrectorForDefinedValues(delta, maxTime, gpcDumper, h, v);
+
+        System.out.println("Ejection speed: " + stats.getV());
+        System.out.println("Departure orbit: " + stats.getH());
+        System.out.println("Closest distance to Jupiter: " + stats.getMinToJupiter());
+        System.out.println("Closest distance to Saturn: " + stats.getMinToSaturn());
+        stats.printBestSpeedsAndEnergy(".\\tp4\\ovito\\gpc\\");
+
     }
 
 
@@ -363,6 +380,63 @@ public class CraftMain {
     }
 
 
+    private static CraftStats runGearPredictorCorrectorForDefinedValues(double delta, double maxTime, PointDumper dumper, double h, double v) {
+
+        CraftStats stats = new CraftStats();
+
+        List<MDParticle> system = gearPredictorCorrectorSystem(v, h, dumper);
+
+        GearPredictorCorrectorParticle jupiter = (GearPredictorCorrectorParticle)system.get(2);
+        GearPredictorCorrectorParticle saturn = (GearPredictorCorrectorParticle)system.get(3);
+        GearPredictorCorrectorParticle voyager = (GearPredictorCorrectorParticle)system.get(4);
+
+        MDParticle.interact(system);
+
+
+        system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
+        dumper.dumpToList();
+
+
+        double saturnDist , jupiterDist ;
+        double minJupiter = Double.MAX_VALUE, minSaturn = Double.MAX_VALUE;
+
+        for(double d = 0; d < maxTime ; d += delta){
+
+            system.forEach(x -> x.rDelta(delta));
+            system.forEach(MDParticle::resetForces);
+            MDParticle.interact(system);
+
+            double totalEnergy = 0;
+
+            for (MDParticle x : system) {
+                x.vDelta(delta);
+                totalEnergy += x.U + x.kineticEnergy();
+            }
+
+            saturnDist = new Vector2D(saturn.x0, saturn.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+            jupiterDist = new Vector2D(jupiter.x0, jupiter.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+
+            minJupiter = Math.min(minJupiter, jupiterDist);
+            minSaturn = Math.min(minSaturn, saturnDist);
+
+            system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
+            stats.logSpeedAndEnergy(new Vector2D(voyager.vx0, voyager.vy0).mod(), totalEnergy);
+            dumper.dumpToList();
+
+        }
+
+        List<String> dump = dumper.getList();
+
+        if(stats.isBetterApproach(minJupiter, minSaturn, v, h)){
+            stats.setDump(dump);
+        }
+
+
+        return stats;
+
+    }
+
+
     private static double runGearPredictorCorrectorNextTime(double delta, double maxTime, PointDumper dumper, double deltaPos) {
 
         List<MDParticle> startingSystem = gearPredictorCorrectorSystemNoVoyager(dumper);
@@ -379,13 +453,19 @@ public class CraftMain {
 
         double d = 0;
 
-        while (true){
+        double minJDist = Double.MAX_VALUE, minSDist = Double.MAX_VALUE;
+
+        while (d <= 6E9){
             System.out.println(d);
             double jupitersDistance = new Vector2D(jupiter0.x0, jupiter0.y0).sub(new Vector2D(jupiter.x0, jupiter.y0)).mod();
             double saturnsDistance = new Vector2D(saturn0.x0, saturn0.y0).sub(new Vector2D(saturn.x0, saturn.y0)).mod();
 
             if(jupitersDistance <= deltaPos && saturnsDistance <= deltaPos && d >= 31558118.4)
                 return d;
+            else if(d >= 31558118.4){
+                minJDist = Math.min(minJDist, jupitersDistance);
+                minSDist = Math.min(minSDist, saturnsDistance);
+            }
 
             system.forEach(x -> x.rDelta(delta));
             system.forEach(MDParticle::resetForces);
@@ -396,10 +476,16 @@ public class CraftMain {
                 x.vDelta(delta);
             }
 
+            System.out.println(jupitersDistance);
+
 
             d += delta;
 
         }
+
+        System.out.println(minSDist);
+
+        return -1;
 
     }
 

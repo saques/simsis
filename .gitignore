@@ -2,8 +2,6 @@
 *.txt
 *.dump
 *.statistics
-*.speeds
-*.energy
 
 #video
 *.avi
