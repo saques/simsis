@@ -1,7 +1,5 @@
 package tp4.ship;
 
-import common.Vector2D;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;

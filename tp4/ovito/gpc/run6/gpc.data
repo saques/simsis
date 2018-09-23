@@ -1,0 +1,22 @@
+    static final double BD = 1500 ;
+    static final double CLOSE_THRESHOLD = 10000000;
+
+    static final double maxTime = 31558118.4*4;
+    static final double delta = 60*60*24;
+    static final double deltaClose = 60*60;
+
+    static final double maxSpeed = 20;
+    static final double maxAltitude = 10000;
+    static final double karmanLine = 100;
+
+    static final double heightStep = 25;
+    static final double speedStep = 0.025;
+
+    static final double eMass = 5.97237E24, eRadius = 6371;
+
+    static final double craftMass = 721.9;
+
+Ejection speed: 8.991439786408133
+Departure orbit: 5225.0
+Closest distance to Jupiter: 340951.95993619296
+Closest distance to Saturn: 3898855.885662668

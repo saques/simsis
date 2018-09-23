@@ -1,0 +1,15 @@
+    static final double maxTime = 31558118.4*4;
+    static final double delta = 60*60*24;
+    static final double maxSpeed = 20;
+    static final double maxAltitude = 10000;
+    static final double karmanLine = 100;
+
+    static final double heightStep = 25;
+    static final double speedStep = 0.05;
+
+    static final double eMass = 5.97237E24, eRadius = 6371;
+
+    static final double craftMass = 721.9;
+
+8.991439786408133
+5225.0

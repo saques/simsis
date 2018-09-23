@@ -10,18 +10,16 @@ import java.util.stream.Stream;
 public class CraftMain {
 
     static final double BD = 1500 ;
-    static final double CLOSE_THRESHOLD = 10000000;
 
     static final double maxTime = 31558118.4*4;
     static final double delta = 60*60*24;
-    static final double deltaClose = 60*60;
 
     static final double maxSpeed = 20;
-    static final double maxAltitude = 1000;
-    static final double karmanLine = 100;
+    static final double maxAltitude = 5070;
+    static final double karmanLine = 5050;
 
-    static final double heightStep = 100;
-    static final double speedStep = 0.1;
+    static final double heightStep = 1;
+    static final double speedStep = 0.01;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
 
@@ -252,7 +250,7 @@ public class CraftMain {
 
             //Calculate escape velocity
             double minV = Math.sqrt((2*MDParticle.G*eMass)/(eRadius + h));
-            System.out.printf("Running for height %f\n", h);
+            System.out.printf("Running for height %f. Jupiter: %f, Saturn: %f\n", h, stats.getMinToJupiter(), stats.getMinToSaturn());
 
             for(double v = minV; v < maxSpeed; v += speedStep){
 
@@ -265,11 +263,8 @@ public class CraftMain {
                 GearPredictorCorrectorParticle saturn = (GearPredictorCorrectorParticle)system.get(3);
                 GearPredictorCorrectorParticle voyager = (GearPredictorCorrectorParticle)system.get(4);
 
-                system.forEach(x -> system.forEach(y -> {
-                    if(x != y) {
-                        x.interact(y);
-                    }
-                }));
+
+                MDParticle.interact(system);
 
                 double minJupiter = Double.MAX_VALUE, minSaturn = Double.MAX_VALUE;
 
@@ -284,10 +279,7 @@ public class CraftMain {
 
                     system.forEach(x -> x.rDelta(delta));
                     system.forEach(MDParticle::resetForces);
-                    system.forEach(x -> system.forEach(y -> {
-                        if(x != y)
-                            x.interact(y);
-                    }));
+                    MDParticle.interact(system);
 
                     double totalEnergy = 0;
 
@@ -325,13 +317,6 @@ public class CraftMain {
         }
 
         return stats;
-    }
-
-    private static double getStep(Stream<Double> distances){
-        double ans = delta;
-        if(distances.anyMatch(x -> x < CLOSE_THRESHOLD))
-            ans = deltaClose;
-        return ans;
     }
 
 }

@@ -2,6 +2,12 @@
 *.txt
 *.dump
 *.statistics
+*.speeds
+*.energy
+
+#video
+*.avi
+*.mp4
 
 # Compiled class file
 *.class

@@ -3,6 +3,7 @@ package tp4.ship;
 import common.Vector2D;
 
 import java.io.IOException;
+import java.util.List;
 
 public abstract class MDParticle implements Cloneable{
 
@@ -50,8 +51,12 @@ public abstract class MDParticle implements Cloneable{
         fx0 += xyforces.x;
         fy0 += xyforces.y;
 
+        o.fx0 -= xyforces.x;
+        o.fy0 -= xyforces.y;
+
         double U = (-1)*mp/rel.mod();
         this.U += U;
+        o.U += U;
     }
 
     public double kineticEnergy(){
@@ -67,5 +72,14 @@ public abstract class MDParticle implements Cloneable{
     public abstract void rDelta(double delta);
 
     public abstract void vDelta(double delta);
+
+    public static void interact(List<MDParticle> particles){
+        for(int i = 0; i < particles.size(); i++) {
+            MDParticle p = particles.get(i);
+            for (int j = i + 1; j < particles.size(); j++){
+                p.interact(particles.get(j));
+            }
+        }
+    }
 
 }
