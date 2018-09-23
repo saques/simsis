@@ -12,14 +12,14 @@ public class CraftMain {
     static final double BD = 1500 ;
 
     static final double maxTime = 31558118.4*4;
-    static final double delta = 60*60*24;
+    static final double delta = 60;
 
     static final double maxSpeed = 20;
-    static final double maxAltitude = 5070;
-    static final double karmanLine = 5050;
+    static final double maxAltitude = 8250;
+    static final double karmanLine = 7500;
 
-    static final double heightStep = 1;
-    static final double speedStep = 0.01;
+    static final double heightStep = 25;
+    static final double speedStep = 0.1;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
 
@@ -27,8 +27,9 @@ public class CraftMain {
 
     public static void main(String[] args) throws IOException{
 
-        gpc();
+        //gpc();
 
+        gpcNextTime();
     }
 
     private static void beeman() throws IOException {
@@ -59,6 +60,14 @@ public class CraftMain {
         System.out.println("Closest distance to Saturn: " + stats.getMinToSaturn());
         stats.printBestSpeedsAndEnergy(".\\tp4\\ovito\\gpc\\");
     }
+
+    private static void gpcNextTime(){
+
+        double t = runGearPredictorCorrectorNextTime(delta, maxTime, null, /*0.00006684491*/ 0.1);
+
+        System.out.println("Next time: " + t);
+    }
+
 
     private static List<MDParticle> beemanSystem(double v, double h, PointDumper dumper){
         List<MDParticle> system = new ArrayList<>(5);
@@ -239,6 +248,40 @@ public class CraftMain {
         return system;
     }
 
+    private static List<MDParticle> gearPredictorCorrectorSystemNoVoyager(PointDumper dumper){
+        List<MDParticle> system = new ArrayList<>(4);
+
+        GearPredictorCorrectorParticle sun = new GearPredictorCorrectorParticle(1.9885E30, 695700 , 0, 0, 0, 0, dumper);
+
+        GearPredictorCorrectorParticle earth = new GearPredictorCorrectorParticle(
+                5.97237E24, 6371,
+                1.443040359985483E+8, -4.566821691926755E+7,
+                8.429276455862507E+0, 2.831601955976786E+1,
+                dumper);
+
+        GearPredictorCorrectorParticle saturn = new GearPredictorCorrectorParticle(
+                5.68319E+26, 58232,
+                -1.075238877886715E+09, 8.538222924091074E+08,
+                -6.527515746018062E+00, -7.590526046562251E+00,
+                dumper
+        );
+
+        GearPredictorCorrectorParticle jupiter = new GearPredictorCorrectorParticle(
+                1.89813E+27, 69911,
+                1.061950341671551E+08, 7.544955348409320E+08,
+                -1.309157032053854E+01, 2.424744678419164E+00,
+                dumper
+        );
+
+        system.add(sun);
+        system.add(earth);
+        system.add(jupiter);
+        system.add(saturn);
+
+        return system;
+    }
+
+
 
 
     private static CraftStats runGearPredictorCorrector(double delta, double maxTime, PointDumper dumper) throws IOException {
@@ -317,6 +360,47 @@ public class CraftMain {
         }
 
         return stats;
+    }
+
+
+    private static double runGearPredictorCorrectorNextTime(double delta, double maxTime, PointDumper dumper, double deltaPos) {
+
+        List<MDParticle> startingSystem = gearPredictorCorrectorSystemNoVoyager(dumper);
+
+        GearPredictorCorrectorParticle jupiter0 = (GearPredictorCorrectorParticle)startingSystem.get(2);
+        GearPredictorCorrectorParticle saturn0 = (GearPredictorCorrectorParticle)startingSystem.get(3);
+
+        List<MDParticle> system = gearPredictorCorrectorSystemNoVoyager(dumper);
+
+        GearPredictorCorrectorParticle jupiter = (GearPredictorCorrectorParticle)system.get(2);
+        GearPredictorCorrectorParticle saturn = (GearPredictorCorrectorParticle)system.get(3);
+
+        MDParticle.interact(system);
+
+        double d = 0;
+
+        while (true){
+            System.out.println(d);
+            double jupitersDistance = new Vector2D(jupiter0.x0, jupiter0.y0).sub(new Vector2D(jupiter.x0, jupiter.y0)).mod();
+            double saturnsDistance = new Vector2D(saturn0.x0, saturn0.y0).sub(new Vector2D(saturn.x0, saturn.y0)).mod();
+
+            if(jupitersDistance <= deltaPos && saturnsDistance <= deltaPos && d >= 31558118.4)
+                return d;
+
+            system.forEach(x -> x.rDelta(delta));
+            system.forEach(MDParticle::resetForces);
+            MDParticle.interact(system);
+
+
+            for (MDParticle x : system) {
+                x.vDelta(delta);
+            }
+
+
+            d += delta;
+
+        }
+
     }
 
 }
