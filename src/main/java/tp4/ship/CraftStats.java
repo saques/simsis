@@ -10,9 +10,15 @@ import java.util.List;
 
 public class CraftStats {
 
-    private List<Vector2D> speeds;
+    private List<Double> speeds;
 
-    private List<Vector2D> bestSpeeds;
+    private List<Double> bestSpeeds;
+
+    double maxEnergy;
+    private List<Double> energy;
+
+    double maxBestEnergy;
+    private List<Double> bestEnergy;
 
     private double minToJupiter, minToSaturn;
     private double v, h;
@@ -22,7 +28,9 @@ public class CraftStats {
 
     public CraftStats(){
         speeds = new LinkedList<>();
+        energy = new LinkedList<>();
         minToJupiter = minToSaturn = Double.MAX_VALUE;
+        maxEnergy = Double.MIN_VALUE;
     }
 
     public List<String> getDump() {
@@ -48,26 +56,35 @@ public class CraftStats {
             this.v = v;
             this.h = h;
             bestSpeeds = new LinkedList<>(speeds);
+            bestEnergy = new LinkedList<>(energy);
+            maxBestEnergy = maxEnergy;
             return true;
         }
         return false;
     }
 
-    public void printBestSpeeds(String file) throws IOException{
-        PrintWriter writer = new PrintWriter(new FileWriter(file + ".speeds"));
-        bestSpeeds.forEach(x-> {
-            writer.printf("%f %f\n", x.x, x.y);
-        });
-        writer.flush();
-        writer.close();
+    public void printBestSpeedsAndEnergy(String file) throws IOException{
+        PrintWriter speeds = new PrintWriter(new FileWriter(file + ".speeds"));
+        bestSpeeds.forEach(x-> speeds.printf("%f\n", x));
+        speeds.flush();
+        speeds.close();
+
+        PrintWriter energy = new PrintWriter(new FileWriter(file + ".energy"));
+        bestEnergy.forEach(x-> energy.printf("%f\n", x/maxBestEnergy));
+        energy.flush();
+        energy.close();
     }
 
-    public void resetSpeeds(){
+    public void resetSpeedsAndEnergy(){
         speeds = new LinkedList<>();
+        energy = new LinkedList<>();
+        maxEnergy = Double.MIN_VALUE;
     }
 
-    public void logSpeed(double t, double v){
-        speeds.add(new Vector2D(t, v));
+    public void logSpeedAndEnergy(double v, double e){
+        speeds.add(v);
+        energy.add(e);
+        maxEnergy = Math.max(maxEnergy, e);
     }
 
     public double getV() {

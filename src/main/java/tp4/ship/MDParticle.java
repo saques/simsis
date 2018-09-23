@@ -25,6 +25,8 @@ public abstract class MDParticle implements Cloneable{
     double fx0;
     double fy0;
 
+    double U;
+
 
     public MDParticle(double mass, double radius, double x0, double y0, double vx0, double vy0){
         id = IDs++;
@@ -34,24 +36,30 @@ public abstract class MDParticle implements Cloneable{
         this.y0 = y0;
         this.vx0 = vx0;
         this.vy0 = vy0;
-        fx0 = fy0 = 0;
+        fx0 = fy0 = U = 0;
     }
 
     public void interact(MDParticle o){
 
         Vector2D rel = new Vector2D(o.x0, o.y0).sub(new Vector2D(x0, y0));
 
-        double f = G*mass*o.mass/(rel.mod2());
+        double mp = G*mass*o.mass;
 
+        double f = mp/(rel.mod2());
         Vector2D xyforces = rel.nor().scl(f);
-
         fx0 += xyforces.x;
         fy0 += xyforces.y;
 
+        double U = (-1)*mp/rel.mod();
+        this.U += U;
+    }
+
+    public double kineticEnergy(){
+        return (1.0/2.0)*mass*Math.pow(new Vector2D(vx0, vy0).mod(), 2);
     }
 
     void resetForces(){
-        fx0 = fy0 = 0;
+        fx0 = fy0 = U = 0;
     }
 
     abstract void saveState(int i) throws IOException;

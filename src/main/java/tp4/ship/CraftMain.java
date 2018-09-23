@@ -4,7 +4,6 @@ import common.Vector2D;
 import utils.PointDumper;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -18,7 +17,7 @@ public class CraftMain {
     static final double deltaClose = 60*60;
 
     static final double maxSpeed = 20;
-    static final double maxAltitude = 5000;
+    static final double maxAltitude = 1000;
     static final double karmanLine = 100;
 
     static final double heightStep = 100;
@@ -60,7 +59,7 @@ public class CraftMain {
         System.out.println("Departure orbit: " + stats.getH());
         System.out.println("Closest distance to Jupiter: " + stats.getMinToJupiter());
         System.out.println("Closest distance to Saturn: " + stats.getMinToSaturn());
-        stats.printBestSpeeds(".\\tp4\\ovito\\gpc\\");
+        stats.printBestSpeedsAndEnergy(".\\tp4\\ovito\\gpc\\");
     }
 
     private static List<MDParticle> beemanSystem(double v, double h, PointDumper dumper){
@@ -290,7 +289,12 @@ public class CraftMain {
                             x.interact(y);
                     }));
 
-                    system.forEach(x -> x.vDelta(delta));
+                    double totalEnergy = 0;
+
+                    for (MDParticle x : system) {
+                        x.vDelta(delta);
+                        totalEnergy += x.U + x.kineticEnergy();
+                    }
 
                     saturnDist = new Vector2D(saturn.x0, saturn.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
                     jupiterDist = new Vector2D(jupiter.x0, jupiter.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
@@ -307,7 +311,7 @@ public class CraftMain {
                     minSaturn = Math.min(minSaturn, saturnDist);
 
                     system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
-                    stats.logSpeed(d, new Vector2D(voyager.vx0, voyager.vy0).mod());
+                    stats.logSpeedAndEnergy(new Vector2D(voyager.vx0, voyager.vy0).mod(), totalEnergy);
                     dumper.dumpToList();
                 }
 
@@ -316,7 +320,7 @@ public class CraftMain {
                 if(stats.isBetterApproach(minJupiter, minSaturn, v, h) && !bad){
                     stats.setDump(dump);
                 }
-                stats.resetSpeeds();
+                stats.resetSpeedsAndEnergy();
             }
         }
 
