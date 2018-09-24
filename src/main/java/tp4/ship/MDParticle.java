@@ -47,7 +47,7 @@ public abstract class MDParticle implements Cloneable{
         double mp = G*mass*o.mass;
 
         double f = mp/(rel.mod2());
-        Vector2D xyforces = rel.nor().scl(f);
+        Vector2D xyforces = new Vector2D(rel).nor().scl(f);
         fx0 += xyforces.x;
         fy0 += xyforces.y;
 
@@ -60,7 +60,7 @@ public abstract class MDParticle implements Cloneable{
     }
 
     public double kineticEnergy(){
-        return (1.0/2.0)*mass*Math.pow(new Vector2D(vx0, vy0).mod(), 2);
+        return mass*Math.pow(new Vector2D(vx0, vy0).mod(), 2)/2.0;
     }
 
     void resetForces(){

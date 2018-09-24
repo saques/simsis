@@ -12,13 +12,13 @@ public class CraftStats {
 
     private List<Double> bestSpeeds;
 
-    double maxEnergy;
+    double minEnergy;
     private List<Double> energy;
 
-    double maxBestEnergy;
+    double minBestEnergy;
     private List<Double> bestEnergy;
 
-    private double minToJupiter, minToSaturn;
+    private double minToJupiter, minToSaturn, tJupiter, tSaturn;
     private double v, h;
 
     private List<String> dump;
@@ -28,7 +28,7 @@ public class CraftStats {
         speeds = new LinkedList<>();
         energy = new LinkedList<>();
         minToJupiter = minToSaturn = Double.MAX_VALUE;
-        maxEnergy = Double.MIN_VALUE;
+        minEnergy = Double.MAX_VALUE;
     }
 
     public List<String> getDump() {
@@ -47,15 +47,17 @@ public class CraftStats {
         return minToJupiter;
     }
 
-    public boolean isBetterApproach(double jupiterDist, double saturnDist, double v, double h){
+    public boolean isBetterApproach(double jupiterDist, double saturnDist, double jupiterT, double saturnT, double v, double h){
         if((jupiterDist+saturnDist) < (minToJupiter + minToSaturn)){
             minToJupiter = jupiterDist;
             minToSaturn = saturnDist;
+            tJupiter = jupiterT;
+            tSaturn = saturnT;
             this.v = v;
             this.h = h;
             bestSpeeds = new LinkedList<>(speeds);
             bestEnergy = new LinkedList<>(energy);
-            maxBestEnergy = maxEnergy;
+            minBestEnergy = minEnergy;
             return true;
         }
         return false;
@@ -68,7 +70,7 @@ public class CraftStats {
         speeds.close();
 
         PrintWriter energy = new PrintWriter(new FileWriter(file + ".energy"));
-        bestEnergy.forEach(x-> energy.printf("%f\n", x/maxBestEnergy));
+        bestEnergy.forEach(x-> energy.printf("%f\n", x/ minBestEnergy));
         energy.flush();
         energy.close();
     }
@@ -76,13 +78,21 @@ public class CraftStats {
     public void resetSpeedsAndEnergy(){
         speeds = new LinkedList<>();
         energy = new LinkedList<>();
-        maxEnergy = Double.MIN_VALUE;
+        minEnergy = Double.MIN_VALUE;
     }
 
     public void logSpeedAndEnergy(double v, double e){
         speeds.add(v);
         energy.add(e);
-        maxEnergy = Math.max(maxEnergy, e);
+        minEnergy = Math.min(minEnergy, e);
+    }
+
+    public double gettJupiter() {
+        return tJupiter;
+    }
+
+    public double gettSaturn() {
+        return tSaturn;
     }
 
     public double getV() {

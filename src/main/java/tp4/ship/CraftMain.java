@@ -5,20 +5,21 @@ import utils.PointDumper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class CraftMain {
 
+    static final double YEAR = 31556926;
+
     static final double BD = 1500 ;
 
-    static final double maxTime = 31558118.4*4;
-    static final double delta = 60*60*24;
+    static final double maxTime = YEAR*4;
+    static final double delta = 60*60*24*4;
 
     static final double maxSpeed = 20;
-    static final double maxAltitude = 5070;
-    static final double karmanLine = 5050;
+    static final double maxAltitude = 4101;
+    static final double karmanLine = 4099;
 
-    static final double heightStep = 1;
+    static final double heightStep = 0.5;
     static final double speedStep = 0.01;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
@@ -29,6 +30,9 @@ public class CraftMain {
 
         gpc();
 
+        //gpcNextTime();
+
+        //gpcForDefined(4100.0,10.32549300563502);
     }
 
     private static void beeman() throws IOException {
@@ -51,14 +55,42 @@ public class CraftMain {
 
         CraftStats stats = runGearPredictorCorrector(delta, maxTime, gpcDumper);
 
+        System.out.println("Ejection speed: " + stats.getV());
+        System.out.println("Departure orbit: " + stats.getH());
+        System.out.println("Closest distance to Jupiter: " + stats.getMinToJupiter());
+        System.out.println("Years to Jupiter: " + stats.gettJupiter()/YEAR);
+        System.out.println("Closest distance to Saturn: " + stats.getMinToSaturn());
+        System.out.println("Years to Saturn: " + stats.gettSaturn()/YEAR);
+
         gpcDumper.dumpList(stats.getDump());
+        stats.printBestSpeedsAndEnergy(".\\tp4\\ovito\\gpc\\");
+    }
+
+    private static void gpcNextTime(){
+
+        double t = runGearPredictorCorrectorNextTime(delta, maxTime, null, /*0.00006684491*/ 0.1);
+
+        System.out.println("Next time: " + t);
+    }
+
+    private static void gpcForDefined(double h, double v) throws IOException{
+
+        PointDumper gpcDumper = new PointDumper(".\\tp4\\ovito\\gpc\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+
+        CraftStats stats = runGearPredictorCorrectorForDefinedValues(delta, maxTime, gpcDumper, h, v);
 
         System.out.println("Ejection speed: " + stats.getV());
         System.out.println("Departure orbit: " + stats.getH());
         System.out.println("Closest distance to Jupiter: " + stats.getMinToJupiter());
+        System.out.println("Years to Jupiter: " + stats.gettJupiter()/YEAR);
         System.out.println("Closest distance to Saturn: " + stats.getMinToSaturn());
+        System.out.println("Years to Saturn: " + stats.gettSaturn()/YEAR);
+
+        gpcDumper.dumpList(stats.getDump());
         stats.printBestSpeedsAndEnergy(".\\tp4\\ovito\\gpc\\");
+
     }
+
 
     private static List<MDParticle> beemanSystem(double v, double h, PointDumper dumper){
         List<MDParticle> system = new ArrayList<>(5);
@@ -142,11 +174,12 @@ public class CraftMain {
                 }));
 
                 double minJupiter = Double.MAX_VALUE, minSaturn = Double.MAX_VALUE;
+                double tMinJupiter = 0, tMinSaturn = 0;
 
                 system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
                 dumper.dumpToList();
 
-                for(int i = 0; i<maxTime/delta; i++){
+                for(double d = 0; d < maxTime ; d += delta){
                     system.forEach(x -> x.rDelta(delta));
 
                     system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
@@ -161,11 +194,18 @@ public class CraftMain {
                         break;
                     }
 
-                    minJupiter = Math.min(minJupiter, jupiterDist);
-                    minSaturn = Math.min(minSaturn, saturnDist);
+                    if(jupiterDist < minJupiter){
+                        minJupiter = jupiterDist;
+                        tMinJupiter = d;
+                    }
+
+                    if(saturnDist < minSaturn){
+                        minJupiter = jupiterDist;
+                        tMinSaturn = d;
+                    }
 
                     for (MDParticle mdParticle : system) {
-                        mdParticle.saveState(i);
+                        mdParticle.saveState(0);
                     }
 
                     system.forEach(x -> system.forEach(y -> {
@@ -179,7 +219,7 @@ public class CraftMain {
 
                 List<String> dump = dumper.getList();
 
-                if(stats.isBetterApproach(minJupiter, minSaturn, v, h)){
+                if(stats.isBetterApproach(minJupiter, minSaturn, tMinJupiter, tMinSaturn, v, h)){
                     stats.setDump(dump);
                 }
             }
@@ -239,6 +279,40 @@ public class CraftMain {
         return system;
     }
 
+    private static List<MDParticle> gearPredictorCorrectorSystemNoVoyager(PointDumper dumper){
+        List<MDParticle> system = new ArrayList<>(4);
+
+        GearPredictorCorrectorParticle sun = new GearPredictorCorrectorParticle(1.9885E30, 695700 , 0, 0, 0, 0, dumper);
+
+        GearPredictorCorrectorParticle earth = new GearPredictorCorrectorParticle(
+                5.97237E24, 6371,
+                1.443040359985483E+8, -4.566821691926755E+7,
+                8.429276455862507E+0, 2.831601955976786E+1,
+                dumper);
+
+        GearPredictorCorrectorParticle saturn = new GearPredictorCorrectorParticle(
+                5.68319E+26, 58232,
+                -1.075238877886715E+09, 8.538222924091074E+08,
+                -6.527515746018062E+00, -7.590526046562251E+00,
+                dumper
+        );
+
+        GearPredictorCorrectorParticle jupiter = new GearPredictorCorrectorParticle(
+                1.89813E+27, 69911,
+                1.061950341671551E+08, 7.544955348409320E+08,
+                -1.309157032053854E+01, 2.424744678419164E+00,
+                dumper
+        );
+
+        system.add(sun);
+        system.add(earth);
+        system.add(jupiter);
+        system.add(saturn);
+
+        return system;
+    }
+
+
 
 
     private static CraftStats runGearPredictorCorrector(double delta, double maxTime, PointDumper dumper) throws IOException {
@@ -267,6 +341,7 @@ public class CraftMain {
                 MDParticle.interact(system);
 
                 double minJupiter = Double.MAX_VALUE, minSaturn = Double.MAX_VALUE;
+                double tMinJupiter = 0, tMinSaturn = 0;
 
                 system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
                 dumper.dumpToList();
@@ -299,8 +374,15 @@ public class CraftMain {
                         break;
                     }
 
-                    minJupiter = Math.min(minJupiter, jupiterDist);
-                    minSaturn = Math.min(minSaturn, saturnDist);
+                    if(jupiterDist < minJupiter){
+                        minJupiter = jupiterDist;
+                        tMinJupiter = d;
+                    }
+
+                    if(saturnDist < minSaturn){
+                        minSaturn = saturnDist;
+                        tMinSaturn = d;
+                    }
 
                     system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
                     stats.logSpeedAndEnergy(new Vector2D(voyager.vx0, voyager.vy0).mod(), totalEnergy);
@@ -309,7 +391,7 @@ public class CraftMain {
 
                 List<String> dump = dumper.getList();
 
-                if(stats.isBetterApproach(minJupiter, minSaturn, v, h) && !bad){
+                if(stats.isBetterApproach(minJupiter, minSaturn, tMinJupiter, tMinSaturn, v, h) && !bad){
                     stats.setDump(dump);
                 }
                 stats.resetSpeedsAndEnergy();
@@ -317,6 +399,124 @@ public class CraftMain {
         }
 
         return stats;
+    }
+
+
+    private static CraftStats runGearPredictorCorrectorForDefinedValues(double delta, double maxTime, PointDumper dumper, double h, double v) {
+
+        CraftStats stats = new CraftStats();
+
+        List<MDParticle> system = gearPredictorCorrectorSystem(v, h, dumper);
+
+        GearPredictorCorrectorParticle jupiter = (GearPredictorCorrectorParticle)system.get(2);
+        GearPredictorCorrectorParticle saturn = (GearPredictorCorrectorParticle)system.get(3);
+        GearPredictorCorrectorParticle voyager = (GearPredictorCorrectorParticle)system.get(4);
+
+        MDParticle.interact(system);
+
+
+        system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
+        dumper.dumpToList();
+
+
+        double saturnDist , jupiterDist ;
+        double tMinJupiter = 0, tMinSaturn = 0;
+        double minJupiter = Double.MAX_VALUE, minSaturn = Double.MAX_VALUE;
+
+        for(double d = 0; d < maxTime ; d += delta){
+
+            system.forEach(x -> x.rDelta(delta));
+            system.forEach(MDParticle::resetForces);
+            MDParticle.interact(system);
+
+            double totalEnergy = 0;
+
+            for (MDParticle x : system) {
+                x.vDelta(delta);
+                totalEnergy += x.U + x.kineticEnergy();
+            }
+
+            saturnDist = new Vector2D(saturn.x0, saturn.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+            jupiterDist = new Vector2D(jupiter.x0, jupiter.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+
+            if(jupiterDist < minJupiter){
+                minJupiter = jupiterDist;
+                tMinJupiter = d;
+            }
+
+            if(saturnDist < minSaturn){
+                minSaturn = saturnDist;
+                tMinSaturn = d;
+            }
+
+            system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
+            stats.logSpeedAndEnergy(new Vector2D(voyager.vx0, voyager.vy0).mod(), totalEnergy);
+            dumper.dumpToList();
+
+        }
+
+        List<String> dump = dumper.getList();
+
+        if(stats.isBetterApproach(minJupiter, minSaturn, tMinJupiter, tMinSaturn, v, h)){
+            stats.setDump(dump);
+        }
+
+
+        return stats;
+
+    }
+
+
+    private static double runGearPredictorCorrectorNextTime(double delta, double maxTime, PointDumper dumper, double deltaPos) {
+
+        List<MDParticle> startingSystem = gearPredictorCorrectorSystemNoVoyager(dumper);
+
+        GearPredictorCorrectorParticle jupiter0 = (GearPredictorCorrectorParticle)startingSystem.get(2);
+        GearPredictorCorrectorParticle saturn0 = (GearPredictorCorrectorParticle)startingSystem.get(3);
+
+        List<MDParticle> system = gearPredictorCorrectorSystemNoVoyager(dumper);
+
+        GearPredictorCorrectorParticle jupiter = (GearPredictorCorrectorParticle)system.get(2);
+        GearPredictorCorrectorParticle saturn = (GearPredictorCorrectorParticle)system.get(3);
+
+        MDParticle.interact(system);
+
+        double d = 0;
+
+        double minJDist = Double.MAX_VALUE, minSDist = Double.MAX_VALUE;
+
+        while (d <= 6E9){
+            System.out.println(d);
+            double jupitersDistance = new Vector2D(jupiter0.x0, jupiter0.y0).sub(new Vector2D(jupiter.x0, jupiter.y0)).mod();
+            double saturnsDistance = new Vector2D(saturn0.x0, saturn0.y0).sub(new Vector2D(saturn.x0, saturn.y0)).mod();
+
+            if(jupitersDistance <= deltaPos && saturnsDistance <= deltaPos && d >= 31558118.4)
+                return d;
+            else if(d >= 31558118.4){
+                minJDist = Math.min(minJDist, jupitersDistance);
+                minSDist = Math.min(minSDist, saturnsDistance);
+            }
+
+            system.forEach(x -> x.rDelta(delta));
+            system.forEach(MDParticle::resetForces);
+            MDParticle.interact(system);
+
+
+            for (MDParticle x : system) {
+                x.vDelta(delta);
+            }
+
+            System.out.println(jupitersDistance);
+
+
+            d += delta;
+
+        }
+
+        System.out.println(minSDist);
+
+        return -1;
+
     }
 
 }
