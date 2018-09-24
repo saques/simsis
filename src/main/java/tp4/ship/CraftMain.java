@@ -12,15 +12,15 @@ public class CraftMain {
 
     static final double BD = 1500 ;
 
-    static final double maxTime = YEAR*3;
-    static final double delta = 60*60*24*2;
+    static final double maxTime = YEAR*4;
+    static final double delta = 60*60*24*4;
 
     static final double maxSpeed = 20;
-    static final double maxAltitude = 4100;
-    static final double karmanLine = 4100;
+    static final double maxAltitude = 4101;
+    static final double karmanLine = 4099;
 
     static final double heightStep = 0.5;
-    static final double speedStep = 0.005;
+    static final double speedStep = 0.01;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
 
@@ -28,11 +28,11 @@ public class CraftMain {
 
     public static void main(String[] args) throws IOException{
 
-        //gpc();
+        gpc();
 
         //gpcNextTime();
 
-        gpcForDefined(4100.0,10.32549300563502);
+        //gpcForDefined(4100.0,10.32549300563502);
     }
 
     private static void beeman() throws IOException {
