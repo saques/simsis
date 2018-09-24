@@ -203,13 +203,17 @@ public final class PointDumper {
         printWriter.close();
     }
 
-    public void dumpOscilatorAproximation(List<Double> numericSolutions) throws IOException {
-        statsQueue.add(String.format("%d",numericSolutions.size()));
+    public void dumpOscilatorAproximation(List<Double> numericSolutions,Integer num,Double step) throws IOException {
+        //statsQueue.add(String.format("%d",numericSolutions.size()));
+
         for (double t : numericSolutions){
             statsQueue.add(String.format(Locale.US,"%.17f",t));
         }
-        PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "numericSolutions.txt"));
-        statsQueue.forEach(printWriter::println);
+        PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "numericSolutions"+num+".txt"));
+        printWriter.println(String.format(Locale.US,"%f",step));
+        printWriter.print("[");
+        statsQueue.forEach( x -> printWriter.print(x+";"));
+        printWriter.print("]");
         printWriter.flush();
         printWriter.close();
     }
