@@ -1,14 +1,16 @@
+    static final double YEAR = 31556926;
+
     static final double BD = 1500 ;
 
-    static final double maxTime = 31558118.4*4;
+    static final double maxTime = YEAR*3;
     static final double delta = 60*60*24*2;
 
     static final double maxSpeed = 20;
-    static final double maxAltitude = 6000;
-    static final double karmanLine = 3500;
+    static final double maxAltitude = 4100;
+    static final double karmanLine = 4100;
 
-    static final double heightStep = 25;
-    static final double speedStep = 0.1;
+    static final double heightStep = 0.5;
+    static final double speedStep = 0.005;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
 
@@ -17,4 +19,6 @@
 Ejection speed: 10.32549300563502
 Departure orbit: 4100.0
 Closest distance to Jupiter: 772039.9827271284
-Closest distance to Saturn: 2391932.103041208
+Years to Jupiter: 1.456567727794526
+Closest distance to Saturn: 1.089071077616438E7
+Years to Saturn: 2.995272733472202

@@ -18,7 +18,7 @@ public class CraftStats {
     double minBestEnergy;
     private List<Double> bestEnergy;
 
-    private double minToJupiter, minToSaturn;
+    private double minToJupiter, minToSaturn, tJupiter, tSaturn;
     private double v, h;
 
     private List<String> dump;
@@ -47,10 +47,12 @@ public class CraftStats {
         return minToJupiter;
     }
 
-    public boolean isBetterApproach(double jupiterDist, double saturnDist, double v, double h){
+    public boolean isBetterApproach(double jupiterDist, double saturnDist, double jupiterT, double saturnT, double v, double h){
         if((jupiterDist+saturnDist) < (minToJupiter + minToSaturn)){
             minToJupiter = jupiterDist;
             minToSaturn = saturnDist;
+            tJupiter = jupiterT;
+            tSaturn = saturnT;
             this.v = v;
             this.h = h;
             bestSpeeds = new LinkedList<>(speeds);
@@ -83,6 +85,14 @@ public class CraftStats {
         speeds.add(v);
         energy.add(e);
         minEnergy = Math.min(minEnergy, e);
+    }
+
+    public double gettJupiter() {
+        return tJupiter;
+    }
+
+    public double gettSaturn() {
+        return tSaturn;
     }
 
     public double getV() {
