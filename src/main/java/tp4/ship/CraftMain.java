@@ -2,9 +2,13 @@ package tp4.ship;
 
 import common.Vector2D;
 import utils.PointDumper;
+
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CraftMain {
 
@@ -13,24 +17,24 @@ public class CraftMain {
     static final double BD = 1500 ;
 
     static final double maxTime = YEAR*4;
-    static final double delta = 60*60*24*4;
+    static final double delta = 60*60*24*2;
 
     static final double maxSpeed = 20;
-    static final double maxAltitude = 4101;
-    static final double karmanLine = 4099;
+    static final double maxAltitude = 4100;
+    static final double karmanLine = 4100;
 
     static final double heightStep = 0.5;
-    static final double speedStep = 0.01;
+    static final double speedStep = 0.005;
 
     static final double eMass = 5.97237E24, eRadius = 6371;
 
     static final double craftMass = 721.9;
 
     public static void main(String[] args) throws IOException{
+        runYearGPC(100, 8.991439786408133, 5225.0);
+//        gpc();
 
-        gpc();
-
-        //gpcNextTime();
+//        gpcNextTime();
 
         //gpcForDefined(4100.0,10.32549300563502);
     }
@@ -330,7 +334,7 @@ public class CraftMain {
 
 
                 List<MDParticle> system = gearPredictorCorrectorSystem(v, h, dumper);
-
+                System.out.println("Values v: " + v + ", h:" + h);
                 GearPredictorCorrectorParticle sun = (GearPredictorCorrectorParticle)system.get(0);
                 GearPredictorCorrectorParticle earth = (GearPredictorCorrectorParticle)system.get(1);
                 GearPredictorCorrectorParticle jupiter = (GearPredictorCorrectorParticle)system.get(2);
@@ -519,4 +523,124 @@ public class CraftMain {
 
     }
 
+    public static CraftStats runSystemGPC(List<MDParticle> system, PointDumper dumper, double v, double h) throws IOException{
+        CraftStats stats = new CraftStats();
+        MDParticle.interact(system);
+        system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
+        dumper.dumpToList();
+        GearPredictorCorrectorParticle sun = (GearPredictorCorrectorParticle)system.get(0);
+        GearPredictorCorrectorParticle earth = (GearPredictorCorrectorParticle)system.get(1);
+        GearPredictorCorrectorParticle jupiter = (GearPredictorCorrectorParticle)system.get(2);
+        GearPredictorCorrectorParticle saturn = (GearPredictorCorrectorParticle)system.get(3);
+        GearPredictorCorrectorParticle voyager = (GearPredictorCorrectorParticle)system.get(4);
+        double minJupiter = Double.MAX_VALUE, minSaturn = Double.MAX_VALUE;
+        double tMinJupiter = 0, tMinSaturn = 0;
+        double saturnDist , jupiterDist ,earthDist ,sunDist;
+        for(double d = 0; d < maxTime ; d += delta){
+
+            system.forEach(x -> x.rDelta(delta));
+            system.forEach(MDParticle::resetForces);
+            MDParticle.interact(system);
+
+            double totalEnergy = 0;
+
+            for (MDParticle x : system) {
+                x.vDelta(delta);
+                totalEnergy += x.U + x.kineticEnergy();
+            }
+
+            saturnDist = new Vector2D(saturn.x0, saturn.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+            jupiterDist = new Vector2D(jupiter.x0, jupiter.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+            earthDist = new Vector2D(earth.x0, earth.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+            sunDist = new Vector2D(sun.x0, sun.y0).sub(new Vector2D(voyager.x0, voyager.y0)).mod();
+
+            if(saturnDist <= (saturn.radius + BD) || jupiterDist <= (jupiter.radius + BD) || earthDist <= earth.radius || sunDist <= (sun.radius + BD)){
+                dumper.getList();
+                break;
+            }
+
+            if(jupiterDist < minJupiter){
+                minJupiter = jupiterDist;
+                tMinJupiter = d;
+            }
+
+            if(saturnDist < minSaturn){
+                minSaturn = saturnDist;
+                tMinSaturn = d;
+            }
+
+            system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
+            stats.logSpeedAndEnergy(new Vector2D(voyager.vx0, voyager.vy0).mod(), totalEnergy);
+//            dumper.dump(d);
+            dumper.dumpToList();
+        }
+        List<String> dump = dumper.getList();
+        if(stats.isBetterApproach(minJupiter, minSaturn, tMinJupiter, tMinSaturn, v, h)){
+            stats.setDump(dump);
+        }
+        stats.resetSpeedsAndEnergy();
+        dumper.dumpStats();
+        return stats;
+    }
+
+    public static void runYearGPC(int maxYears, double v, double h) throws IOException{
+        PointDumper dumper = new PointDumper(".\\tp4\\ovito\\yearOnly\\", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+        List<MDParticle> system = gearPredictorCorrectorSystemNoVoyager(dumper);
+        double delta = 60 * 60 * 24;
+
+        for (double d = 0; d < 365 * (maxYears / 2); d++) {
+            system.forEach(x -> x.rDelta(-delta));
+            system.forEach(MDParticle::resetForces);
+            MDParticle.interact(system);
+            system.forEach(x -> x.vDelta(-delta));
+        }
+        PrintWriter writer = new PrintWriter(new FileWriter(".\\tp4\\ovito\\yearOnly\\calendar.stats"));
+        for (double d = 0; d < 365 * maxYears; d++) {
+            PointDumper dayDumper = new PointDumper(".\\tp4\\ovito\\yearOnly\\stats_"+ (int)d + "_", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+            List<MDParticle> daySystem = makeDaySystem(system, dayDumper, v, h);
+            CraftStats stats = runSystemGPC(daySystem, dayDumper, v, h);
+            System.out.println("/////////" );
+            System.out.println("Ejection speed: " + stats.getV());
+            System.out.println("Departure orbit: " + stats.getH());
+            System.out.println("Closest distance to Jupiter: " + stats.getMinToJupiter());
+            System.out.println("Years to Jupiter: " + stats.gettJupiter()/YEAR);
+            System.out.println("Closest distance to Saturn: " + stats.getMinToSaturn());
+            System.out.println("Years to Saturn: " + stats.gettSaturn()/YEAR);
+
+            writer.println(String.format("%f", stats.getMinToJupiter() + stats.getMinToSaturn()));
+            system.forEach(x -> x.rDelta(delta));
+            system.forEach(MDParticle::resetForces);
+            MDParticle.interact(system);
+            system.forEach(x -> x.vDelta(delta));
+            system.forEach(x-> dumper.print2D(x.x0/MDParticle.AU, x.y0/MDParticle.AU, x.vx0, x.vy0, x.mass, x.radius, x.id));
+            System.out.println("One day more: " + d);
+            dumper.dump(d);
+        }
+
+        writer.flush();
+        writer.close();
+    }
+
+    public static List<MDParticle> makeDaySystem(List<MDParticle> system, PointDumper dumper, double v, double h) {
+        List<MDParticle> daySystem = system.stream().map(p -> new GearPredictorCorrectorParticle(p.mass, p.radius, p.x0, p.y0, p.vx0, p.vy0, dumper)).collect(Collectors.toList());
+        MDParticle earth = daySystem.get(1);
+
+        Vector2D earthPos = new Vector2D(earth.x0, earth.y0);
+        Vector2D earthNor = new Vector2D(earthPos).nor();
+
+        Vector2D earthV = new Vector2D(earth.vx0, earth.vy0);
+        Vector2D earthVNor = new Vector2D(earthV).nor();
+
+        Vector2D craftPos = new Vector2D(earthNor).scl(earthPos.mod() + eRadius + h);
+        Vector2D craftV = new Vector2D(earthVNor).scl(earthV.mod() + v);
+
+        MDParticle voyager = new GearPredictorCorrectorParticle(
+            craftMass, 0.01,
+            craftPos.x, craftPos.y,
+            craftV.x, craftV.y,
+            dumper
+        );
+        daySystem.add(voyager);
+        return daySystem;
+    }
 }
