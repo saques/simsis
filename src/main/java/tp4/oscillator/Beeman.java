@@ -29,12 +29,12 @@ public class Beeman {
 
         current.xPast = current.xCurrent;
         current.vPast = current.vCurrent;
-        current.xCurrent = current.xCurrent + current.vCurrent * deltaT + 2.0 / 3.0 * currentAccel * squaredDeltaT - 1.0 / 6.0 * pastAccel * squaredDeltaT;
+        current.xCurrent = current.xCurrent + current.vCurrent * deltaT + (2.0 / 3.0) * currentAccel * squaredDeltaT - (1.0 / 6.0) * pastAccel * squaredDeltaT;
 
         double vPredicted = current.vCurrent + 1.5 * currentAccel * deltaT - .5 * pastAccel * deltaT;
 
         double futureAccel = accelerator.accelerate(current.xCurrent, vPredicted);
-        current.vCurrent = current.vCurrent + 1.0 / 3.0 * futureAccel * deltaT - 1.0 / 6.0 * pastAccel * deltaT;
+        current.vCurrent = current.vCurrent + (1.0 / 3.0) * futureAccel * deltaT + (5.0 / 6.0) * currentAccel * deltaT  - (1.0 / 6.0) * pastAccel * deltaT;
 
         return current;
     }
