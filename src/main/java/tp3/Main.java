@@ -1,18 +1,12 @@
 package tp3;
 
 import common.ParticleGenerators;
-import tp1.Particle;
+import common.Particle;
 import utils.PointDumper;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Main {
 

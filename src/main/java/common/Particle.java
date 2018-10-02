@@ -1,16 +1,16 @@
-package tp1;
+package common;
 
-import common.Vector2D;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import tp1.Point2D;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @ToString
-public class Particle implements Entity{
+public class Particle implements Entity {
 
     private static int IDS = 0;
 

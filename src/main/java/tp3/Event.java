@@ -2,7 +2,7 @@ package tp3;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import tp1.Particle;
+import common.Particle;
 
 @EqualsAndHashCode
 public class Event implements Comparable<Event>{

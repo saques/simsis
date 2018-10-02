@@ -1,6 +1,6 @@
 package common;
 
-import tp1.Particle;
+import tp5.GranularParticle;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -12,7 +12,7 @@ public final class ParticleGenerators {
 
     private ParticleGenerators(){}
 
-    public static List<Particle> generateEntities(double L, int N, double radius, Random r, boolean checkOverlapping) throws Exception{
+    public static List<Particle> generateEntities(double L, double W, int N, double radius, Random r, boolean checkOverlapping) throws Exception{
 
         List<Particle> ans = new ArrayList<>(N);
         PrintWriter sta = new PrintWriter(new FileWriter("static.txt"));
@@ -25,7 +25,7 @@ public final class ParticleGenerators {
         din.println(0);
 
         while(N > 0) {
-            double x = r.nextDouble() * L, y = r.nextDouble() * L;
+            double x = r.nextDouble() * L, y = r.nextDouble() * W;
 
             Particle p = new Particle(x, y, radius);
 
@@ -44,6 +44,23 @@ public final class ParticleGenerators {
 
         sta.flush(); sta.close();
         din.flush(); din.close();
+        return ans;
+    }
+
+    public static List<GranularParticle> generateGranularParticles(double L, double W, int N, double radius, double mass, Random r) throws Exception {
+        List<GranularParticle> ans = new ArrayList<>(N);
+
+        while (N > 0) {
+            double x = r.nextDouble() * L, y = r.nextDouble() * W;
+            GranularParticle p = new GranularParticle(x, y,0, 0, radius, mass);
+            if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0)) ||
+                    p.overlapsBoundaries(L)) {
+                GranularParticle.decreaseIDs();
+            } else {
+                ans.add(p);
+                N--;
+            }
+        }
         return ans;
     }
 

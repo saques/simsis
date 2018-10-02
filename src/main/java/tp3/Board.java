@@ -3,7 +3,7 @@ package tp3;
 
 import common.Vector2D;
 import lombok.Getter;
-import tp1.Particle;
+import common.Particle;
 import utils.PointDumper;
 
 import java.io.IOException;

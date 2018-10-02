@@ -1,12 +1,14 @@
-package tp1;
+package common;
 
 import com.google.common.collect.Iterators;
 import lombok.Getter;
+import tp1.Cell;
+import tp1.Point2D;
 
 import java.util.*;
 
 
-public class Grid {
+public class Grid<E extends Entity>{
 
     @FunctionalInterface
     interface DistanceCondition {
@@ -71,19 +73,21 @@ public class Grid {
 
 
     @Getter
-    private double L, segmentLength;
+    private double L, W, heightSegment, widthSegment;
 
     @Getter
     private int M;
 
-    private Cell<Entity> [][] grid;
-    private List<Entity> list = new LinkedList<>();
+    private Cell<E>[][] grid;
+    private List<E> list = new LinkedList<>();
 
     @SuppressWarnings("unchecked")
-    public Grid(double L, int M){
+    public Grid(double L, double W, int M){
         this.L = L;
+        this.W = W;
         this.M = M;
-        segmentLength = L/M;
+        heightSegment = L/M;
+        widthSegment = W/M;
         this.grid = new Cell[M][M];
         initialize();
     }
@@ -94,13 +98,17 @@ public class Grid {
                 grid[i][j] = new Cell<>();
     }
 
-    public void add(Entity t){
+    public Iterator<E> getIterator() {
+        return list.iterator();
+    }
+
+    public void add(E t){
         List<Point2D> mbr = t.mbr();
         Point2D a = mbr.get(0);
         Point2D b = mbr.get(1);
 
-        int cellAx = (int) (Math.max(0, a.getX()) / segmentLength), cellAy = (int) (Math.min(L, a.getY()) / segmentLength);
-        int cellBx = (int) (Math.max(0, b.getX()) / segmentLength), cellBy = (int) (Math.min(L, b.getY()) / segmentLength);
+        int cellAx = (int) (Math.max(0, a.getX()) / widthSegment), cellAy = (int) (Math.min(L, a.getY()) / heightSegment);
+        int cellBx = (int) (Math.max(0, b.getX()) / widthSegment), cellBy = (int) (Math.min(L, b.getY()) / heightSegment);
 
         int minx = Math.min(Math.min(cellAx, cellBx), M-1), miny = Math.min(Math.min(cellAy, cellBy), M-1);
         int maxx = Math.min(Math.max(cellAx, cellBx), M-1), maxy = Math.min(Math.max(cellAy, cellBy), M-1);
@@ -131,12 +139,12 @@ public class Grid {
         list.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < M; j++) {
-                Cell<Entity> c = grid[i][j];
+                Cell<E> c = grid[i][j];
 
                 mode.entityIterator.compute(this, i, j).forEachRemaining(y -> {
                     c.iterator().forEachRemaining(x -> {
                         if(mode.condition.check(this, x, y, evalDistance)){
-                            addToMap(adjacencyMap, x, y);
+                            addToMap(adjacencyMap, x,  y);
                         }
                     });
                 });
@@ -144,6 +152,10 @@ public class Grid {
             }
         }
         return adjacencyMap;
+    }
+
+    public void updateParticles(double deltaTime) {
+
     }
 
     private void addToMap(Map<Entity, Set<Entity>> map, Entity x, Entity y){

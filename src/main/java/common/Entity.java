@@ -1,4 +1,6 @@
-package tp1;
+package common;
+
+import tp1.Point2D;
 
 import java.util.List;
 

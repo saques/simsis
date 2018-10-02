@@ -1,5 +1,7 @@
 package tp1;
 
+import common.Entity;
+import common.Grid;
 import common.ParticleGenerators;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -30,10 +32,10 @@ public class Main {
         LOGGER.info("Seed: {}", seed);
 
         Random r = new Random(seed);
-        Grid g = new Grid(L, M);
+        Grid g = new Grid(L, L,  M);
 
         LOGGER.info("Generating particles...");
-        ParticleGenerators.generateEntities(L, N, particleRadius, r, checkOverlapping).forEach(g::add);
+        ParticleGenerators.generateEntities(L, L, N, particleRadius, r, checkOverlapping).forEach(g::add);
         LOGGER.info("Success");
 
         Map<Entity, Set<Entity>> adjacencies = null;
