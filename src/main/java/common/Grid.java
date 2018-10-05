@@ -79,7 +79,7 @@ public class Grid<E extends Entity>{
     private int M;
 
     private Cell<E>[][] grid;
-    private List<E> list = new LinkedList<>();
+    protected List<E> particles = new LinkedList<>();
 
     @SuppressWarnings("unchecked")
     public Grid(double L, double W, int M){
@@ -99,7 +99,7 @@ public class Grid<E extends Entity>{
     }
 
     public Iterator<E> getIterator() {
-        return list.iterator();
+        return particles.iterator();
     }
 
     public void add(E t){
@@ -117,14 +117,14 @@ public class Grid<E extends Entity>{
                 grid[i][j].add(t);
             }
         }
-        list.add(t);
+        particles.add(t);
     }
 
-    public Map<Entity, Set<Entity>> evalNeighboursBruteForce(double evalDistance, Mode mode){
-        Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
-        list.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
-        list.forEach(y -> {
-            list.forEach(x -> {
+    public Map<E, Set<E>> evalNeighboursBruteForce(double evalDistance, Mode mode){
+        Map<E, Set<E>> adjacencyMap = new HashMap<>();
+        particles.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
+        particles.forEach(y -> {
+            particles.forEach(x -> {
                 if(mode.condition.check(this, x, y, evalDistance)){
                     addToMap(adjacencyMap, x, y);
                 }
@@ -134,9 +134,9 @@ public class Grid<E extends Entity>{
         return adjacencyMap;
     }
 
-    public Map<Entity, Set<Entity>> evalNeighbours(double evalDistance, Mode mode) {
-        Map<Entity, Set<Entity>> adjacencyMap = new HashMap<>();
-        list.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
+    public Map<E, Set<E>> evalNeighbours(double evalDistance, Mode mode) {
+        Map<E, Set<E>> adjacencyMap = new HashMap<>();
+        particles.forEach(x-> adjacencyMap.put(x, new HashSet<>()));
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < M; j++) {
                 Cell<E> c = grid[i][j];
@@ -144,7 +144,7 @@ public class Grid<E extends Entity>{
                 mode.entityIterator.compute(this, i, j).forEachRemaining(y -> {
                     c.iterator().forEachRemaining(x -> {
                         if(mode.condition.check(this, x, y, evalDistance)){
-                            addToMap(adjacencyMap, x,  y);
+                            addToMap(adjacencyMap, x, (E) y);
                         }
                     });
                 });
@@ -154,12 +154,14 @@ public class Grid<E extends Entity>{
         return adjacencyMap;
     }
 
+
+
     public void updateParticles(double deltaTime) {
 
     }
 
-    private void addToMap(Map<Entity, Set<Entity>> map, Entity x, Entity y){
-        Set<Entity> set = map.get(x);
+    private void addToMap(Map<E, Set<E>> map, E x, E y){
+        Set<E> set = map.get(x);
         set.add(y);
         set = map.get(y);
         set.add(x);

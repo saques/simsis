@@ -18,9 +18,9 @@ public class Particle implements Entity {
     private int id;
 
     @Getter @Setter
-    private double x, vx, y, vy;
+    protected double x, vx, y, vy;
     @Getter
-    private double radius, mass;
+    protected double radius, mass;
 
     public double collisionTime = Double.MAX_VALUE;
 
