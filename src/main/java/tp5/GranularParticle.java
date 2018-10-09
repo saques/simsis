@@ -59,6 +59,7 @@ public class GranularParticle extends Particle {
 //        o.fy0 -= normalForce.y;
     }
 
+
     public double kineticEnergy(){
         return getMass()*Math.pow(new Vector2D(getVx(), getVy()).mod(), 2)/2.0;
     }

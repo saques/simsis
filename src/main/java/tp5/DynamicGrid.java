@@ -9,9 +9,15 @@ import java.util.*;
 public class DynamicGrid extends Grid<GranularParticle> {
     Random r = new Random();
 
-    public DynamicGrid(double L, double W, int M) {
-        super(L, W, M);
+    double D;
 
+    public DynamicGrid(double L, double W, int M, double D) {
+        super(L, W, M);
+        this.D = D;
+    }
+
+    public double getD(){
+        return D;
     }
 
     public void update(int frame, double deltaTime, PointDumper dumper) throws IOException {
@@ -33,6 +39,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
                     particle.interact(other, deltaTime);
                 }
             }
+            checkWallCollisions(particle,getL(),getD());
             alreadyInteracted.add(particle);
         }
 
@@ -44,6 +51,16 @@ public class DynamicGrid extends Grid<GranularParticle> {
             dumper.print2D(particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
         }
 
-        dumper.dump(frame);
+        //dumper.dump(frame);
+    }
+
+    public void checkWallCollisions(GranularParticle p , double L, double D){
+        if ( p.getRadius() + p.getX()  == L || p.getX() - p.getRadius() == 0.0){
+            System.out.println("Wall collision");
+            p.setVx(p.getVx()*(-1));
+        }  else if ( p.getY() + p.getRadius() == L && ( (p.getX() + p.getRadius() > L/2.0 + D/2.0) || (p.getX() - p.getRadius() < L/2.0 - D/2.0 ) )){
+            System.out.println("Wall collision");
+            p.setVy(p.getVy()*(-1));
+        }
     }
 }
