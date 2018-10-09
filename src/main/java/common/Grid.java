@@ -102,7 +102,11 @@ public class Grid<E extends Entity>{
         return particles.iterator();
     }
 
-    public void add(E t){
+    public void add(E t) {
+        add(t, true);
+    }
+
+    public void add(E t, boolean addParticle){
         List<Point2D> mbr = t.mbr();
         Point2D a = mbr.get(0);
         Point2D b = mbr.get(1);
@@ -110,14 +114,16 @@ public class Grid<E extends Entity>{
         int cellAx = (int) (Math.max(0, a.getX()) / widthSegment), cellAy = (int) (Math.min(L, a.getY()) / heightSegment);
         int cellBx = (int) (Math.max(0, b.getX()) / widthSegment), cellBy = (int) (Math.min(L, b.getY()) / heightSegment);
 
-        int minx = Math.min(Math.min(cellAx, cellBx), M-1), miny = Math.min(Math.min(cellAy, cellBy), M-1);
-        int maxx = Math.min(Math.max(cellAx, cellBx), M-1), maxy = Math.min(Math.max(cellAy, cellBy), M-1);
+        int minx = Math.max(0, Math.min(Math.min(cellAx, cellBx), M-1)), miny = Math.max(0, Math.min(Math.min(cellAy, cellBy), M-1));
+        int maxx = Math.max(0, Math.min(Math.max(cellAx, cellBx), M-1)), maxy = Math.max(0, Math.min(Math.max(cellAy, cellBy), M-1));
         for (int i = minx; i <= maxx; i++) {
             for (int j = miny; j <= maxy; j++) {
                 grid[i][j].add(t);
             }
         }
-        particles.add(t);
+        if (addParticle) {
+            particles.add(t);
+        }
     }
 
     public Map<E, Set<E>> evalNeighboursBruteForce(double evalDistance, Mode mode){
@@ -169,5 +175,36 @@ public class Grid<E extends Entity>{
 
     private boolean isWithinBounds(int x, int y){
         return x >= 0 && x < M && y >= 0 && y < M;
+    }
+
+
+    public void remove(E particle, List<Point2D> oldMbr){
+        List<Point2D> mbr = oldMbr;
+        Point2D a = mbr.get(0);
+        Point2D b = mbr.get(1);
+
+        int cellAx = (int) (Math.max(0, a.getX()) / widthSegment), cellAy = (int) (Math.min(L, a.getY()) / heightSegment);
+        int cellBx = (int) (Math.max(0, b.getX()) / widthSegment), cellBy = (int) (Math.min(L, b.getY()) / heightSegment);
+
+        int minx = Math.max(0, Math.min(Math.min(cellAx, cellBx), M-1)), miny = Math.max(0, Math.min(Math.min(cellAy, cellBy), M-1));
+        int maxx = Math.max(0, Math.min(Math.max(cellAx, cellBx), M-1)), maxy = Math.max(0, Math.min(Math.max(cellAy, cellBy), M-1));
+
+        for (int i = minx; i <= maxx; i++) {
+            for (int j = miny; j <= maxy; j++) {
+                grid[i][j].units.remove(particle);
+            }
+        }
+//        particles.remove(particle);
+    }
+
+    protected void updateCell(E particle, List<Point2D> oldMbr, double oldX, double oldY, double newX, double newY) {
+        int oldCellX = (int) (Math.max(0, oldX) / widthSegment), oldCellY = (int) (Math.min(L, oldY) / heightSegment);
+        int newCellX = (int) (Math.max(0, newX) / widthSegment), newCellY = (int) (Math.min(L, newY) / heightSegment);
+
+        if (oldCellX != newCellX || oldCellY != newCellY) {
+            remove(particle, oldMbr);
+            add(particle, false);
+        }
+
     }
 }

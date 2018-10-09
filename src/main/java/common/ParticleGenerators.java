@@ -52,7 +52,7 @@ public final class ParticleGenerators {
 
         while (N > 0) {
             double x = r.nextDouble() * L, y = r.nextDouble() * W;
-            GranularParticle p = new GranularParticle(x, y,0, 0, radius, k, mass, gamma, mu);
+            GranularParticle p = new GranularParticle(x, y,0, 0, radius, mass, k, gamma, mu);
             if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0)) ||
                     p.overlapsBoundaries(L)) {
                 GranularParticle.decreaseIDs();

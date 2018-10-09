@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 public class Cell<T> implements Iterable<T>{
 
-    private List<T> units = new LinkedList<T>();
+    public List<T> units = new LinkedList<T>();
 
     public void add(T t){
         units.add(t);

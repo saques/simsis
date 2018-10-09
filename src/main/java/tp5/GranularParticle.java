@@ -55,6 +55,12 @@ public class GranularParticle extends Particle {
         fx0 += tangForce.x;
         fy0 += tangForce.y;
 
+        o.fx0 -= normalForce.x;
+        o.fy0 -= normalForce.y;
+        o.fx0 -= tangForce.x;
+        o.fy0 -= tangForce.y;
+
+
 //        o.fx0 -= normalForce.x;
 //        o.fy0 -= normalForce.y;
     }
