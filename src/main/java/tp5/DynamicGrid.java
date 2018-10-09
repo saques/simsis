@@ -24,7 +24,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
     public void update(int frame, double deltaTime, PointDumper dumper) throws IOException {
         for (GranularParticle particle : particles) {
             particle.resetForces();
-            if (r.nextDouble() < 0.01) {
+            if (particle.getId() == 1) {
                 particle.applyGravity();
             }
         }

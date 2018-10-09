@@ -13,9 +13,9 @@ public class GranularParticle extends Particle {
     double x2, x3, x4, x5;
     double y2, y3, y4, y5;
     double k;
-    double gamma = 100, mu = 0.7;
+    double gamma, mu;
 
-    Map<GranularParticle, Double> pastOverlaps = new HashMap<>();;
+    Map<GranularParticle, Double> pastOverlaps = new HashMap<>();
 
     public GranularParticle(double x, double y, double vx, double vy, double radius, double mass, double k, double gamma, double mu) {
         super(x, y, vx, vy, radius, mass);
@@ -23,7 +23,6 @@ public class GranularParticle extends Particle {
         this.k = k;
         this.gamma = gamma;
         this.mu = mu;
-
     }
 
     public void interact(GranularParticle o, double deltaT){
@@ -37,17 +36,21 @@ public class GranularParticle extends Particle {
         Vector2D tanVers = new Vector2D(-eyn, exn);
 
         double overlap = radius + o.radius - dist;
-        assert (overlap > 0);
+        assert (overlap > 0 && overlap < radius);
 
         double pastOverlap = pastOverlaps.getOrDefault(o, 0.0);
         double overlapDeriv  = (overlap - pastOverlap) / deltaT;
-        double normalForceMag = k * overlap - gamma * overlapDeriv;
+        double normalForceMag = (-1) * k * overlap - gamma * overlapDeriv;
+
+
+        System.out.println(normalForceMag);
+
 
         Vector2D vel = new Vector2D(vx, vy);
         Vector2D otherVel = new Vector2D(o.vx, o.vy);
         double velRel = vel.sub(otherVel).mod();
 
-        Vector2D normalForce = normVers.scl( - normalForceMag);
+        Vector2D normalForce = normVers.scl((-1)*normalForceMag);
         Vector2D tangForce = tanVers.scl(- mu * normalForceMag * Math.signum(velRel));
 
         fx0 += normalForce.x;
@@ -60,9 +63,6 @@ public class GranularParticle extends Particle {
         o.fx0 -= tangForce.x;
         o.fy0 -= tangForce.y;
 
-
-//        o.fx0 -= normalForce.x;
-//        o.fy0 -= normalForce.y;
     }
 
 
