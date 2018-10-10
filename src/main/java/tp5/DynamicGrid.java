@@ -11,7 +11,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
     Random r = new Random();
 
     double D;
-    GranularParticle auxParticle = new GranularParticle(0, 0,  0, 0, 0, 0, 0, 0, 0);
+    GranularParticle auxParticle = new GranularParticle(0, 0,  0, 0, 0, 1000, 0, 0, 0);
 
 
     public DynamicGrid(double L, double W, int M, double D) {
@@ -25,7 +25,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
 
     public void update(int frame, double deltaTime, PointDumper dumper, boolean dump) throws IOException {
         for (GranularParticle particle : particles) {
-            particle.resetForces();
+            particle.updateForces();
            // if (/*r.nextDouble() < 0.25*/ particle.getId() == 1) {
                 particle.applyGravity();
            // }
@@ -65,24 +65,29 @@ public class DynamicGrid extends Grid<GranularParticle> {
         auxParticle.setY(p.getY());
         auxParticle.setX(0.0);
 
-        if (p.isWithinRadiusBoundingBox(auxParticle, 1E-6))
+        if (p.isWithinRadiusBoundingBox(auxParticle, 0)) {
+
             p.interact(auxParticle, deltaTime);
+        }
+
 
         // checking right vertical
         auxParticle.setY(p.getY());
         auxParticle.setX(L);
 
-        if (p.isWithinRadiusBoundingBox(auxParticle, 1E-6))
+        if (p.isWithinRadiusBoundingBox(auxParticle, 0)) {
             p.interact(auxParticle, deltaTime);
+        }
+
 
 
         // checking bottom horizontal with hole
-        auxParticle.setY(L);
+        auxParticle.setY(0);
         auxParticle.setX(p.getX());
 
-        if (p.isWithinRadiusBoundingBox(auxParticle, 1E-6) && ( p.getX() < (L/2.0 - D/2.0) || p.getX() > (L/2.0 + D/2.0)) )
+//        if (p.isWithinRadiusBoundingBox(auxParticle, 0) && ( p.getX() < (L/2.0 - D/2.0) || p.getX() >= (L/2.0 + D/2.0)) ) {
+        if (p.isWithinRadiusBoundingBox(auxParticle, 0) && ( p.getX() < (L/2.0 - D/2.0) || p.getX() >= (L/2.0 + D/2.0)) ) {
             p.interact(auxParticle, deltaTime);
-
-
+        }
     }
 }
