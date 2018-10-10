@@ -11,6 +11,8 @@ public class DynamicGrid extends Grid<GranularParticle> {
     Random r = new Random();
 
     double D;
+    GranularParticle auxParticle = new GranularParticle(0, 0,  0, 0, 0, 0, 0, 0, 0);
+
 
     public DynamicGrid(double L, double W, int M, double D) {
         super(L, W, M);
@@ -24,9 +26,9 @@ public class DynamicGrid extends Grid<GranularParticle> {
     public void update(int frame, double deltaTime, PointDumper dumper, boolean dump) throws IOException {
         for (GranularParticle particle : particles) {
             particle.resetForces();
-            if (/*r.nextDouble() < 0.25*/ particle.getId() == 1) {
+           // if (/*r.nextDouble() < 0.25*/ particle.getId() == 1) {
                 particle.applyGravity();
-            }
+           // }
         }
 
         Map<GranularParticle, Set<GranularParticle>> particleMap = evalNeighbours(0, Mode.BOX);
@@ -39,7 +41,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
                     particle.interact(other, deltaTime);
                 }
             }
-            checkWallCollisions(particle, getL(), getD());
+            checkWallCollisions(particle, getL(), getD(),deltaTime);
             alreadyInteracted.add(particle);
         }
 
@@ -58,13 +60,29 @@ public class DynamicGrid extends Grid<GranularParticle> {
             dumper.dump(frame);
     }
 
-    public void checkWallCollisions(GranularParticle p, double L, double D) {
-        if (p.getRadius() + p.getX() == L || p.getX() - p.getRadius() == 0.0) {
-            System.out.println("Wall collision");
-            p.setVx(p.getVx() * (-1));
-        } else if (p.getY() + p.getRadius() == L && ((p.getX() + p.getRadius() > L / 2.0 + D / 2.0) || (p.getX() - p.getRadius() < L / 2.0 - D / 2.0))) {
-            System.out.println("Wall collision");
-            p.setVy(p.getVy() * (-1));
-        }
+    public void checkWallCollisions(GranularParticle p, double L, double D, double deltaTime) {
+        // checking left vertical
+        auxParticle.setY(p.getY());
+        auxParticle.setX(0.0);
+
+        if (p.isWithinRadiusBoundingBox(auxParticle, 1E-6))
+            p.interact(auxParticle, deltaTime);
+
+        // checking right vertical
+        auxParticle.setY(p.getY());
+        auxParticle.setX(L);
+
+        if (p.isWithinRadiusBoundingBox(auxParticle, 1E-6))
+            p.interact(auxParticle, deltaTime);
+
+
+        // checking bottom horizontal with hole
+        auxParticle.setY(L);
+        auxParticle.setX(p.getX());
+
+        if (p.isWithinRadiusBoundingBox(auxParticle, 1E-6) && ( p.getX() < (L/2.0 - D/2.0) || p.getX() > (L/2.0 + D/2.0)) )
+            p.interact(auxParticle, deltaTime);
+
+
     }
 }

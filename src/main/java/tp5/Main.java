@@ -9,7 +9,7 @@ public class Main {
     static int seed = 1;
     static int M = 10;
     static int N = 100;
-    static float L = 1, W = 1, radius = 0.01f, mass = 0.01f;
+    static float L = 2, W = 1, radius = 0.01f, mass = 0.01f;
     static double MaxTime = 0.1, DeltaTime = 1E-4;
     static double k = 10E5, gamma = 100, mu = 0.07;
     static double D = 0.15;
@@ -22,7 +22,7 @@ public class Main {
         //ParticleGenerators.generateGranularParticles(L, W, N, radius, mass, k, gamma, mu, r).forEach(grid::add);
 
         grid.add(new GranularParticle(1, 1,  0, 0, radius, mass, k, gamma, mu));
-        grid.add(new GranularParticle(1, 1 + 3*radius,  0, 0, radius, mass, k, gamma, mu));
+        grid.add(new GranularParticle(1, (1 + .5),  0, 0, radius, mass, k, gamma, mu));
 
         PointDumper dumper = new PointDumper("./tp5/ovito/", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
 
