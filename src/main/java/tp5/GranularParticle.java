@@ -29,8 +29,8 @@ public class GranularParticle extends Particle {
         Vector2D pos = new Vector2D(x, y);
         Vector2D otherPos = new Vector2D(o.x, o.y);
         double dist = pos.sub(otherPos).mod();
-        double exn = (x - o.x) / dist;
-        double eyn = (y - o.y) / dist;
+        double exn = (o.x - x) / dist;
+        double eyn = (o.y - y) / dist;
 
         Vector2D normVers = new Vector2D(exn, eyn);
         Vector2D tanVers = new Vector2D(-eyn, exn);
@@ -39,11 +39,10 @@ public class GranularParticle extends Particle {
         assert (overlap > 0 && overlap < radius);
 
         double pastOverlap = pastOverlaps.getOrDefault(o, 0.0);
+        pastOverlaps.put(o, overlap);
+
         double overlapDeriv  = (overlap - pastOverlap) / deltaT;
         double normalForceMag = (-1) * k * overlap - gamma * overlapDeriv;
-
-
-        System.out.println(normalForceMag);
 
 
         Vector2D vel = new Vector2D(vx, vy);
@@ -52,7 +51,7 @@ public class GranularParticle extends Particle {
 
         Vector2D normalForce = normVers.scl(normalForceMag);
 
-        Vector2D tangForce = tanVers.scl((-1) * mu * normalForceMag * Math.signum(velRel));
+        Vector2D tangForce = tanVers.scl((-1) * mu * normalForce.mod() * Math.signum(velRel));
 
         fx0 += normalForce.x;
         fy0 += normalForce.y;
@@ -116,8 +115,6 @@ public class GranularParticle extends Particle {
         y4 = correct(y4, 1.0 / 6.0, deltaR2Y, delta, 4, 24);
         x5 = correct(x5, 1.0 / 60.0, deltaR2X, delta, 5, 120);
         y5 = correct(y5, 1.0 / 60.0, deltaR2Y, delta, 5, 120);
-
-        System.out.println(new Vector2D(vx, vy));
     }
 
     private static double taylorEval(double a, double b, double c, double d, double e, double f, double deltaT) {

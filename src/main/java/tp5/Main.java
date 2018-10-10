@@ -11,7 +11,7 @@ public class Main {
     static int N = 100;
     static float L = 1, W = 1, radius = 0.01f, mass = 0.01f;
     static double MaxTime = 0.1, DeltaTime = 1E-4;
-    static double k = 10E5, gamma = 100, mu = 0.1;
+    static double k = 10E5, gamma = 100, mu = 0.07;
     static double D = 0.15;
     static int dumpEach = 10;
 
