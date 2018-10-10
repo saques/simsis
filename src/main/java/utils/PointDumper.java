@@ -82,6 +82,10 @@ public final class PointDumper {
         id++;
     }
 
+    public void clear(){
+        queue.clear();
+    }
+
     public void dumpToList() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(String.format("%d\n", queue.size()));

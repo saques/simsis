@@ -50,8 +50,9 @@ public class GranularParticle extends Particle {
         Vector2D otherVel = new Vector2D(o.vx, o.vy);
         double velRel = vel.sub(otherVel).mod();
 
-        Vector2D normalForce = normVers.scl((-1)*normalForceMag);
-        Vector2D tangForce = tanVers.scl(- mu * normalForceMag * Math.signum(velRel));
+        Vector2D normalForce = normVers.scl(normalForceMag);
+
+        Vector2D tangForce = tanVers.scl((-1) * mu * normalForceMag * Math.signum(velRel));
 
         fx0 += normalForce.x;
         fy0 += normalForce.y;
@@ -115,6 +116,8 @@ public class GranularParticle extends Particle {
         y4 = correct(y4, 1.0 / 6.0, deltaR2Y, delta, 4, 24);
         x5 = correct(x5, 1.0 / 60.0, deltaR2X, delta, 5, 120);
         y5 = correct(y5, 1.0 / 60.0, deltaR2Y, delta, 5, 120);
+
+        System.out.println(new Vector2D(vx, vy));
     }
 
     private static double taylorEval(double a, double b, double c, double d, double e, double f, double deltaT) {
