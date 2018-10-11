@@ -56,9 +56,9 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
         timeAcum += deltaTime;
         // Flow data is stored 30 times per second
         if (timeAcum > 0.033) {
-            timeAcum = 0;
-            stats.flow.add(fallingParticles);
+            stats.flow.add(fallingParticles / timeAcum);
             fallingParticles = 0;
+            timeAcum = 0;
         }
         updateParticles();
 
