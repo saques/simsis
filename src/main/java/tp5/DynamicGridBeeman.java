@@ -55,9 +55,7 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
     }
 
     private void checkFallingOff(BeemanGranularParticle particle) {
-        int newCellY = (int) (particle.getY() / getHeightSegment());
-
-        if (newCellY < -1) {
+        if (particle.getY() < -(getL() / 10)) {
             Particle dummy = new Particle(0, getL(), particle.getRadius());
             do {
                 dummy.setX(Math.max(0.1, Math.min(r.nextDouble(), .9)) * getW());

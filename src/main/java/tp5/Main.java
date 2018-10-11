@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.util.Random;
 
 public class Main {
-    static int seed = 2;
+    static int seed = 4;
     static int M = 7;
     static int N = 500;
-    static float L = 4, W = 4, radius = 0.03f, mass = 0.01f;
-    static double MaxTime = 5, DeltaTime = 4E-5;
+    static float L = 4, W = 4, minRadius = 0.02f, maxRadius = 0.03f, mass = 0.01f, radius = 0.03f;
+    static double MaxTime = 10, DeltaTime = 3E-5;
     static double k = 1E5, gamma = 100, mu = 0.1;
     static double D = L * 0.1;
     static int dumpEach = (int) (0.016 / DeltaTime);
@@ -44,7 +44,7 @@ public class Main {
     private static void runBeeman() throws Exception{
         Random r = new Random(seed);
         DynamicGridBeeman grid = new DynamicGridBeeman(L, W, M, D, r);
-        ParticleGenerators.generateBeemanGranularParticles(L, W, N, radius, mass, k, gamma, mu, r).forEach(grid::add);
+        ParticleGenerators.generateBeemanGranularParticles(L, W, N, minRadius, maxRadius, mass, k, gamma, mu, r).forEach(grid::add);
 
 //        grid.add(new GranularParticle(1, 1,  0, 0, radius, mass, k, gamma, mu));
 //        grid.add(new GranularParticle(1, (1 + .5),  0, 0, radius, mass, k, gamma, mu));

@@ -64,11 +64,12 @@ public final class ParticleGenerators {
         return ans;
     }
 
-    public static List<BeemanGranularParticle> generateBeemanGranularParticles(double L, double W, int N, double radius, double mass, double k, double gamma, double mu, Random r) throws Exception {
+    public static List<BeemanGranularParticle> generateBeemanGranularParticles(double L, double W, int N, double minRadius, double maxRadius, double mass, double k, double gamma, double mu, Random r) throws Exception {
         List<BeemanGranularParticle> ans = new ArrayList<>(N);
 
         while (N > 0) {
             double x = Math.max(0.1, Math.min(r.nextDouble(), .9)) * L , y = Math.max(0.1, Math.min(r.nextDouble(), .9)) * W;
+            double radius = r.nextDouble() * (maxRadius - minRadius) + minRadius;
             BeemanGranularParticle p = new BeemanGranularParticle(x, y,0, 0, radius, mass, k, gamma, mu);
             if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0))) {
                 GranularParticle.decreaseIDs();
