@@ -70,7 +70,6 @@ public class DynamicGrid extends Grid<GranularParticle> {
             p.interact(auxParticle, deltaTime);
         }
 
-
         // checking right vertical
         auxParticle.setY(p.getY());
         auxParticle.setX(L);
@@ -78,8 +77,6 @@ public class DynamicGrid extends Grid<GranularParticle> {
         if (p.isWithinRadiusBoundingBox(auxParticle, 0)) {
             p.interact(auxParticle, deltaTime);
         }
-
-
 
         // checking bottom horizontal with hole
         auxParticle.setY(0);

@@ -51,7 +51,7 @@ public final class ParticleGenerators {
         List<GranularParticle> ans = new ArrayList<>(N);
 
         while (N > 0) {
-            double x = r.nextDouble() * L, y = r.nextDouble() * W;
+            double x = Math.max(0.1, Math.min(r.nextDouble(), .9)) * L , y = Math.max(0.1, Math.min(r.nextDouble(), .9)) * W;
             GranularParticle p = new GranularParticle(x, y,0, 0, radius, mass, k, gamma, mu);
             if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0))) {
                 GranularParticle.decreaseIDs();
