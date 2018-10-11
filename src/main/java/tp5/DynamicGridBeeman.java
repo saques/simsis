@@ -54,8 +54,12 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
             alreadyInteracted.add(particle);
             particle.vDelta(deltaTime);
             fallingParticles += checkFallingOff(particle) ? 1: 0;
-            if(dump)
-                dumper.print2DForce(new Vector2D(particle.nx, particle.ny).mod(), particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
+
+            if(dump) {
+                double normForce = new Vector2D(particle.nx, particle.ny).mod()/particle.circumference();
+                dumper.updateMaxForce(normForce);
+                dumper.print2DForce(normForce, particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
+            }
         }
         timeAcum += deltaTime;
         // Flow data is stored 30 times per second
@@ -66,8 +70,10 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
         }
         updateParticles();
 
-        if(dump)
+        if(dump) {
             dumper.dump(frame);
+            dumper.resetMaxForce();
+        }
     }
 
     private boolean checkFallingOff(BeemanGranularParticle particle) {

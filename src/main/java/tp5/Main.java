@@ -11,9 +11,9 @@ public class Main {
     static int M = 8;
     static int N = 500;
     static float L = 5, W = 2, minRadius = 0.02f, maxRadius = 0.03f, mass = 0.01f, radius = 0.03f;
-    static double MaxTime = 3, DeltaTime = 3E-5;
-    static double k = 1E5, gamma = 100, mu = 0.07;
-    static double D = 0.2;
+    static double MaxTime = 1.5, DeltaTime = 3E-5;
+    static double k = 1E5, gamma = 100, mu = 0.05;
+    static double D = 0;
     static int dumpEach = (int) ((1.0/frameRate) / DeltaTime);
 
 
