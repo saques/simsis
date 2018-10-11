@@ -48,12 +48,12 @@ public final class ParticleGenerators {
         return ans;
     }
 
-    public static List<GranularParticle> generateGranularParticles(double L, double W, int N, double radius, double mass, double k, double gamma, double tgMult, Random r) throws Exception {
+    public static List<GranularParticle> generateGranularParticles(double L, double W, int N, double radius, double mass, double k, double gamma, double mu, Random r) throws Exception {
         List<GranularParticle> ans = new ArrayList<>(N);
 
         while (N > 0) {
             double x = Math.max(0.1, Math.min(r.nextDouble(), .9)) * W , y = Math.max(0.1, Math.min(r.nextDouble(), .9)) * L;
-            GranularParticle p = new GranularParticle(x, y,0, 0, radius, mass, k, gamma, tgMult);
+            GranularParticle p = new GranularParticle(x, y,0, 0, radius, mass, k, gamma, mu);
             if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0))) {
                 GranularParticle.decreaseIDs();
             } else {
