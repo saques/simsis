@@ -69,11 +69,11 @@ public class GranularParticle extends Particle {
     }
 
     public void updateForces(){
-        fx_2 = fx_1;
-        fy_2 = fy_1;
-
-        fx_1 = fx0;
-        fy_1 = fy0;
+        //fx_2 = fx_1;
+        //fy_2 = fy_1;
+//
+        //fx_1 = fx0;
+        //fy_1 = fy0;
         resetForces();
     }
 
@@ -94,45 +94,39 @@ public class GranularParticle extends Particle {
      * @param delta
      */
     public void rDelta(double delta) {
-//        x = taylorEval(x, vx, x2, x3, x4, x5, delta);
-//        y = taylorEval(y, vy, y2, y3, y4, y5, delta);
-//        vx = taylorEval(vx, x2, x3, x4, x5, 0, delta);
-//        vy = taylorEval(vy, y2, y3, y4, y5, 0, delta);
-//        x2 = taylorEval(x2, x3, x4, x5, 0, 0, delta);
-//        y2 = taylorEval(y2, y3, y4, y5, 0, 0, delta);
-//        x3 = taylorEval(x3, x4, x5, 0, 0, 0, delta);
-//        y3 = taylorEval(y3, y4, y5, 0, 0, 0, delta);
-//        x4 = taylorEval(x4, x5, 0, 0, 0, 0, delta);
-//        y4 = taylorEval(y4, y5, 0, 0, 0, 0, delta);
-//        x5 = taylorEval(x5, 0, 0, 0, 0, 0, delta);
-//        y5 = taylorEval(y5, 0 ,0 ,0, 0, 0, delta);
-
-        x = r(delta, x, vx, fx0/mass, fx_1/mass);
-        y = r(delta, y, vy, fy0/mass, fy_1/mass);
+        x = taylorEval(x, vx, x2, x3, x4, x5, delta);
+        y = taylorEval(y, vy, y2, y3, y4, y5, delta);
+        vx = taylorEval(vx, x2, x3, x4, x5, 0, delta);
+        vy = taylorEval(vy, y2, y3, y4, y5, 0, delta);
+        x2 = taylorEval(x2, x3, x4, x5, 0, 0, delta);
+        y2 = taylorEval(y2, y3, y4, y5, 0, 0, delta);
+        x3 = taylorEval(x3, x4, x5, 0, 0, 0, delta);
+        y3 = taylorEval(y3, y4, y5, 0, 0, 0, delta);
+        x4 = taylorEval(x4, x5, 0, 0, 0, 0, delta);
+        y4 = taylorEval(y4, y5, 0, 0, 0, 0, delta);
+        x5 = taylorEval(x5, 0, 0, 0, 0, 0, delta);
+        y5 = taylorEval(y5, 0 ,0 ,0, 0, 0, delta);
     }
 
     public void vDelta(double delta) {
-//        double accelX = fx0 / getMass(), accelY = fy0 / getMass();
-//        double deltaAX = accelX - x2, deltaAY = accelY - y2;
-//
-//        double deltaSquared = delta * delta;
-//        double deltaR2X = deltaAX * deltaSquared / 2, deltaR2Y = deltaAY * deltaSquared / 2;
-//
-//        x = correct(x,3.0 / 16.0,  deltaR2X, delta, 0, 1);
-//        y = correct(y,3.0 / 16.0, deltaR2Y, delta, 0, 1);
-//        vx = correct(vx,251.0 / 360.0, deltaR2X, delta, 1, 1);
-//        vy = correct(vy,251.0 / 360.0, deltaR2Y, delta, 1, 1);
-//        x2 = correct(x2,1.0, deltaR2X, delta, 2, 2);
-//        y2 = correct(y2,1.0, deltaR2Y, delta, 2, 2);
-//        x3 = correct(x3,11.0 / 18.0, deltaR2X, delta, 3, 6);
-//        y3 = correct(y3, 11.0 / 18.0, deltaR2Y, delta, 3, 6);
-//        x4 = correct(x4, 1.0 / 6.0, deltaR2X, delta, 4, 24);
-//        y4 = correct(y4, 1.0 / 6.0, deltaR2Y, delta, 4, 24);
-//        x5 = correct(x5, 1.0 / 60.0, deltaR2X, delta, 5, 120);
-//        y5 = correct(y5, 1.0 / 60.0, deltaR2Y, delta, 5, 120);
+        double accelX = fx0 / getMass(), accelY = fy0 / getMass();
+        double deltaAX = accelX - x2, deltaAY = accelY - y2;
 
-        vx = v(delta, vx, fx0/mass, fx_1/mass, fx_2/mass);
-        vy = v(delta, vy, fy0/mass, fy_1/mass, fy_2/mass);
+        double deltaSquared = delta * delta;
+        double deltaR2X = deltaAX * deltaSquared / 2, deltaR2Y = deltaAY * deltaSquared / 2;
+
+        x = correct(x,3.0 / 16.0,  deltaR2X, delta, 0, 1);
+        y = correct(y,3.0 / 16.0, deltaR2Y, delta, 0, 1);
+        vx = correct(vx,251.0 / 360.0, deltaR2X, delta, 1, 1);
+        vy = correct(vy,251.0 / 360.0, deltaR2Y, delta, 1, 1);
+        x2 = correct(x2,1.0, deltaR2X, delta, 2, 2);
+        y2 = correct(y2,1.0, deltaR2Y, delta, 2, 2);
+        x3 = correct(x3,11.0 / 18.0, deltaR2X, delta, 3, 6);
+        y3 = correct(y3, 11.0 / 18.0, deltaR2Y, delta, 3, 6);
+        x4 = correct(x4, 1.0 / 6.0, deltaR2X, delta, 4, 24);
+        y4 = correct(y4, 1.0 / 6.0, deltaR2Y, delta, 4, 24);
+        x5 = correct(x5, 1.0 / 60.0, deltaR2X, delta, 5, 120);
+        y5 = correct(y5, 1.0 / 60.0, deltaR2Y, delta, 5, 120);
     }
 
     private double r(double t, double r0, double v0, double a0, double a_1){

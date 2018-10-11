@@ -1,5 +1,6 @@
 package common;
 
+import tp5.BeemanGranularParticle;
 import tp5.GranularParticle;
 
 import java.io.FileWriter;
@@ -53,6 +54,22 @@ public final class ParticleGenerators {
         while (N > 0) {
             double x = Math.max(0.1, Math.min(r.nextDouble(), .9)) * L , y = Math.max(0.1, Math.min(r.nextDouble(), .9)) * W;
             GranularParticle p = new GranularParticle(x, y,0, 0, radius, mass, k, gamma, mu);
+            if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0))) {
+                GranularParticle.decreaseIDs();
+            } else {
+                ans.add(p);
+                N--;
+            }
+        }
+        return ans;
+    }
+
+    public static List<BeemanGranularParticle> generateBeemanGranularParticles(double L, double W, int N, double radius, double mass, double k, double gamma, double mu, Random r) throws Exception {
+        List<BeemanGranularParticle> ans = new ArrayList<>(N);
+
+        while (N > 0) {
+            double x = r.nextDouble() * L, y = r.nextDouble() * W;
+            BeemanGranularParticle p = new BeemanGranularParticle(x, y,0, 0, radius, mass, k, gamma, mu);
             if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0))) {
                 GranularParticle.decreaseIDs();
             } else {

@@ -7,14 +7,14 @@ import utils.PointDumper;
 import java.io.IOException;
 import java.util.*;
 
-public class DynamicGrid extends Grid<GranularParticle> {
+public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
     Random r = new Random();
 
     double D;
-    GranularParticle auxParticle = new GranularParticle(0, 0,  0, 0, 0, 1000, 0, 0, 0);
+    BeemanGranularParticle auxParticle = new BeemanGranularParticle(0, 0,  0, 0, 0, 1000, 0, 0, 0);
 
 
-    public DynamicGrid(double L, double W, int M, double D) {
+    public DynamicGridBeeman(double L, double W, int M, double D) {
         super(L, W, M);
         this.D = D;
     }
@@ -24,30 +24,31 @@ public class DynamicGrid extends Grid<GranularParticle> {
     }
 
     public void update(int frame, double deltaTime, PointDumper dumper, boolean dump) throws IOException {
-        for (GranularParticle particle : particles) {
+        for (BeemanGranularParticle particle : particles) {
             particle.updateForces();
-            particle.applyGravity();
         }
 
-        Map<GranularParticle, Set<GranularParticle>> particleMap = evalNeighbours(0, Mode.BOX);
-        Set<GranularParticle> alreadyInteracted = new HashSet<>();
-        for (Map.Entry<GranularParticle, Set<GranularParticle>> entry : particleMap.entrySet()) {
-            // Interact with every particle, by checking overlapping and applying force
-            GranularParticle particle = entry.getKey();
-            for (GranularParticle other : entry.getValue()) {
+        Map<BeemanGranularParticle, Set<BeemanGranularParticle>> particleMap = evalNeighbours(0, Mode.BOX);
+        Set<BeemanGranularParticle> alreadyInteracted = new HashSet<>();
+
+        // Update particle position based on cumulative force
+        for (BeemanGranularParticle particle : particles) {
+            double oldX = particle.getX(), oldY = particle.getY();
+            List<Point2D> oldMbr = particle.mbr();
+            particle.rDelta(deltaTime);
+
+
+            particle.applyGravity();
+            for (BeemanGranularParticle other : particleMap.get(particle)) {
                 if (!alreadyInteracted.contains(other) && particle.isWithinRadiusBoundingBox(other, 0)) {
                     particle.interact(other, deltaTime);
                 }
             }
             checkWallCollisions(particle, getL(), getD(),deltaTime);
             alreadyInteracted.add(particle);
-        }
 
-        // Update particle position based on cumulative force
-        for (GranularParticle particle : particles) {
-            double oldX = particle.getX(), oldY = particle.getY();
-            List<Point2D> oldMbr = particle.mbr();
-            particle.rDelta(deltaTime);
+
+
             particle.vDelta(deltaTime);
             updateCell(particle, oldMbr, oldX, oldY, particle.getX(), particle.getY());
             if(dump)
@@ -58,7 +59,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
             dumper.dump(frame);
     }
 
-    public void checkWallCollisions(GranularParticle p, double L, double D, double deltaTime) {
+    public void checkWallCollisions(BeemanGranularParticle p, double L, double D, double deltaTime) {
         // checking left vertical
         auxParticle.setY(p.getY());
         auxParticle.setX(0.0);
@@ -68,6 +69,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
             p.interact(auxParticle, deltaTime);
         }
 
+
         // checking right vertical
         auxParticle.setY(p.getY());
         auxParticle.setX(L);
@@ -75,6 +77,8 @@ public class DynamicGrid extends Grid<GranularParticle> {
         if (p.isWithinRadiusBoundingBox(auxParticle, 0)) {
             p.interact(auxParticle, deltaTime);
         }
+
+
 
         // checking bottom horizontal with hole
         auxParticle.setY(0);
