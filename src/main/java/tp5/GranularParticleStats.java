@@ -6,4 +6,5 @@ import java.util.List;
 public class GranularParticleStats {
 	public List<Double> totalKineticEnergy = new ArrayList<>();
 	public List<Double> flow = new ArrayList<>();
+	public int particles;
 }

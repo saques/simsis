@@ -194,9 +194,12 @@ public final class PointDumper {
         }
         {
             PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "flow.txt"));
+            printWriter.print(String.format("%d\n", statistics.particles));
+            printWriter.print(String.format("["));
             for (double flow : statistics.flow){
-                printWriter.print(String.format("%.17f\n", flow));
+                printWriter.print(String.format("%.17f,", flow));
             }
+            printWriter.print(String.format("]"));
             printWriter.flush();
             printWriter.close();
         }
