@@ -37,7 +37,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
                     particle.interact(other, deltaTime);
                 }
             }
-            checkWallCollisions(particle, getL(), getD(),deltaTime);
+            checkWallCollisions(particle, getD(),deltaTime);
             alreadyInteracted.add(particle);
         }
 
@@ -53,7 +53,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
             dumper.dump(frame);
     }
 
-    public void checkWallCollisions(GranularParticle p, double L, double D, double deltaTime) {
+    public void checkWallCollisions(GranularParticle p, double D, double deltaTime) {
         // checking left vertical
         auxParticle.setY(p.getY());
         auxParticle.setX(0.0);
@@ -65,7 +65,7 @@ public class DynamicGrid extends Grid<GranularParticle> {
 
         // checking right vertical
         auxParticle.setY(p.getY());
-        auxParticle.setX(L);
+        auxParticle.setX(getW());
 
         if (p.isWithinRadiusBoundingBox(auxParticle, 0)) {
             p.interact(auxParticle, deltaTime);
@@ -73,10 +73,8 @@ public class DynamicGrid extends Grid<GranularParticle> {
 
         // checking bottom horizontal with hole
         auxParticle.setY(0);
-        auxParticle.setX(p.getX());
-
 //        if (p.isWithinRadiusBoundingBox(auxParticle, 0) && ( p.getX() < (L/2.0 - D/2.0) || p.getX() >= (L/2.0 + D/2.0)) ) {
-        if (p.isWithinRadiusBoundingBox(auxParticle, 0) && ( p.getX() < (L/2.0 - D/2.0) || p.getX() >= (L/2.0 + D/2.0)) ) {
+        if (p.isWithinRadiusBoundingBox(auxParticle, 0) && ( p.getX() < (getW()/2.0 - D/2.0) || p.getX() >= (getW()/2.0 + D/2.0)) ) {
             p.interact(auxParticle, deltaTime);
         }
     }

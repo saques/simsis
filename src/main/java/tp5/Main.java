@@ -8,10 +8,10 @@ import java.util.Random;
 
 public class Main {
     static int seed = 4;
-    static int M = 7;
+    static int M = 10;
     static int N = 500;
-    static float L = 4, W = 4, minRadius = 0.02f, maxRadius = 0.03f, mass = 0.01f, radius = 0.03f;
-    static double MaxTime = 10, DeltaTime = 3E-5;
+    static float L = 5, W = 2, minRadius = 0.02f, maxRadius = 0.03f, mass = 0.01f, radius = 0.03f;
+    static double MaxTime = 10, DeltaTime = 5E-5;
     static double k = 1E5, gamma = 100, mu = 0.1;
     static double D = L * 0.1;
     static int dumpEach = (int) (0.016 / DeltaTime);

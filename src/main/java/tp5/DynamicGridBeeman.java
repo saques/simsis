@@ -40,7 +40,7 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
                     particle.interact(other, deltaTime);
                 }
             }
-            checkWallCollisions(particle, getL(), getD(),deltaTime);
+            checkWallCollisions(particle, getD(),deltaTime);
             alreadyInteracted.add(particle);
             particle.vDelta(deltaTime);
             checkFallingOff(particle);
@@ -58,6 +58,7 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
         if (particle.getY() < -(getL() / 10)) {
             Particle dummy = new Particle(0, getL(), particle.getRadius());
             do {
+                dummy.setY(r.nextDouble() * 0.2 * getL() + getL() * (1 - 0.05 ) );
                 dummy.setX(Math.max(0.1, Math.min(r.nextDouble(), .9)) * getW());
             }
             while(particles.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(dummy, 0)));
@@ -70,7 +71,7 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
         }
     }
 
-    public void checkWallCollisions(BeemanGranularParticle p, double L, double D, double deltaTime) {
+    public void checkWallCollisions(BeemanGranularParticle p, double D, double deltaTime) {
         // checking left vertical
         auxParticle.setY(p.getY());
         auxParticle.setX(0.0);
@@ -83,20 +84,17 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
 
         // checking right vertical
         auxParticle.setY(p.getY());
-        auxParticle.setX(L);
+        auxParticle.setX(getW());
 
         if (p.isWithinRadiusBoundingBox(auxParticle, 0)) {
             p.interact(auxParticle, deltaTime);
         }
-
-
-
         // checking bottom horizontal with hole
         auxParticle.setY(0);
         auxParticle.setX(p.getX());
 
 //        if (p.isWithinRadiusBoundingBox(auxParticle, 0) && ( p.getX() < (L/2.0 - D/2.0) || p.getX() >= (L/2.0 + D/2.0)) ) {
-        if (p.isWithinRadiusBoundingBox(auxParticle, 0) && ( p.getX() < (L/2.0 - D/2.0) || p.getX() >= (L/2.0 + D/2.0)) ) {
+        if (p.isWithinRadiusBoundingBox(auxParticle, 0) && ( p.getX() < (getW()/2.0 - D/2.0) || p.getX() >= (getW() /2.0 + D/2.0)) ) {
             p.interact(auxParticle, deltaTime);
         }
     }
