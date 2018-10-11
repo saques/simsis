@@ -3,6 +3,7 @@ package utils;
 import tp2.Statistics;
 import tp3.BrownianStatistics;
 import tp3.Point2D;
+import tp5.GranularParticleStats;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -179,6 +180,31 @@ public final class PointDumper {
         printWriter.close();
 
 
+    }
+
+    public void dumpGranularStats(GranularParticleStats statistics) throws IOException {
+        {
+            Queue<String> statsQueue = new LinkedList<>();
+            statsQueue.add(String.format("%d\n",statistics.totalKineticEnergy.size()));
+            for (double energy : statistics.totalKineticEnergy){
+                statsQueue.add(String.format("%.17f\n", energy));
+            }
+            PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "kinematic.txt"));
+            statsQueue.forEach(printWriter::println);
+            printWriter.flush();
+            printWriter.close();
+        }
+        {
+            Queue<String> statsQueue = new LinkedList<>();
+            statsQueue.add(String.format("%d\n",statistics.flow.size()));
+            for (double flow : statistics.flow){
+                statsQueue.add(String.format("%.17f\n", flow));
+            }
+            PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "flow.txt"));
+            statsQueue.forEach(printWriter::println);
+            printWriter.flush();
+            printWriter.close();
+        }
     }
 
     public void dumpMSD(String path , String msdFolder,ArrayList<ArrayList<Double>> sd, int size ) throws IOException{

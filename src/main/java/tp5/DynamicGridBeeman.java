@@ -2,7 +2,6 @@ package tp5;
 
 import common.Grid;
 import common.Particle;
-import tp1.Point2D;
 import utils.PointDumper;
 
 import java.io.IOException;
@@ -23,15 +22,22 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
         return D;
     }
 
-    public void update(int frame, double deltaTime, PointDumper dumper, boolean dump) throws IOException {
+
+    double fallingParticles = 0;
+    double timeAcum = 0;
+    public void update(int frame, double deltaTime, PointDumper dumper, boolean dump, GranularParticleStats stats) throws IOException {
+
+        double kinetic = 0;
         for (BeemanGranularParticle particle : particles) {
+            kinetic += particle.kineticEnergy();
             particle.updateForces();
         }
-
+        stats.totalKineticEnergy.add(kinetic);
         Map<BeemanGranularParticle, Set<BeemanGranularParticle>> particleMap = evalNeighbours(0, Mode.BOX);
         Set<BeemanGranularParticle> alreadyInteracted = new HashSet<>();
 
         // Update particle position based on cumulative force
+
         for (BeemanGranularParticle particle : particles) {
             particle.rDelta(deltaTime);
             particle.applyGravity();
@@ -43,18 +49,24 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
             checkWallCollisions(particle, getD(),deltaTime);
             alreadyInteracted.add(particle);
             particle.vDelta(deltaTime);
-            checkFallingOff(particle);
+            fallingParticles += checkFallingOff(particle) ? 1: 0;
             if(dump)
                 dumper.print2D(particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
         }
-
+        timeAcum += deltaTime;
+        // Flow data is stored 30 times per second
+        if (timeAcum > 0.033) {
+            timeAcum = 0;
+            stats.flow.add(fallingParticles);
+            fallingParticles = 0;
+        }
         updateParticles();
 
         if(dump)
             dumper.dump(frame);
     }
 
-    private void checkFallingOff(BeemanGranularParticle particle) {
+    private boolean checkFallingOff(BeemanGranularParticle particle) {
         if (particle.getY() < -(getL() / 10)) {
             Particle dummy = new Particle(0, getL(), particle.getRadius());
             do {
@@ -67,8 +79,9 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
             particle.setVy(0);
             particle.setVx(0);
             particle.resetAllForces();
-
+            return true;
         }
+        return false;
     }
 
     public void checkWallCollisions(BeemanGranularParticle p, double D, double deltaTime) {
