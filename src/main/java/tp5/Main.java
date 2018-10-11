@@ -3,7 +3,6 @@ package tp5;
 import common.ParticleGenerators;
 import utils.PointDumper;
 
-import java.io.IOException;
 import java.util.Random;
 
 public class Main {
@@ -46,9 +45,6 @@ public class Main {
         Random r = new Random(seed);
         DynamicGridBeeman grid = new DynamicGridBeeman(L, W, M, D, r);
         ParticleGenerators.generateBeemanGranularParticles(L, W, N, minRadius, maxRadius, mass, k, gamma, mu, r).forEach(grid::add);
-
-//        grid.add(new GranularParticle(1, 1,  0, 0, radius, mass, k, gamma, mu));
-//        grid.add(new GranularParticle(1, (1 + .5),  0, 0, radius, mass, k, gamma, mu));
 
         PointDumper dumper = new PointDumper("./tp5/ovito/", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
         GranularParticleStats stats = new GranularParticleStats();

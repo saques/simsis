@@ -2,6 +2,7 @@ package tp5;
 
 import common.Grid;
 import common.Particle;
+import common.Vector2D;
 import utils.PointDumper;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
             particle.vDelta(deltaTime);
             fallingParticles += checkFallingOff(particle) ? 1: 0;
             if(dump)
-                dumper.print2D(particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
+                dumper.print2DForce(new Vector2D(particle.nx, particle.ny).mod(), particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
         }
         timeAcum += deltaTime;
         // Flow data is stored 30 times per second
