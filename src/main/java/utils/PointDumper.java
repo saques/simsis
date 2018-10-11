@@ -67,6 +67,24 @@ public final class PointDumper {
         queue.add(String.format("%.20f %.20f %f %f %f %f %d %d %d", x, y, vx, vy, mass, radius, red, green, blue));
     }
 
+    public void print2DForce(double force, double x, double y, double vx, double vy, double mass, double radius, int id){
+        checkConstraints(FileMode.DYNAMIC, Dimensions._2D);
+        int red, blue, green;
+        if (id == 0) {
+            red = 100;
+            blue = 0;
+            green = 0;
+        } else {
+
+            double val = 1 - 1.0 / ( 1.0 + force);
+
+            red = (int)(255*0.5);
+            green = (int)(255*val);
+            blue = (int)(255*val);
+        }
+        queue.add(String.format("%.20f %.20f %f %f %f %f %d %d %d", x, y, vx, vy, mass, radius, red, green, blue));
+    }
+
     public void print3D(double x, double y, double z){
         checkConstraints(FileMode.DYNAMIC, Dimensions._3D);
         queue.add(String.format("%f %f %f\n", x, y, z));

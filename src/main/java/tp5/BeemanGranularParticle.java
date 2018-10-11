@@ -11,7 +11,9 @@ public class BeemanGranularParticle extends Particle {
     double gamma, mu;
 
     private double fx_1, fy_1;
-    private double fx1, fy1;
+    double fx1, fy1;
+
+    double nx, ny;
 
     Map<BeemanGranularParticle, Double> pastOverlaps = new HashMap<>();
 
@@ -49,7 +51,11 @@ public class BeemanGranularParticle extends Particle {
 
         Vector2D normalForce = normVers.scl(normalForceMag);
 
-        Vector2D tangForce = tanVers.scl((-1) * mu * normalForce.mod() * Math.signum(velRel));
+        Vector2D tangForce = tanVers.scl(- mu * normalForce.mod() * Math.signum(velRel));
+
+
+        nx += normalForce.x;
+        ny += normalForce.y;
 
         fx1 += normalForce.x;
         fy1 += normalForce.y;
@@ -78,7 +84,7 @@ public class BeemanGranularParticle extends Particle {
     }
 
     void resetForces(){
-        fx1 = fy1 = U = 0;
+        nx = ny = fx1 = fy1 = U = 0;
     }
 
     void resetAllForces() {
@@ -110,6 +116,10 @@ public class BeemanGranularParticle extends Particle {
 
     private double v(double t, double v0, double a1, double a0, double a_1){
         return v0 + (1.0/3.0)*a1*t + (5.0/6.0)*a0*t - (1.0/6.0)*a_1*t;
+    }
+
+    public double circumference(){
+        return 2.0*Math.PI*radius;
     }
 
 }
