@@ -75,6 +75,8 @@ public class Grid<E extends Entity>{
     @Getter
     private double L, W, heightSegment, widthSegment;
 
+    public Random r;
+
     @Getter
     private int M;
 
@@ -82,10 +84,11 @@ public class Grid<E extends Entity>{
     protected List<E> particles = new LinkedList<>();
 
     @SuppressWarnings("unchecked")
-    public Grid(double L, double W, int M){
+    public Grid(double L, double W, int M, Random r){
         this.L = L;
         this.W = W;
         this.M = M;
+        this.r = r;
         heightSegment = L/M;
         widthSegment = W/M;
         this.grid = new Cell[M][M];
@@ -162,8 +165,16 @@ public class Grid<E extends Entity>{
 
 
 
-    public void updateParticles(double deltaTime) {
+    public void updateParticles() {
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < M; j++) {
+                grid[i][j].units = new HashSet<>();
+            }
+        }
 
+        for (E particle: particles) {
+            add(particle, false);
+        }
     }
 
     private void addToMap(Map<E, Set<E>> map, E x, E y){
@@ -177,6 +188,9 @@ public class Grid<E extends Entity>{
         return x >= 0 && x < M && y >= 0 && y < M;
     }
 
+    public void resetCells() {
+
+    }
 
     public void remove(E particle, List<Point2D> oldMbr){
         List<Point2D> mbr = oldMbr;
@@ -197,14 +211,5 @@ public class Grid<E extends Entity>{
 //        particles.remove(particle);
     }
 
-    protected void updateCell(E particle, List<Point2D> oldMbr, double oldX, double oldY, double newX, double newY) {
-        int oldCellX = (int) (Math.max(0, oldX) / widthSegment), oldCellY = (int) (Math.min(L, oldY) / heightSegment);
-        int newCellX = (int) (Math.max(0, newX) / widthSegment), newCellY = (int) (Math.min(L, newY) / heightSegment);
 
-        if (oldCellX != newCellX || oldCellY != newCellY) {
-            remove(particle, oldMbr);
-            add(particle, false);
-        }
-
-    }
 }

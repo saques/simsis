@@ -1,13 +1,11 @@
 package tp1;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Cell<T> implements Iterable<T>{
 
-    public List<T> units = new LinkedList<T>();
+    public Set<T> units = new HashSet<>();
 
     public void add(T t){
         units.add(t);

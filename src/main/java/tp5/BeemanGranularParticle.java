@@ -80,6 +80,11 @@ public class BeemanGranularParticle extends Particle {
     void resetForces(){
         fx1 = fy1 = U = 0;
     }
+
+    void resetAllForces() {
+        resetForces();
+        fx_1 = fy_1 = fx1 = fy1 = 0;
+    }
     void applyGravity() {
         fy1 -= 9.807 * mass;
     }

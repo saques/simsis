@@ -1,6 +1,7 @@
 package tp5;
 
 import common.Grid;
+import common.Particle;
 import tp1.Point2D;
 import utils.PointDumper;
 
@@ -8,14 +9,13 @@ import java.io.IOException;
 import java.util.*;
 
 public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
-    Random r = new Random();
 
     double D;
     BeemanGranularParticle auxParticle = new BeemanGranularParticle(0, 0,  0, 0, 0, 1000, 0, 0, 0);
 
 
-    public DynamicGridBeeman(double L, double W, int M, double D) {
-        super(L, W, M);
+    public DynamicGridBeeman(double L, double W, int M, double D, Random r) {
+        super(L, W, M, r);
         this.D = D;
     }
 
@@ -33,11 +33,7 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
 
         // Update particle position based on cumulative force
         for (BeemanGranularParticle particle : particles) {
-            double oldX = particle.getX(), oldY = particle.getY();
-            List<Point2D> oldMbr = particle.mbr();
             particle.rDelta(deltaTime);
-
-
             particle.applyGravity();
             for (BeemanGranularParticle other : particleMap.get(particle)) {
                 if (!alreadyInteracted.contains(other) && particle.isWithinRadiusBoundingBox(other, 0)) {
@@ -46,17 +42,34 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
             }
             checkWallCollisions(particle, getL(), getD(),deltaTime);
             alreadyInteracted.add(particle);
-
-
-
             particle.vDelta(deltaTime);
-            updateCell(particle, oldMbr, oldX, oldY, particle.getX(), particle.getY());
+            checkFallingOff(particle);
             if(dump)
                 dumper.print2D(particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
         }
 
+        updateParticles();
+
         if(dump)
             dumper.dump(frame);
+    }
+
+    private void checkFallingOff(BeemanGranularParticle particle) {
+        int newCellY = (int) (particle.getY() / getHeightSegment());
+
+        if (newCellY < -1) {
+            Particle dummy = new Particle(0, getL(), particle.getRadius());
+            do {
+                dummy.setX(Math.max(0.1, Math.min(r.nextDouble(), .9)) * getW());
+            }
+            while(particles.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(dummy, 0)));
+            particle.setY(dummy.getY());
+            particle.setX(dummy.getX());
+            particle.setVy(0);
+            particle.setVx(0);
+            particle.resetAllForces();
+
+        }
     }
 
     public void checkWallCollisions(BeemanGranularParticle p, double L, double D, double deltaTime) {

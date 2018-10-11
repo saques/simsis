@@ -8,13 +8,13 @@ import java.util.Random;
 
 public class Main {
     static int seed = 2;
-    static int M = 20;
-    static int N = 100;
-    static float L = 2, W = 2, radius = 0.03f, mass = 0.01f;
-    static double MaxTime = 5, DeltaTime = 7E-5;
+    static int M = 7;
+    static int N = 500;
+    static float L = 4, W = 4, radius = 0.03f, mass = 0.01f;
+    static double MaxTime = 5, DeltaTime = 4E-5;
     static double k = 1E5, gamma = 100, mu = 0.1;
-    static double D = .15;
-    static int dumpEach = 1000;
+    static double D = L * 0.1;
+    static int dumpEach = (int) (0.016 / DeltaTime);
 
 
     public static void main(String [] args) throws Exception {
@@ -24,7 +24,7 @@ public class Main {
 
     private static void runGear() throws Exception {
         Random r = new Random(seed);
-        DynamicGrid grid = new DynamicGrid(L, W, M, D);
+        DynamicGrid grid = new DynamicGrid(L, W, M, D, r);
         ParticleGenerators.generateGranularParticles(L, W, N, radius, mass, k, gamma, mu, r).forEach(grid::add);
 
         //grid.add(new GranularParticle(1, 1,  0, 0, radius, mass, k, gamma, mu));
@@ -43,7 +43,7 @@ public class Main {
 
     private static void runBeeman() throws Exception{
         Random r = new Random(seed);
-        DynamicGridBeeman grid = new DynamicGridBeeman(L, W, M, D);
+        DynamicGridBeeman grid = new DynamicGridBeeman(L, W, M, D, r);
         ParticleGenerators.generateBeemanGranularParticles(L, W, N, radius, mass, k, gamma, mu, r).forEach(grid::add);
 
 //        grid.add(new GranularParticle(1, 1,  0, 0, radius, mass, k, gamma, mu));

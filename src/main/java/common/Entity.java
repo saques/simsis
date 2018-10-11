@@ -12,6 +12,14 @@ public interface Entity {
 
     double getY();
 
+    void setX(double x);
+
+    void setY(double y);
+
+    void setVx(double vx);
+
+    void setVy(double vy);
+
     double getRadius();
 
     int getId();

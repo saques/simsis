@@ -59,9 +59,9 @@ public final class PointDumper {
             blue = 0;
             green = 0;
         } else {
-            red = 200;
-            green = 200;
-            blue = 200;
+            red = (randomRed * id);
+            green = (randomGreen * id );
+            blue = (randomBlue * id);
         }
         queue.add(String.format("%.20f %.20f %f %f %f %f %d %d %d", x, y, vx, vy, mass, radius, red, green, blue));
     }

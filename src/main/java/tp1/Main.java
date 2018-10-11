@@ -32,7 +32,7 @@ public class Main {
         LOGGER.info("Seed: {}", seed);
 
         Random r = new Random(seed);
-        Grid g = new Grid(L, L,  M);
+        Grid g = new Grid(L, L,  M, r);
 
         LOGGER.info("Generating particles...");
         ParticleGenerators.generateEntities(L, L, N, particleRadius, r, checkOverlapping).forEach(g::add);

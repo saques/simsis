@@ -8,14 +8,12 @@ import java.io.IOException;
 import java.util.*;
 
 public class DynamicGrid extends Grid<GranularParticle> {
-    Random r = new Random();
-
     double D;
     GranularParticle auxParticle = new GranularParticle(0, 0,  0, 0, 0, 1000, 0, 0, 0);
 
 
-    public DynamicGrid(double L, double W, int M, double D) {
-        super(L, W, M);
+    public DynamicGrid(double L, double W, int M, double D, Random r) {
+        super(L, W, M, r);
         this.D = D;
     }
 
@@ -45,11 +43,8 @@ public class DynamicGrid extends Grid<GranularParticle> {
 
         // Update particle position based on cumulative force
         for (GranularParticle particle : particles) {
-            double oldX = particle.getX(), oldY = particle.getY();
-            List<Point2D> oldMbr = particle.mbr();
             particle.rDelta(deltaTime);
             particle.vDelta(deltaTime);
-            updateCell(particle, oldMbr, oldX, oldY, particle.getX(), particle.getY());
             if(dump)
                 dumper.print2D(particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
         }
