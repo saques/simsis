@@ -184,24 +184,19 @@ public final class PointDumper {
 
     public void dumpGranularStats(GranularParticleStats statistics) throws IOException {
         {
-            Queue<String> statsQueue = new LinkedList<>();
-            statsQueue.add(String.format("%d\n",statistics.totalKineticEnergy.size()));
-            for (double energy : statistics.totalKineticEnergy){
-                statsQueue.add(String.format("%.17f\n", energy));
-            }
+
             PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "kinematic.txt"));
-            statsQueue.forEach(printWriter::println);
+            for (double energy : statistics.totalKineticEnergy){
+                printWriter.print(String.format("%.17f\n", energy));
+            }
             printWriter.flush();
             printWriter.close();
         }
         {
-            Queue<String> statsQueue = new LinkedList<>();
-            statsQueue.add(String.format("%d\n",statistics.flow.size()));
-            for (double flow : statistics.flow){
-                statsQueue.add(String.format("%.17f\n", flow));
-            }
             PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "flow.txt"));
-            statsQueue.forEach(printWriter::println);
+            for (double flow : statistics.flow){
+                printWriter.print(String.format("%.17f\n", flow));
+            }
             printWriter.flush();
             printWriter.close();
         }
