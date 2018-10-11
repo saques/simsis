@@ -29,10 +29,13 @@ public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
 
         double kinetic = 0;
         for (BeemanGranularParticle particle : particles) {
-            kinetic += particle.kineticEnergy();
+            if(dump)
+                kinetic += particle.kineticEnergy();
             particle.updateForces();
         }
-        stats.totalKineticEnergy.add(kinetic);
+        if(dump)
+            stats.totalKineticEnergy.add(kinetic);
+
         Map<BeemanGranularParticle, Set<BeemanGranularParticle>> particleMap = evalNeighbours(0, Mode.BOX);
         Set<BeemanGranularParticle> alreadyInteracted = new HashSet<>();
 

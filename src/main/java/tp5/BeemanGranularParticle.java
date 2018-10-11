@@ -45,7 +45,7 @@ public class BeemanGranularParticle extends Particle {
 
         Vector2D vel = new Vector2D(vx, vy);
         Vector2D otherVel = new Vector2D(o.vx, o.vy);
-        double velRel = vel.sub(otherVel).mod();
+        double velRel = vel.mod() - otherVel.mod();
 
         Vector2D normalForce = normVers.scl(normalForceMag);
 
