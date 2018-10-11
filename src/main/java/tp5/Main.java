@@ -3,7 +3,6 @@ package tp5;
 import common.ParticleGenerators;
 import utils.PointDumper;
 
-import java.io.IOException;
 import java.util.Random;
 
 public class Main {
@@ -12,9 +11,9 @@ public class Main {
     static int M = 8;
     static int N = 500;
     static float L = 5, W = 2, minRadius = 0.02f, maxRadius = 0.03f, mass = 0.01f, radius = 0.03f;
-    static double MaxTime = 5, DeltaTime = 3E-5;
-    static double k = 1E5, gamma = 100, mu = 0.1;
-    static double D = 0.3;
+    static double MaxTime = 2, DeltaTime = 5E-5;
+    static double k = 1E5, gamma = 100, tgMult = 0.7;
+    static double D = 0;
     static int dumpEach = (int) ((1.0/frameRate) / DeltaTime);
 
 
@@ -26,10 +25,10 @@ public class Main {
     private static void runGear() throws Exception {
         Random r = new Random(seed);
         DynamicGrid grid = new DynamicGrid(L, W, M, D, r);
-        ParticleGenerators.generateGranularParticles(L, W, N, radius, mass, k, gamma, mu, r).forEach(grid::add);
+        ParticleGenerators.generateGranularParticles(L, W, N, radius, mass, k, gamma, tgMult, r).forEach(grid::add);
 
-        //grid.add(new GranularParticle(1, 1,  0, 0, radius, mass, k, gamma, mu));
-        //grid.add(new GranularParticle(1, (1 + .5),  0, 0, radius, mass, k, gamma, mu));
+        //grid.add(new GranularParticle(1, 1,  0, 0, radius, mass, k, gamma, tgMult));
+        //grid.add(new GranularParticle(1, (1 + .5),  0, 0, radius, mass, k, gamma, tgMult));
 
         PointDumper dumper = new PointDumper("./tp5/ovito/", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
 
@@ -45,7 +44,7 @@ public class Main {
     private static void runBeeman() throws Exception{
         Random r = new Random(seed);
         DynamicGridBeeman grid = new DynamicGridBeeman(L, W, M, D, r);
-        ParticleGenerators.generateBeemanGranularParticles(L, W, N, minRadius, maxRadius, mass, k, gamma, mu, r).forEach(grid::add);
+        ParticleGenerators.generateBeemanGranularParticles(L, W, N, minRadius, maxRadius, mass, k, gamma, tgMult, r).forEach(grid::add);
 
         PointDumper dumper = new PointDumper("./tp5/ovito/", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
         GranularParticleStats stats = new GranularParticleStats();

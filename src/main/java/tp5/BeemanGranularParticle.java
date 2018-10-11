@@ -8,7 +8,7 @@ import java.util.Map;
 public class BeemanGranularParticle extends Particle {
     double fx0, fy0, U;
     double k;
-    double gamma, mu;
+    double gamma, tgMult;
 
     private double fx_1, fy_1;
     double fx1, fy1;
@@ -17,12 +17,12 @@ public class BeemanGranularParticle extends Particle {
 
     Map<BeemanGranularParticle, Double> pastOverlaps = new HashMap<>();
 
-    public BeemanGranularParticle(double x, double y, double vx, double vy, double radius, double mass, double k, double gamma, double mu) {
+    public BeemanGranularParticle(double x, double y, double vx, double vy, double radius, double mass, double k, double gamma, double tgMult) {
         super(x, y, vx, vy, radius, mass);
         fx0 = fy0 = U = 0;
         this.k = k;
         this.gamma = gamma;
-        this.mu = mu;
+        this.tgMult = tgMult;
     }
 
     public void interact(BeemanGranularParticle o, double deltaT){
@@ -33,10 +33,9 @@ public class BeemanGranularParticle extends Particle {
         double eyn = (o.y - y) / dist;
 
         Vector2D normVers = new Vector2D(exn, eyn);
-        Vector2D tanVers = new Vector2D(-eyn, exn);
+        Vector2D tanVers = new Vector2D((-1)*eyn, exn);
 
         double overlap = radius + o.radius - dist;
-        assert (overlap > 0 && overlap < radius);
 
         double pastOverlap = pastOverlaps.getOrDefault(o, 0.0);
         pastOverlaps.put(o, overlap);
@@ -47,12 +46,11 @@ public class BeemanGranularParticle extends Particle {
 
         Vector2D vel = new Vector2D(vx, vy);
         Vector2D otherVel = new Vector2D(o.vx, o.vy);
-        double velRel = vel.mod() - otherVel.mod();
+        Vector2D velRel = new Vector2D(vel).sub(otherVel);
 
         Vector2D normalForce = normVers.scl(normalForceMag);
 
-        Vector2D tangForce = tanVers.scl(- mu * normalForce.mod() * Math.signum(velRel));
-
+        Vector2D tangForce = tanVers.scl(-tgMult * k * overlap * velRel.dot(tanVers));
 
         nx += normalForce.x;
         ny += normalForce.y;
