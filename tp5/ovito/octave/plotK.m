@@ -2,32 +2,32 @@
   format long;
   Data = eval(fgets(file));
   format long;
-  plot ([0:1/60:5],Data);
+  plot ([0:1/60:5],log10(Data));
   hold on
   
   file = fopen('../kinematic0.25.txt','r');
   format long;
   Data = eval(fgets(file));
   format long;
-  plot ([0:1/60:5],Data,"r");
+  plot ([0:1/60:5],log10(Data),"r");
   hold on
   
   file = fopen('../kinematic0.35.txt','r');
   format long;
   Data = eval(fgets(file));
   format long;
-  plot ([0:1/60:5],Data,"m");
+  plot ([0:1/60:5],log10(Data),"m");
   hold on
   
   file = fopen('../kinematic0.5.txt','r');
   format long;
   Data = eval(fgets(file));
   format long;
-  plot ([0:1/60:5],Data,"k");
+  plot ([0:1/60:5],log10(Data),"k");
   hold on
 
   xlabel ("t (segundos)","fontsize", 25);
-  h = ylabel ("Energia cinetica (J)");
+  h = ylabel ("log(Energia cinetica) (J)");
   l = legend ("D = 0.2 m", "D = 0.25 m","D = 0.35 m","D = 0.5 m");
   set (l, "fontsize", 22,"location", "northeastoutside") 
 
