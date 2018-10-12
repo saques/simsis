@@ -22,6 +22,10 @@ public final class PointDumper {
     private int randomGreen;
     private int randomBlue;
     private List<String> list = new LinkedList<>();
+    private double maxForce = Double.MIN_VALUE;
+
+
+
 
 
 
@@ -47,6 +51,14 @@ public final class PointDumper {
         randomRed = random.nextInt();
     }
 
+    public void updateMaxForce(double force){
+        maxForce = Math.max(maxForce, force);
+    }
+
+    public void resetMaxForce(){
+        maxForce = Double.MIN_VALUE;
+    }
+
     public void print2D(double x, double y){
         checkConstraints(FileMode.DYNAMIC, Dimensions._2D);
         queue.add(String.format("%f %f\n", x, y));
@@ -69,20 +81,20 @@ public final class PointDumper {
 
     public void print2DForce(double force, double x, double y, double vx, double vy, double mass, double radius, int id){
         checkConstraints(FileMode.DYNAMIC, Dimensions._2D);
-        int red, blue, green;
+        double red, blue, green;
         if (id == 0) {
-            red = 100;
+            red = 0.5;
             blue = 0;
             green = 0;
         } else {
 
-            double val = 1 - 1.0 / ( 1.0 + force);
+            double val = force/maxForce;
 
-            red = (int)(255*0.5);
-            green = (int)(255*val);
-            blue = (int)(255*val);
+            red = green = blue = 1;
+
+            green = blue = 1 - val;
         }
-        queue.add(String.format("%.20f %.20f %f %f %f %f %d %d %d", x, y, vx, vy, mass, radius, red, green, blue));
+        queue.add(String.format("%.20f %.20f %f %f %f %f %f %f %f", x, y, vx, vy, mass, radius, red, green, blue));
     }
 
     public void print3D(double x, double y, double z){
