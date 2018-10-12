@@ -204,9 +204,11 @@ public final class PointDumper {
         {
 
             PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "kinematic.txt"));
+            printWriter.print(String.format("["));
             for (double energy : statistics.totalKineticEnergy){
-                printWriter.print(String.format("%.17f\n", energy));
+                printWriter.print(String.format("%.17f,", energy));
             }
+            printWriter.print(String.format("]"));
             printWriter.flush();
             printWriter.close();
         }
