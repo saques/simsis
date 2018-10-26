@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BeemanGranularParticle extends Particle {
-    double fx0, fy0, U;
+    public double fx0, fy0, U;
     double k;
     double gamma, mu;
 
     private double fx_1, fy_1;
     double fx1, fy1;
 
-    double nx, ny;
+    public double nx, ny;
 
     Map<BeemanGranularParticle, Double> pastOverlaps = new HashMap<>();
 
@@ -85,7 +85,7 @@ public class BeemanGranularParticle extends Particle {
         nx = ny = fx1 = fy1 = U = 0;
     }
 
-    void resetAllForces() {
+    public void resetAllForces() {
         resetForces();
         fx_1 = fy_1 = fx1 = fy1 = 0;
     }

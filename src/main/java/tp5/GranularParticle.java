@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class GranularParticle extends Particle {
     public static final double G = 9.8;
-    double fx0, fy0, U;
+    protected double fx0, fy0, U;
     double x2, x3, x4, x5;
     double y2, y3, y4, y5;
     double k;
