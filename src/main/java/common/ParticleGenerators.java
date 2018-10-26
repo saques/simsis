@@ -2,6 +2,7 @@ package common;
 
 import tp5.BeemanGranularParticle;
 import tp5.GranularParticle;
+import tp6.Pedestrian;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -71,6 +72,24 @@ public final class ParticleGenerators {
             double x = Math.max(0.1, Math.min(r.nextDouble(), .9)) * W , y = Math.max(0.1, Math.min(r.nextDouble(), .9)) * L;
             double radius = r.nextDouble() * (maxRadius - minRadius) + minRadius;
             BeemanGranularParticle p = new BeemanGranularParticle(x, y,0, 0, radius, mass, k, gamma, mu);
+            if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0))) {
+                GranularParticle.decreaseIDs();
+            } else {
+                ans.add(p);
+                N--;
+            }
+        }
+        return ans;
+    }
+
+    public static List<Pedestrian> generatePedestrians(double L, double W, int N, double minRadius, double maxRadius, double minV,double maxV,double mass, double k, double gamma, double mu, double A,double B,double tau,Random r) throws Exception {
+        List<Pedestrian> ans = new ArrayList<>(N);
+
+        while (N > 0) {
+            double x = Math.max(0.1, Math.min(r.nextDouble(), .9)) * W , y = Math.max(0.1, Math.min(r.nextDouble(), .9)) * L;
+            double radius = r.nextDouble() * (maxRadius - minRadius) + minRadius;
+            double v =  r.nextDouble() * (maxV - minV) + minV;
+            Pedestrian p = new Pedestrian(x, y,0, 0, radius, mass, k, gamma, mu,A,B,tau,v);
             if (ans.stream().anyMatch(t -> t.isWithinRadiusBoundingBox(p, 0))) {
                 GranularParticle.decreaseIDs();
             } else {

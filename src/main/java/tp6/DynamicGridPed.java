@@ -44,6 +44,13 @@ public class DynamicGridPed extends Grid<Pedestrian> {
             particle.updateForces();
             particle.drivingForce(path, pathRadius);
         }
+        for (int i =  0 ; i < particles.size() ; i++) {
+            Pedestrian particle = particles.get(i);
+            for (int j =  i+1 ; j < particles.size() ; j++) {
+                Pedestrian other = particles.get(j);
+                particle.socialForce(other);
+            }
+        }
         if(dump)
             stats.totalKineticEnergy.add(kinetic);
 
