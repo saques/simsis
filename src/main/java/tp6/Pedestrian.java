@@ -5,6 +5,7 @@ import tp5.BeemanGranularParticle;
 import tp5.GranularParticle;
 
 import java.util.List;
+import java.util.Vector;
 
 public class Pedestrian extends BeemanGranularParticle {
     private double A, B, tau, dSpeed;
@@ -17,6 +18,7 @@ public class Pedestrian extends BeemanGranularParticle {
             double radius,
             double mass,
             double k,
+            double kt,
             double gamma,
             double mu,
             double A,
@@ -24,7 +26,7 @@ public class Pedestrian extends BeemanGranularParticle {
             double tau,
             double dSpeed
     ) {
-        super(x, y, vx, vy, radius, mass, k, gamma, mu);
+        super(x, y, vx, vy, radius, mass, k, kt, gamma, mu);
         this.A = A;
         this.B = B;
         this.tau = tau;
@@ -39,8 +41,9 @@ public class Pedestrian extends BeemanGranularParticle {
         Vector2D normalVector = pos.sub(opos);
         double dist = normalVector.mod();
         Vector2D e = normalVector.scl(1 / dist);
-        double overlap = radius + other.radius - dist;
-        Vector2D force = e.scl(A * Math.exp(-overlap / B));
+        double overlap = dist -  (radius + other.radius);
+        Vector2D force = e.scl(A * Math.exp(-overlap/B));
+
         fx0 += force.x;
         fy0 += force.y;
         other.fx0 -= force.x;
@@ -50,7 +53,7 @@ public class Pedestrian extends BeemanGranularParticle {
     public void drivingForce(List<Vector2D> path, double pathRadius) {
         Vector2D destiny = null;
         for (Vector2D breadCrumb : path) {
-            if (position().sub(breadCrumb).mod() <= pathRadius) {
+            if (position().getY() < breadCrumb.getY() - pathRadius || position().sub(breadCrumb).mod() <= pathRadius) {
                 continue;
             } else {
                 destiny = breadCrumb;
@@ -64,7 +67,7 @@ public class Pedestrian extends BeemanGranularParticle {
 
         // Calculate driving force.
         Vector2D pos = new Vector2D(x, y);
-        Vector2D normalVector = pos.sub(destiny);
+        Vector2D normalVector = destiny.sub(pos);
         Vector2D e = normalVector.scl(1 / normalVector.mod());
         Vector2D v = new Vector2D(vx, vy);
         Vector2D desiredForce = e.scl(dSpeed).sub(v).scl(mass / tau);

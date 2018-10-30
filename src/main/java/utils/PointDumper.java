@@ -23,11 +23,7 @@ public final class PointDumper {
     private int randomBlue;
     private List<String> list = new LinkedList<>();
     private double maxForce = Double.MIN_VALUE;
-
-
-
-
-
+    private List<Double> fallingTimes;
 
     public enum FileMode {
         STATIC, DYNAMIC
@@ -49,6 +45,7 @@ public final class PointDumper {
         randomBlue = random.nextInt();
         randomGreen = random.nextInt();
         randomRed = random.nextInt();
+        this.fallingTimes = new ArrayList<>();
     }
 
     public void updateMaxForce(double force){
@@ -95,6 +92,10 @@ public final class PointDumper {
             green = blue = 1 - val;
         }
         queue.add(String.format("%.20f %.20f %f %f %f %f %f %f %f", x, y, vx, vy, mass, radius, red, green, blue));
+    }
+
+    public void printFalling(double time) {
+        fallingTimes.add(time);
     }
 
     public void print3D(double x, double y, double z){
@@ -230,6 +231,16 @@ public final class PointDumper {
             printWriter.print(String.format("["));
             for (double flow : statistics.flow){
                 printWriter.print(String.format("%.17f,", flow));
+            }
+            printWriter.print(String.format("]"));
+            printWriter.flush();
+            printWriter.close();
+        }
+        {
+            PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "evacuationTimes.txt"));
+            printWriter.print(String.format("["));
+            for (double time : fallingTimes){
+                printWriter.print(String.format("%.17f,", time));
             }
             printWriter.print(String.format("]"));
             printWriter.flush();

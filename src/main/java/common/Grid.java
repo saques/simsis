@@ -6,6 +6,7 @@ import tp1.Cell;
 import tp1.Point2D;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 
 public class Grid<E extends Entity>{
@@ -166,12 +167,11 @@ public class Grid<E extends Entity>{
 
 
     public void updateParticles() {
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < M; j++) {
+        IntStream.range(0, M).parallel().forEach(i -> {
+            IntStream.range(0, M).parallel().forEach(j -> {
                 grid[i][j].units = new HashSet<>();
-            }
-        }
-
+            });
+        });
         for (E particle: particles) {
             add(particle, false);
         }

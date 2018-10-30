@@ -4,7 +4,6 @@ import common.Particle;
 import common.Vector2D;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GranularParticle extends Particle {
@@ -12,7 +11,7 @@ public class GranularParticle extends Particle {
     protected double fx0, fy0, U;
     double x2, x3, x4, x5;
     double y2, y3, y4, y5;
-    double k;
+    double kn, kt;
     double gamma, mu;
 
     private double fx_1, fy_1;
@@ -20,10 +19,11 @@ public class GranularParticle extends Particle {
 
     Map<GranularParticle, Double> pastOverlaps = new HashMap<>();
 
-    public GranularParticle(double x, double y, double vx, double vy, double radius, double mass, double k, double gamma, double mu) {
+    public GranularParticle(double x, double y, double vx, double vy, double radius, double mass, double kn, double kt, double gamma, double mu) {
         super(x, y, vx, vy, radius, mass);
         fx0 = fy0 = U = 0;
-        this.k = k;
+        this.kn = kn;
+        this.kt = kt;
         this.gamma = gamma;
         this.mu = mu;
     }
@@ -45,7 +45,7 @@ public class GranularParticle extends Particle {
         pastOverlaps.put(o, overlap);
         o.pastOverlaps.put(this, overlap);
         double overlapDeriv  = (overlap - pastOverlap) / deltaT;
-        double normalForceMag = (-1) * k * overlap - gamma * overlapDeriv;
+        double normalForceMag = (-1) * kn * overlap - gamma * overlapDeriv;
 
 
         Vector2D vel = new Vector2D(vx, vy);
