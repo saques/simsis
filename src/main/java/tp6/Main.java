@@ -14,7 +14,7 @@ public class Main {
     static double frameRate = 30;
     static int seed = 4;
     static int M = 8;
-    static int N = 200;
+    static int N = 10;
     static float L = 20, W = 20, minRadius = 0.25f, maxRadius = 0.29f, mass = 65.0f, radius = 0.03f,minV = 4f,maxV=4f;
     static double MaxTime = 120, DeltaTime = 1E-3;
     static double k = 1.2E5, gamma = 100, mu = 0.1, kt = 2.4E5;
@@ -36,7 +36,7 @@ public class Main {
         GranularParticleStats stats = new GranularParticleStats();
         stats.particles = N;
         int frame = 0;
-        for (int i = 0; i < MaxTime/DeltaTime; i ++) {
+        for (int i = 0; grid.size() != 0; i ++) {
             boolean dump = i % dumpEach == 0;
             grid.update(frame, DeltaTime, dumper, dump, stats);
             if(dump)

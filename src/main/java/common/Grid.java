@@ -211,5 +211,9 @@ public class Grid<E extends Entity>{
 //        particles.remove(particle);
     }
 
+    public int size(){
+        return particles.size();
+    }
+
 
 }

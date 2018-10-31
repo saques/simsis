@@ -38,13 +38,6 @@ public class DynamicGridPed extends Grid<Pedestrian> {
             particle.updateForces();
             particle.drivingForce(path, pathRadius);
         });
-//        for (Pedestrian particle : particles) {
-//            if(dump)
-//                kinetic += particle.kineticEnergy();
-//            particle.updateForces();
-//            particle.drivingForce(path, pathRadius);
-//        }
-
 
         for (int i =  0 ; i < particles.size() ; i++) {
             Pedestrian particle = particles.get(i);
@@ -76,9 +69,9 @@ public class DynamicGridPed extends Grid<Pedestrian> {
                 dumper.printFalling(timeAcum);
             }
             if(dump) {
-                double normForce = new Vector2D(particle.nx, particle.ny).mod()/particle.circumference();
-                dumper.updateMaxForce(normForce);
-                dumper.print2DForce(normForce, particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
+                double speed = new Vector2D(particle.getVx(), particle.getVy()).mod();
+                dumper.updateMaxForce(speed);
+                dumper.print2DForce(speed, particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
             }
         });
         particles.removeAll(toErase);
