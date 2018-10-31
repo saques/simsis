@@ -55,6 +55,10 @@ public class DynamicGridPed extends Grid<Pedestrian> {
 
         particles.parallelStream().forEach(particle -> {
             particle.rDelta(deltaTime);
+            if(dump){
+                double speed = new Vector2D(particle.getVx(), particle.getVy()).mod();
+                dumper.updateMaxForce(speed);
+            }
         });
         List<Pedestrian> toErase = new ArrayList<>();
         particles.stream().forEach(particle -> {
@@ -70,7 +74,6 @@ public class DynamicGridPed extends Grid<Pedestrian> {
             }
             if(dump) {
                 double speed = new Vector2D(particle.getVx(), particle.getVy()).mod();
-                dumper.updateMaxForce(speed);
                 dumper.print2DForce(speed, particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getMass(), particle.getRadius(), particle.getId());
             }
         });
