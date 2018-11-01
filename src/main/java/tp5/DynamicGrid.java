@@ -9,7 +9,7 @@ import java.util.*;
 
 public class DynamicGrid extends Grid<GranularParticle> {
     double D;
-    GranularParticle auxParticle = new GranularParticle(0, 0,  0, 0, 0, 1000, 0, 0, 0);
+    GranularParticle auxParticle = new GranularParticle(0, 0,  0, 0, 0, 1000, 0, 0, 0, 0);
 
 
     public DynamicGrid(double L, double W, int M, double D, Random r) {

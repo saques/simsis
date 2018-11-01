@@ -11,7 +11,7 @@ import java.util.*;
 public class DynamicGridBeeman extends Grid<BeemanGranularParticle> {
 
     double D;
-    BeemanGranularParticle auxParticle = new BeemanGranularParticle(0, 0,  0, 0, 0, 1000, 0, 0, 0);
+    BeemanGranularParticle auxParticle = new BeemanGranularParticle(0, 0,  0, 0, 0, 0, 1000, 0, 0, 0);
 
 
     public DynamicGridBeeman(double L, double W, int M, double D, Random r) {
