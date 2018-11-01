@@ -11,8 +11,6 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class DynamicGridPed extends Grid<Pedestrian> {
-    Random r = new Random();
-
     private double D;
     private BeemanGranularParticle auxParticle = new BeemanGranularParticle(0, 0,  0, 0, 0, 1000, 0, 0,0, 0);
     private List<Vector2D> path;
@@ -50,7 +48,7 @@ public class DynamicGridPed extends Grid<Pedestrian> {
             stats.totalKineticEnergy.add(kinetic);
 
         Map<Pedestrian, Set<Pedestrian>> particleMap = evalNeighbours(0, Mode.BOX);
-        Set<BeemanGranularParticle> alreadyInteracted = new HashSet<>();
+        Set<Pedestrian> alreadyInteracted = new HashSet<>();
         // Update particle position based on cumulative force
 
         particles.parallelStream().forEach(particle -> {

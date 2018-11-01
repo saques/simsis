@@ -9,6 +9,7 @@ import java.util.Vector;
 
 public class Pedestrian extends BeemanGranularParticle {
     private double A, B, tau, dSpeed;
+    private int pathIndex = 0;
 
     public Pedestrian(
             double x,
@@ -52,18 +53,18 @@ public class Pedestrian extends BeemanGranularParticle {
 
     public void drivingForce(List<Vector2D> path, double pathRadius) {
         Vector2D destiny = null;
-        for (Vector2D breadCrumb : path) {
-            if (position().getY() < breadCrumb.getY() - pathRadius || position().sub(breadCrumb).mod() <= pathRadius) {
-                continue;
-            } else {
-                destiny = breadCrumb;
-                break;
-            }
-        }
+
+
+        if(pathIndex < path.size())
+            destiny = path.get(pathIndex);
+
         if (destiny == null) {
             System.out.println("No driving force pedestrian: " + getId());
             return;
         }
+
+        if(position().sub(destiny).mod() <= pathRadius)
+            pathIndex++;
 
         // Calculate driving force.
         Vector2D pos = new Vector2D(x, y);
