@@ -14,7 +14,7 @@ public class Main {
     private static double frameRate = 30;
     private static Long seed = null;
     private static int M = 8;
-    private static int N = 175;
+    private static int N = 10;
     private static float L = 20, W = 20, minRadius = 0.25f, maxRadius = 0.29f, mass = 65.0f, v = 2.25f;
     private static double DeltaTime = 4E-4;
     private static double k = 1.2E5, gamma = 100, mu = 0.1, kt = 2.4E5;
@@ -38,7 +38,7 @@ public class Main {
         DynamicGridPed grid = new DynamicGridPed(L, W, M, r, D, list, pathRadius);
         ParticleGenerators.generatePedestrians(L, W, N, minRadius, maxRadius,v, mass, k, kt, gamma, mu, A,B,tau,r).forEach(grid::add);
 
-        PointDumper dumper = new PointDumper("./tp6/ovito/v2.25-5/", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
+        PointDumper dumper = new PointDumper("./tp6/ovito/", PointDumper.FileMode.DYNAMIC, PointDumper.Dimensions._2D);
         int frame = 0;
         for (int i = 0; grid.size() > 0; i ++) {
             boolean dump = i % dumpEach == 0;
