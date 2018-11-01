@@ -63,7 +63,7 @@ public class Pedestrian extends BeemanGranularParticle {
             return;
         }
 
-        if(position().sub(destiny).mod() <= pathRadius)
+        if(position().sub(destiny).mod() <= pathRadius || pathIndex != (path.size()-1) && position().y < 0)
             pathIndex++;
 
         // Calculate driving force.
