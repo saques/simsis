@@ -29,9 +29,8 @@ public class DynamicGridPed extends Grid<Pedestrian> {
 
 
     double timeAcum = 0;
-    public void update(int frame, double deltaTime, PointDumper dumper, boolean dump, GranularParticleStats stats) throws IOException {
+    public void update(int frame, double deltaTime, PointDumper dumper, boolean dump) throws IOException {
 
-        double kinetic = 0;
         particles.parallelStream().forEach(particle -> {
             particle.updateForces();
             particle.drivingForce(path, pathRadius);
@@ -44,8 +43,6 @@ public class DynamicGridPed extends Grid<Pedestrian> {
                 particle.socialForce(other);
             });
         }
-        if(dump)
-            stats.totalKineticEnergy.add(kinetic);
 
         Map<Pedestrian, Set<Pedestrian>> particleMap = evalNeighbours(0, Mode.BOX);
         Set<Pedestrian> alreadyInteracted = new HashSet<>();

@@ -236,6 +236,10 @@ public final class PointDumper {
             printWriter.flush();
             printWriter.close();
         }
+    }
+
+
+    public void dumpPedStats() throws IOException{
         {
             PrintWriter printWriter = new PrintWriter(new FileWriter(basePath + "evacuationTimes.txt"));
             printWriter.print(String.format("["));
