@@ -6,15 +6,15 @@ function plotTEvac()
   v4 = [52.10759999993191400;51.81079999993260500;52.26879999993154000;50.94159999993463000;50.89319999993474400];
   v5 = [55.02919999992510500;56.73599999992113000;50.18199999993640000;50.40799999993587500;52.44079999993114000];
   
-  mean1 = mean(v1);
+  mean1 = mean(v1)
   std1 = std(v1)*3;
-  mean2 = mean(v2);
+  mean2 = mean(v2)
   std2 = std(v2)*3;
-  mean3 = mean(v3);
+  mean3 = mean(v3)
   std3 = std(v3)*3;
-  mean4 = mean(v4);
+  mean4 = mean(v4)
   std4 = std(v4)*3;
-  mean5 = mean(v5);
+  mean5 = mean(v5)
   std5 = std(v5)*3;
   scatter ([1,2.25,3,4.5,6], [mean1,mean2,mean3,mean4,mean5],15,"r",'filled');
   hold on;
